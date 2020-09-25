@@ -18,15 +18,17 @@ unsigned int is_int(char* str){
 }
 // Used for reference on reading a string with spaces:
 // Also used for clearing the input buffer
-// https://www.includehelp.com/c/c-program-to-read-string-with-spaces-using-scanf-function.aspx
+// S1: https://www.includehelp.com/c/c-program-to-read-string-with-spaces-using-scanf-function.aspx
 int get_int(char* prompt, int hi, int low){
     char input[32]; // statically allocated for now
     char tmp; //for clearing the input buffer
     do{
-        printf("%s", prompt);
-        scanf("%[^\n]", &input);
-        scanf("%c",&tmp);
-    }while(is_int(input)==0);
+        do{
+            printf("%s", prompt);
+            scanf("%[^\n]", &input); // S1
+            scanf("%c",&tmp); // S1
+        }while(is_int(input)==0);
+    }while(!(atoi(input) >= hi && atoi(input) <= low));
     return atoi(input); 
 }
 
