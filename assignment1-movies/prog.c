@@ -41,9 +41,26 @@ void show_options(){
 }
 
 void main_loop(){
-    int foo = 0;
-    show_options();
-    foo = get_int("Prompt:",1,4);
-    printf("Foo: %d\n", foo);
+    int choice = -1; 
+    do{
+        show_options();
+        choice = get_int("Enter a choice from 1 to 4: ",1,4);
+        switch(choice){
+            case 1:
+                printf("case1\n");
+                break;
+            case 2:
+                printf("case2\n");
+                break;
+            case 3:
+                printf("case3\n");
+                break; 
+            case 4:
+                printf("case4\n");
+                break;
+            default:
+                printf("Something went wrong");
+        }
+    }while(choice != 4);
     return;
 }
