@@ -40,7 +40,7 @@ struct movie* create_movie(char* curr_line){
     strcpy(rating, token);
     //curr_movie->rating = malloc(sizeof(double));
     //curr_movie->rating = atof(token);
-
+    printf("%s\t%s\t%s\t%s\n", curr_movie->name, year, curr_movie->langs, rating);
     return NULL;
 }
 
