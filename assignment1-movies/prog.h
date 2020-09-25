@@ -3,6 +3,7 @@
 
 void main_loop();
 void show_options();
+int get_int(char* prompt);
 //error handling prompt
 //need a string input function
 #endif
