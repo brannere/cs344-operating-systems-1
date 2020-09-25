@@ -6,11 +6,20 @@
 * ** Input: CSV Files
 * ** Output: Strings of text
 * *********************************************************************/
-
+/*********************************************************************
+* ** Function:
+* ** Description:
+* ** Parameters:
+* ** Pre-Conditions:
+* ** Post-Conditions:
+* *********************************************************************/
+#include "./prog.h"
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 int main(void) {
+    main_loop();
+    return 0;
 }
