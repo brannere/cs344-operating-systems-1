@@ -3,13 +3,43 @@
 #include <string.h>
 #include "list.h"
 struct movie{
-    char *name;
+    char* name;
     int year;
-    char *langs;
+    char* langs;
     double rating;      
 };
 
 struct movie* create_movie(char* curr_line){
+    struct movie* curr_movie = malloc(sizeof(struct movie));
+
+    // For use with strtok_r
+    char* saveptr;
+    char* year;
+    char* rating;
+
+    // the first token is the title
+    char* token = strtok_r(curr_line, ",", &saveptr);
+    curr_movie->name = calloc(strlen(token)+1, sizeof(char));
+    strcpy(curr_movie->name, token);
+
+    // the next token is the year 
+    token = strtok_r(NULL, ",", &saveptr);
+    year = calloc(strlen(token)+1,sizeof(char));
+    strcpy(year, token);
+    //curr_movie->year = malloc(sizeof(int));
+    //curr_movie->year = atoi(token);
+
+    // the next token are the languages
+    token = strtok_r(NULL, ",", &saveptr);
+    curr_movie->langs = calloc(strlen(token)+1,sizeof(char));
+    strcpy(curr_movie->langs, token);
+
+    // the last toke is the rating
+    token = strtok_r(NULL, ",", &saveptr);
+    rating = calloc(strlen(token)+1,sizeof(char));
+    strcpy(rating, token);
+    //curr_movie->rating = malloc(sizeof(double));
+    //curr_movie->rating = atof(token);
 
     return NULL;
 }
