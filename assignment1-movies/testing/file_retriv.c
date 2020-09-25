@@ -43,7 +43,7 @@ struct movie* create_movie(char* curr_line){
     
     printf( "%s\t%d\t%s\t%f\n", curr_movie->name, curr_movie->year, 
             curr_movie->langs, curr_movie->rating);
-    return NULL;
+    return curr_movie;
 }
 
 struct list* process_file(char* file_path){
@@ -76,7 +76,8 @@ int main(int argc, char *argv[]){
             printf("Example usage: ./movies file.csv\n");
             return EXIT_FAILURE;                    
         }
-        struct movie *list = process_file(argv[1]);
+        struct list* movies = process_file(argv[1]);
         //printStudentList(list);
+        list_free(movies);
         return EXIT_SUCCESS;                   
 }
