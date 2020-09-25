@@ -27,7 +27,7 @@ struct movie* create_movie(char* curr_line){
     year = calloc(strlen(token)+1,sizeof(char));
     strcpy(year, token);
     //curr_movie->year = malloc(sizeof(int));
-    //curr_movie->year = atoi(token);
+    curr_movie->year = atoi(token);
 
     // the next token are the languages
     token = strtok_r(NULL, ",", &saveptr);
@@ -39,8 +39,10 @@ struct movie* create_movie(char* curr_line){
     rating = calloc(strlen(token)+1,sizeof(char));
     strcpy(rating, token);
     //curr_movie->rating = malloc(sizeof(double));
-    //curr_movie->rating = atof(token);
-    printf("%s\t%s\t%s\t%s\n", curr_movie->name, year, curr_movie->langs, rating);
+    curr_movie->rating = atof(token);
+    
+    printf( "%s\t%d\t%s\t%f\n", curr_movie->name, curr_movie->year, 
+            curr_movie->langs, curr_movie->rating);
     return NULL;
 }
 
@@ -51,14 +53,17 @@ struct list* process_file(char* file_path){
     ssize_t nread; 
     char* token;
     struct movie* new_node = NULL;
+    int line1_flag = 0;
 
     struct list* result = list_create();
     // void list_insert(the list, void* val)
     
     while((nread = getline(&curr_line, &len, movie_file)) != -1){
-        new_node = create_movie(curr_line);
-        list_insert(result, new_node);
-        //insert into linked list
+        if(line1_flag != 0){
+            new_node = create_movie(curr_line);
+            list_insert(result, new_node);
+            //insert into linked list
+        }else line1_flag = 1;
     }
     free(curr_line);
     fclose(movie_file);
@@ -68,7 +73,7 @@ struct list* process_file(char* file_path){
 int main(int argc, char *argv[]){
         if (argc < 2){
             printf("You must provide the name of the file to process\n");
-            printf("Example usage: ./students student_info1.txt\n");
+            printf("Example usage: ./movies file.csv\n");
             return EXIT_FAILURE;                    
         }
         struct movie *list = process_file(argv[1]);
