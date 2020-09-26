@@ -78,6 +78,7 @@ void list_free(struct list* list) {
   while(tmp != NULL){
     tmp = list->head->next;
     free(list->head);
+    //free(list->head->name); // added
     list->head = tmp;
   }
   if(list->head != NULL){

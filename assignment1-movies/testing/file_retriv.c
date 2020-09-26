@@ -1,15 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "list.h"
-struct movie{
+#include "./list.h"
+#include "./movie.h"
+/*struct movie{
     char* name;
     int year;
     char* langs;
     double rating;      
-};
+};*/
 
-struct movie* create_movie(char* curr_line){
+/*struct movie* create_movie(char* curr_line){
     struct movie* curr_movie = malloc(sizeof(struct movie));
 
     // For use with strtok_r
@@ -44,7 +45,7 @@ struct movie* create_movie(char* curr_line){
     printf( "%s\t%d\t%s\t%f\n", curr_movie->name, curr_movie->year, 
             curr_movie->langs, curr_movie->rating);
     return curr_movie;
-}
+}*/
 
 struct list* process_file(char* file_path){
     FILE* movie_file = fopen(file_path, "r");
@@ -60,7 +61,7 @@ struct list* process_file(char* file_path){
     
     while((nread = getline(&curr_line, &len, movie_file)) != -1){
         if(line1_flag != 0){
-            new_node = create_movie(curr_line);
+            new_node = movie_create(curr_line);
             list_insert(result, new_node);
             //insert into linked list
         }else line1_flag = 1;
