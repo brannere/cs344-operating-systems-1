@@ -12,6 +12,9 @@
 #include <stdlib.h>
 
 #include "list.h"
+#include "movie.h"  /*for now, list needs to know what a movie is
+                      so the data can be freed correctly without wasting 
+                      an interation on the list*/ 
 
 /*
  * This structure is used to represent a single link in a singly-linked list.
@@ -78,15 +81,32 @@ void list_free(struct list* list) {
   while(tmp != NULL){
     tmp = list->head->next;
     free(list->head);
-    //free(list->head->name); // added
     list->head = tmp;
   }
   if(list->head != NULL){
     free(list->head);
   } 
-  // list->head = NULL;
+  list->head = NULL;
   free(list);
   return;
+}
+
+void list_free_internal(struct list* list, void (*rmv)(void* a)){
+    //struct movie* m_a = a;
+    //movie_free(m_a);
+    struct link* tmp = list->head;
+    while(tmp != NULL){
+        //tmp = list->head->next;
+        rmv(tmp->val);
+        //free(list->head);
+        tmp = tmp->next;
+        //list->head = tmp;
+    }
+    if(list->head != NULL){
+        rmv(list->head->val);
+        //free(list->head);
+    }
+    return;
 }
 
 /*

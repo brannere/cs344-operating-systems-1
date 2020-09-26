@@ -10,7 +10,8 @@ struct movie{
     char* title;
     int year; 
     char* langs;
-    double rating; 
+    double rating;
+    struct movie* next;
 };
 
 // functions that act on movies
@@ -46,19 +47,23 @@ struct movie* movie_create(char* curr_line){
     //strcpy(rating, token);
     //curr_movie->rating = malloc(sizeof(double));
     curr_movie->rating = atof(token);
-    
+    curr_movie->next = NULL; 
     printf( "%s\t%d\t%s\t%f\n", curr_movie->title, curr_movie->year, 
             curr_movie->langs, curr_movie->rating);
     return curr_movie;
 }
 
 // assumes the movie to remove exists and is not null
-void movie_free(struct movie* remove){
-    if(remove->title != NULL){
-        free(remove->title);
-    }
-    if(remove->langs != NULL){
-        free(remove->langs);
+void movie_free(void* remove){
+    if(remove != NULL){
+
+        struct movie* m_remove = remove; 
+        if(m_remove->title != NULL){
+            free(m_remove->title);
+        }
+        if(m_remove->langs != NULL){
+            free(m_remove->langs);
+        }
     }
     return;
 }

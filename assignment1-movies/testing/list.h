@@ -19,6 +19,7 @@ struct list;
  */
 struct list* list_create();
 void list_free(struct list* list);
+void list_free_internal(struct list* list, void (*rmv)(void* a)); //added
 void list_insert(struct list* list, void* val);
 void list_remove(struct list* list, void* val, int (*cmp)(void* a, void* b));
 int list_position(struct list* list, void* val, int (*cmp)(void* a, void* b));
