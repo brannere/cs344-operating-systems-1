@@ -9,13 +9,25 @@ struct movie{
     char* langs;
     double rating;
     struct movie* next;
+    char lang_arr[5][20];
+    int num_langs; 
 };
+
+int _count_langs(char* langs){
+    int semi = 0; 
+    for(int i = 0; i < strlen(langs); i++){
+        if(langs[i] == 59) semi++;
+    }
+
+    return semi+1; 
+}
 
 struct movie* movie_create(char* curr_line){
     struct movie* curr_movie = malloc(sizeof(struct movie));
 
     // For use with strtok_r
     char* saveptr;
+    char* tmp_saveptr;
     char* year;
     char* rating;
 
@@ -43,8 +55,18 @@ struct movie* movie_create(char* curr_line){
     //curr_movie->rating = malloc(sizeof(double));
     curr_movie->rating = atof(token);
     curr_movie->next = NULL;
-    /*printf( "%s\t%d\t%s\t%f\n", curr_movie->title, curr_movie->year, 
-            curr_movie->langs, curr_movie->rating);*/
+
+    curr_movie->num_langs = _count_langs(curr_movie->langs);
+    char* tmp_tk = strtok_r(curr_movie->langs, "][;",&tmp_saveptr);
+    strcpy(curr_movie->lang_arr[0], tmp_tk);
+    for(int i = 1; i < curr_movie->num_langs; i++){
+       tmp_tk = strtok_r(NULL, "][;", &tmp_saveptr);
+       strcpy(curr_movie->lang_arr[i], tmp_tk);
+    }
+    for(int i = 0; i < curr_movie->num_langs; i++){
+        printf("!!!: %s\n", curr_movie->lang_arr[i]);
+    }
+
     free(rating);
     free(year);
     return curr_movie;
@@ -167,39 +189,8 @@ void movie_show_highest_rate(struct movie* movies){
 
 void movie_show_specif_lang(struct movie* movies, char* lang){
     struct movie* tmp = movies;
-    char* tmp_langs = NULL;
-    char* saveptr;
-    while(tmp != NULL){
-        
-        tmp_langs = calloc(strlen(tmp->langs)+1, sizeof(char));
-        strcpy(tmp_langs, tmp->langs);
-        char* token = strtok_r(tmp_langs, ";][", &saveptr);
-        printf("TOKEN: %s\n\n", token); 
-        int foo = strcmp(token, lang);
-            printf("FOO: %d\n", foo);
-        free(tmp_langs);
-
-        
-        //while(token != "\0"){
-            tmp_langs = calloc(strlen(tmp->langs)+1, sizeof(char));
-            strcpy(tmp_langs, tmp->langs);
-            token = strtok_r(NULL, ";][", &saveptr);
-            printf("TOKEN: %s\n\n", token);
-            free(tmp_langs);
-        //}
-            tmp_langs = calloc(strlen(tmp->langs)+1, sizeof(char));
-            strcpy(tmp_langs, tmp->langs);
-            token = strtok_r(NULL, ";][", &saveptr);
-            printf("TOKEN: %s\n\n", token);
-            free(tmp_langs);
-
-            tmp_langs = calloc(strlen(tmp->langs)+1, sizeof(char));
-            strcpy(tmp_langs, tmp->langs);
-            token = strtok_r(NULL, ";][", &saveptr);
-            printf("TOKEN: %s\n\n", token);
-            free(tmp_langs);
         tmp=tmp->next;
-    }
+    
     return; 
 }
 

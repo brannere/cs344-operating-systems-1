@@ -54,7 +54,7 @@ void show_specif_lang(struct movie* movies){
     char lang[32];
     printf("Enter the language for which you want to see movies: ");
     scanf("%s", lang);
-    movie_show_specif_lang(movies, lang);
+    //movie_show_specif_lang(movies, lang);
     return;
 }
 
