@@ -63,9 +63,9 @@ struct movie* movie_create(char* curr_line){
        tmp_tk = strtok_r(NULL, "][;", &tmp_saveptr);
        strcpy(curr_movie->lang_arr[i], tmp_tk);
     }
-    for(int i = 0; i < curr_movie->num_langs; i++){
+    /*for(int i = 0; i < curr_movie->num_langs; i++){
         printf("!!!: %s\n", curr_movie->lang_arr[i]);
-    }
+    }*/
 
     free(rating);
     free(year);
@@ -189,7 +189,14 @@ void movie_show_highest_rate(struct movie* movies){
 
 void movie_show_specif_lang(struct movie* movies, char* lang){
     struct movie* tmp = movies;
-        tmp=tmp->next;
+    while(tmp != NULL){
+        for(int i = 0; i < tmp->num_langs; i++){
+            if(strcmp(tmp->lang_arr[i], lang) == 0){
+                movie_print(tmp, 0);
+            }
+        }
+        tmp = tmp->next; 
+    }
     
     return; 
 }
