@@ -32,21 +32,27 @@ int get_int(char* prompt, int hi, int low){
 }
 
 void show_options(){
-    printf("1. Show movies released in the specified year\n");
+    printf("\n1. Show movies released in the specified year\n");
     printf("2. Show highest rated movie for each year\n");
     printf("3. Show the title and year of release of all movies in a specific language\n");
-    printf("4. Exit from the program\n");
+    printf("4. Exit from the program\n\n");
     return;
 }
 
-void main_loop(){
+void choose_from_year(struct movie* movies){
+    int year = get_int("Enter the year for which you want to see movies: ",0, 9999);
+    movie_show_from_year(movies, year); 
+}
+
+void main_loop(struct movie* movies){
     int choice = -1; 
     do{
         show_options();
         choice = get_int("Enter a choice from 1 to 4: ",1,4);
+        printf("\n");
         switch(choice){
             case 1:
-                printf("case1\n");
+                choose_from_year(movies);
                 break;
             case 2:
                 printf("case2\n");
@@ -59,6 +65,7 @@ void main_loop(){
                 break;
             default:
                 printf("Something went wrong");
+            printf("\n\n");
         }
     }while(choice != 4);
     return;

@@ -29,9 +29,7 @@ int main(int argc, char *argv[]){
         return EXIT_FAILURE;                    
     }
     movies = process_file(argv[1]);    
-    movie_print_all(movies, 1);
-    movie_print_all(movies, 0);
-    main_loop();
+    main_loop(movies);
         
     movie_free_all(movies);
     return EXIT_SUCCESS;                   

@@ -133,6 +133,16 @@ void movie_print_all(struct movie* head, int rating){
 }
 
 void movie_show_from_year(struct movie* head, int year){
+    struct movie* tmp = head; 
+    int p_flag = 0;
+    while(tmp != NULL){
+        if(tmp->year == year){
+            movie_print(tmp, 0);
+            p_flag = 1;
+        }
+        tmp = tmp->next;
+    }
+    if(p_flag == 0) printf("No data about movies released in the year %d\n", year);
     return;
 }
 
