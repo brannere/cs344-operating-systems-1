@@ -214,6 +214,14 @@ struct _year_list* _create_year_set(struct movie* movies){
     return head;
 }
 
+void _free_year_list(struct _year_list* list){
+    struct _year_list* tmp = NULL;
+    for(tmp = list; tmp != NULL; tmp=tmp->next){
+        if(tmp != NULL) free(tmp);
+    }
+    if(tmp!=NULL) free(tmp);
+}
+
 void movie_show_highest_rate(struct movie* movies){
     struct _year_list* year_set = _create_year_set(movies); 
     struct _year_list* y_tmp = NULL; 
@@ -235,6 +243,7 @@ void movie_show_highest_rate(struct movie* movies){
         max = 0;
         curr_max_m = NULL;
     }
+    _free_year_list(year_set);   
     return;
 }
 
