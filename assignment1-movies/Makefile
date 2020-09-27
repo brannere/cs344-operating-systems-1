@@ -1,10 +1,8 @@
 CC = gcc --std=gnu99 
 exe_file = movies
 
-$(exe_file): list.o movie.o prog.o main.o
-	$(CC) list.o movie.o prog.o main.o -o $(exe_file)
-list.o: list.c
-	$(CC) -c list.c
+$(exe_file): movie.o prog.o main.o
+	$(CC) movie.o prog.o main.o -o $(exe_file)
 movie.o: movie.c
 	$(CC) -c movie.c
 prog.o: prog.c

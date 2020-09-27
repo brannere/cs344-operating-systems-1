@@ -14,12 +14,23 @@
 * ** Post-Conditions:
 * *********************************************************************/
 #include "./prog.h"
+#include "./movie.h"
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-int main(void) {
+
+int main(int argc, char *argv[]){
+    struct movie* movies = NULL;     
+    if (argc < 2){    
+        printf("You must provide the name of the file to process\n");
+        printf("Example usage: ./movies file.csv\n");
+        return EXIT_FAILURE;                    
+    }
+    movies = process_file(argv[1]);    
     main_loop();
-    return 0;
+        
+    movie_free_all(movies);
+    return EXIT_SUCCESS;                   
 }

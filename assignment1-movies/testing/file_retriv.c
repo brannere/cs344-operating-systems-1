@@ -104,8 +104,8 @@ void movie_free_all(struct movie* head){
 
     while(tmp != NULL){
         rmv = tmp;
-        free(rmv->langs);
-        free(rmv->title);
+        if(rmv->langs != NULL) free(rmv->langs);
+        if(rmv->title != NULL) free(rmv->title);
         free(rmv);
         tmp = tmp->next;
     }
