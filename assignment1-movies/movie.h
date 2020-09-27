@@ -8,5 +8,5 @@ void movie_free(struct movie* remove);
 struct movie* movie_create(char* curr_line);
 struct movie* process_file(char* file_path);
 void movie_free_all(struct movie* head);
-void movies_print(struct movie* head, int rating);
+void movie_print_all(struct movie* head, int rating);
 #endif

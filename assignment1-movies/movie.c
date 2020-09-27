@@ -113,11 +113,13 @@ void movie_free_all(struct movie* head){
     }
     return;
 }
-
-void movies_print(struct movie* head, int rating){
+// rating 1, yes; otherwise no
+void movie_print_all(struct movie* head, int rating){
     struct movie* tmp = head;
     while(tmp != NULL){
-        printf("%d %.1f %s\n", tmp->year, tmp->rating, tmp->title);
+        printf("%d ", tmp->year);
+        if(rating==1)printf("%.1f ", tmp->rating);
+        printf("%s\n", tmp->title);
         tmp = tmp->next;
     }
     return;
