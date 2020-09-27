@@ -190,7 +190,7 @@ void movie_show_from_year(struct movie* head, int year){
     return;
 }
 
-void movie_show_highest_rate(struct movie* movies){
+struct _year_list* _create_year_set(struct movie* movies){
     struct movie* tmp = movies;
     struct _year_list* head = NULL; 
     struct _year_list* tail = NULL; 
@@ -211,11 +211,18 @@ void movie_show_highest_rate(struct movie* movies){
         }
         tmp = tmp->next;
     }
-    struct _year_list* foo = head; 
+    return head;
+}
+
+void movie_show_highest_rate(struct movie* movies){
+    struct movie* tmp = movies;
+    struct _year_list* year_set = _create_year_set(movies); 
+    struct _year_list* foo = year_set; 
     while(foo != NULL){
         printf("!!!: %d\n", foo->val);
         foo = foo->next;
     }
+
     return;
 }
 
