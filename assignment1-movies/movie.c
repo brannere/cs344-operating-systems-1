@@ -165,6 +165,44 @@ void movie_show_highest_rate(struct movie* movies){
     return;
 }
 
+void movie_show_specif_lang(struct movie* movies, char* lang){
+    struct movie* tmp = movies;
+    char* tmp_langs = NULL;
+    char* saveptr;
+    while(tmp != NULL){
+        
+        tmp_langs = calloc(strlen(tmp->langs)+1, sizeof(char));
+        strcpy(tmp_langs, tmp->langs);
+        char* token = strtok_r(tmp_langs, ";][", &saveptr);
+        printf("TOKEN: %s\n\n", token); 
+        int foo = strcmp(token, lang);
+            printf("FOO: %d\n", foo);
+        free(tmp_langs);
+
+        
+        //while(token != "\0"){
+            tmp_langs = calloc(strlen(tmp->langs)+1, sizeof(char));
+            strcpy(tmp_langs, tmp->langs);
+            token = strtok_r(NULL, ";][", &saveptr);
+            printf("TOKEN: %s\n\n", token);
+            free(tmp_langs);
+        //}
+            tmp_langs = calloc(strlen(tmp->langs)+1, sizeof(char));
+            strcpy(tmp_langs, tmp->langs);
+            token = strtok_r(NULL, ";][", &saveptr);
+            printf("TOKEN: %s\n\n", token);
+            free(tmp_langs);
+
+            tmp_langs = calloc(strlen(tmp->langs)+1, sizeof(char));
+            strcpy(tmp_langs, tmp->langs);
+            token = strtok_r(NULL, ";][", &saveptr);
+            printf("TOKEN: %s\n\n", token);
+            free(tmp_langs);
+        tmp=tmp->next;
+    }
+    return; 
+}
+
 /*int main(int argc, char *argv[]){
         if (argc < 2){
             printf("You must provide the name of the file to process\n");

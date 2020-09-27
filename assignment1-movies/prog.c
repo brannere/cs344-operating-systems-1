@@ -50,6 +50,14 @@ void show_highest_rate(struct movie* movies){
     return;
 }
 
+void show_specif_lang(struct movie* movies){
+    char lang[32];
+    printf("Enter the language for which you want to see movies: ");
+    scanf("%s", lang);
+    movie_show_specif_lang(movies, lang);
+    return;
+}
+
 void main_loop(struct movie* movies){
     int choice = -1; 
     do{
@@ -64,7 +72,7 @@ void main_loop(struct movie* movies){
                 show_highest_rate(movies);
                 break;
             case 3:
-                printf("case3\n");
+                show_specif_lang(movies); 
                 break; 
             case 4:
                 printf("case4\n");
