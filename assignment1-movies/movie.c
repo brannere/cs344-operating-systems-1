@@ -249,15 +249,17 @@ void movie_show_highest_rate(struct movie* movies){
 
 void movie_show_specif_lang(struct movie* movies, char* lang){
     struct movie* tmp = movies;
+    int p_flag = 0;
     while(tmp != NULL){
         for(int i = 0; i < tmp->num_langs; i++){
             if(strcmp(tmp->lang_arr[i], lang) == 0){
                 movie_print(tmp, 0);
+                p_flag = 1;
             }
         }
         tmp = tmp->next; 
-    }
-    
+    } 
+    if(p_flag == 0) printf("No data about movies released in %s\n", lang);
     return; 
 }
 

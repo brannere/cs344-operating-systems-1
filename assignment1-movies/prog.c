@@ -11,6 +11,7 @@
 unsigned int is_int(char* str){
     for(unsigned int i = 0; str[i] != '\0'; i++){
         if(!(str[i] >= 48 && str[i] <=57)){
+            printf("You entered a non-number. Try again.\n");
             return 0;
         }
     }
@@ -28,6 +29,9 @@ int get_int(char* prompt, int hi, int low){
             scanf("%[^\n]", &input); // S1
             scanf("%c",&tmp); // S1
         }while(is_int(input)==0);
+        if(!(atoi(input) >= hi && atoi(input) <= low)){
+            printf("You entered an incorrect choice. Try again.\n");
+        }
     }while(!(atoi(input) >= hi && atoi(input) <= low));
     return atoi(input); 
 }
@@ -52,8 +56,10 @@ void show_highest_rate(struct movie* movies){
 
 void show_specif_lang(struct movie* movies){
     char lang[32];
+    char input[32]; // statically allocated for now
     printf("Enter the language for which you want to see movies: ");
     scanf("%s", lang);
+    scanf("%[^\n]", &input); // S1
     movie_show_specif_lang(movies, lang);
     return;
 }
@@ -75,10 +81,11 @@ void main_loop(struct movie* movies){
                 show_specif_lang(movies); 
                 break; 
             case 4:
-                printf("case4\n");
+                printf("Goodbye.\n");
                 break;
             default:
                 printf("Something went wrong");
+                exit(0);
             printf("\n\n");
         }
     }while(choice != 4);
