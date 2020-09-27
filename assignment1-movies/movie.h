@@ -11,4 +11,5 @@ void movie_free_all(struct movie* head);
 void movie_print(struct movie* head, int rating);
 void movie_print_all(struct movie* head, int rating);
 void movie_show_from_year(struct movie* head, int year);
+void movie_show_highest_rate(struct movie* movies);
 #endif

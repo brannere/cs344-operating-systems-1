@@ -1,5 +1,6 @@
 #include "./prog.h"
 #include "./movie.h"
+#include "./dynarray.h"
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,9 +40,14 @@ void show_options(){
     return;
 }
 
-void choose_from_year(struct movie* movies){
+void choose_from_year(struct movie* movies){ // MAKE VERSION WITH NO BOUNDS
     int year = get_int("Enter the year for which you want to see movies: ",0, 9999);
     movie_show_from_year(movies, year); 
+}
+
+void show_highest_rate(struct movie* movies){
+    movie_show_highest_rate(movies);
+    return;
 }
 
 void main_loop(struct movie* movies){
@@ -55,7 +61,7 @@ void main_loop(struct movie* movies){
                 choose_from_year(movies);
                 break;
             case 2:
-                printf("case2\n");
+                show_highest_rate(movies);
                 break;
             case 3:
                 printf("case3\n");

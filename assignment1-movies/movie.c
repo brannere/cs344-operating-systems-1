@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "./movie.h"
+#include "./dynarray.h"
 struct movie{
     char* title;
     int year;
@@ -143,6 +144,24 @@ void movie_show_from_year(struct movie* head, int year){
         tmp = tmp->next;
     }
     if(p_flag == 0) printf("No data about movies released in the year %d\n", year);
+    return;
+}
+
+void movie_show_highest_rate(struct movie* movies){
+    struct movie* tmp = movies;
+    int len = 0;
+    int found = 0;
+    // This is a slow approach but the only way 
+    // I could easily write this without making a hash table from scratch
+    while(tmp != NULL){
+        len++;
+        tmp = tmp->next; 
+    }
+    // make an array with more than enough elements
+    int* year_history = malloc(sizeof(int)*len);
+    for(int i = 0; i < len; i++){
+        year_history[i] = -1; // set everything to -1
+    }
     return;
 }
 
