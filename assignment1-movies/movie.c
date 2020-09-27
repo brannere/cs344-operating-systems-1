@@ -13,14 +13,35 @@ struct movie{
     int num_langs; 
 };
 
+/* Utilities */
+
+struct _year_list{
+    int val;
+    double rate;
+    struct _year_list* next; 
+};
+
+/* 1 = yes, 0 = no*/
+int _member(struct _year_list* list, int n){
+    struct _year_list* tmp = list; 
+    while(tmp != NULL){
+        if(tmp->val == n) return 1; 
+        tmp = tmp->next;
+    }
+    return 0;
+}
+
 int _count_langs(char* langs){
     int semi = 0; 
     for(int i = 0; i < strlen(langs); i++){
         if(langs[i] == 59) semi++;
     }
-
     return semi+1; 
 }
+
+
+
+/* Main functionality*/
 
 struct movie* movie_create(char* curr_line){
     struct movie* curr_movie = malloc(sizeof(struct movie));
@@ -171,18 +192,29 @@ void movie_show_from_year(struct movie* head, int year){
 
 void movie_show_highest_rate(struct movie* movies){
     struct movie* tmp = movies;
-    int len = 0;
-    int found = 0;
-    // This is a slow approach but the only way 
-    // I could easily write this without making a hash table from scratch
+    struct _year_list* head = NULL; 
+    struct _year_list* tail = NULL; 
+    /* Make a list (set) of all years */
     while(tmp != NULL){
-        len++;
-        tmp = tmp->next; 
+        if(_member(head, tmp->year) == 0){
+            struct _year_list* new_node = malloc(sizeof(struct _year_list));  
+            new_node->val = tmp->year;
+            new_node->next = NULL; // be careful...
+            if(head == NULL){
+                head = new_node;
+                tail = new_node;
+            }
+            else{
+                tail->next = new_node; 
+                tail = new_node;
+            }
+        }
+        tmp = tmp->next;
     }
-    // make an array with more than enough elements
-    int* year_history = malloc(sizeof(int)*len);
-    for(int i = 0; i < len; i++){
-        year_history[i] = -1; // set everything to -1
+    struct _year_list* foo = head; 
+    while(foo != NULL){
+        printf("!!!: %d\n", foo->val);
+        foo = foo->next;
     }
     return;
 }
