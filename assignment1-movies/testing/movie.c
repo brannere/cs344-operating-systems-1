@@ -16,7 +16,7 @@ struct movie{
 
 // functions that act on movies
 
-struct movie* movie_create(char* curr_line){
+/*struct movie* movie_create(char* curr_line){
     struct movie* curr_movie = malloc(sizeof(struct movie));
 
     // For use with strtok_r
@@ -51,19 +51,19 @@ struct movie* movie_create(char* curr_line){
     printf( "%s\t%d\t%s\t%f\n", curr_movie->title, curr_movie->year, 
             curr_movie->langs, curr_movie->rating);
     return curr_movie;
-}
+}*/
 
 // assumes the movie to remove exists and is not null
-void movie_free(void* remove){
-    if(remove != NULL){
+void movie_free_all(struct movie* head){
+    struct movie* tmp = head;
+    struct movie* rmv = NULL;
 
-        struct movie* m_remove = remove; 
-        if(m_remove->title != NULL){
-            free(m_remove->title);
-        }
-        if(m_remove->langs != NULL){
-            free(m_remove->langs);
-        }
+    while(tmp != NULL){
+        rmv = tmp;
+        free(rmv->langs);
+        free(rmv->title);
+        free(rmv);
+        tmp = tmp->next;
     }
     return;
 }

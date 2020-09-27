@@ -4,7 +4,7 @@
 //#include "./list.h"
 //#include "./movie.h"
 struct movie{
-    char* name;
+    char* title;
     int year;
     char* langs;
     double rating;
@@ -21,8 +21,8 @@ struct movie* movie_create(char* curr_line){
 
     // the first token is the title
     char* token = strtok_r(curr_line, ",", &saveptr);
-    curr_movie->name = calloc(strlen(token)+1, sizeof(char));
-    strcpy(curr_movie->name, token);
+    curr_movie->title = calloc(strlen(token)+1, sizeof(char));
+    strcpy(curr_movie->title, token);
 
     // the next token is the year 
     token = strtok_r(NULL, ",", &saveptr);
@@ -43,8 +43,10 @@ struct movie* movie_create(char* curr_line){
     //curr_movie->rating = malloc(sizeof(double));
     curr_movie->rating = atof(token);
     curr_movie->next = NULL;
-    printf( "%s\t%d\t%s\t%f\n", curr_movie->name, curr_movie->year, 
+    printf( "%s\t%d\t%s\t%f\n", curr_movie->title, curr_movie->year, 
             curr_movie->langs, curr_movie->rating);
+    free(rating);
+    free(year);
     return curr_movie;
 }
 
@@ -96,6 +98,20 @@ struct movie* process_file(char* file_path){
     return head;
 }
 
+void movie_free_all(struct movie* head){
+    struct movie* tmp = head;
+    struct movie* rmv = NULL;
+
+    while(tmp != NULL){
+        rmv = tmp;
+        free(rmv->langs);
+        free(rmv->title);
+        free(rmv);
+        tmp = tmp->next;
+    }
+    return;
+}
+
 int main(int argc, char *argv[]){
         if (argc < 2){
             printf("You must provide the name of the file to process\n");
@@ -103,6 +119,7 @@ int main(int argc, char *argv[]){
             return EXIT_FAILURE;                    
         }
         struct movie* movies = process_file(argv[1]);
+        movie_free_all(movies);
         //printStudentList(list);
         //list_free_internal(movies, &movie_free);
         //list_free(movies);
