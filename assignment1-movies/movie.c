@@ -42,8 +42,8 @@ struct movie* movie_create(char* curr_line){
     //curr_movie->rating = malloc(sizeof(double));
     curr_movie->rating = atof(token);
     curr_movie->next = NULL;
-    printf( "%s\t%d\t%s\t%f\n", curr_movie->title, curr_movie->year, 
-            curr_movie->langs, curr_movie->rating);
+    /*printf( "%s\t%d\t%s\t%f\n", curr_movie->title, curr_movie->year, 
+            curr_movie->langs, curr_movie->rating);*/
     free(rating);
     free(year);
     return curr_movie;
@@ -69,6 +69,7 @@ struct movie* process_file(char* file_path){
     char* token;
     //struct movie* new_node = NULL;
     int line1_flag = 0;
+    unsigned int counter = 0;
 
     //struct list* result = list_create();
     // head of linked list
@@ -90,10 +91,12 @@ struct movie* process_file(char* file_path){
             }
             //list_insert(result, new_node);
             //insert into linked list
+            counter++;
         }else line1_flag = 1;
     }
     free(curr_line);
     fclose(movie_file);
+    printf("Processed file %s and parsed data for %d movies\n", file_path, counter);
     return head;
 }
 
@@ -106,6 +109,15 @@ void movie_free_all(struct movie* head){
         if(rmv->langs != NULL) free(rmv->langs);
         if(rmv->title != NULL) free(rmv->title);
         free(rmv);
+        tmp = tmp->next;
+    }
+    return;
+}
+
+void movies_print(struct movie* head, int rating){
+    struct movie* tmp = head;
+    while(tmp != NULL){
+        printf("%d %.1f %s\n", tmp->year, tmp->rating, tmp->title);
         tmp = tmp->next;
     }
     return;
