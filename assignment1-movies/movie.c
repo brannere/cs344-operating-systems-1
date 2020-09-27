@@ -215,14 +215,26 @@ struct _year_list* _create_year_set(struct movie* movies){
 }
 
 void movie_show_highest_rate(struct movie* movies){
-    struct movie* tmp = movies;
     struct _year_list* year_set = _create_year_set(movies); 
-    struct _year_list* foo = year_set; 
-    while(foo != NULL){
-        printf("!!!: %d\n", foo->val);
-        foo = foo->next;
+    struct _year_list* y_tmp = NULL; 
+    struct movie* m_tmp = NULL;
+    struct movie* curr_max_m = NULL; 
+    double max = 0;
+    /* For each year, look over all movies, see if the year 
+     * matches and find the max */
+    for(y_tmp = year_set; y_tmp != NULL; y_tmp=y_tmp->next){
+        for(m_tmp = movies; m_tmp != NULL; m_tmp = m_tmp->next){
+            if(m_tmp->year == y_tmp->val){
+                if(m_tmp->rating > max){
+                    max = m_tmp->rating; 
+                    curr_max_m = m_tmp; 
+                } 
+            } 
+        }
+        movie_print(curr_max_m ,1);
+        max = 0;
+        curr_max_m = NULL;
     }
-
     return;
 }
 
