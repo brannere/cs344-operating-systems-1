@@ -13,7 +13,8 @@
 #include "./movie.h"
 
 unsigned int is_int(char* str);
-int get_int(char* prompt, int hi, int low);
+int get_int(char* prompt);
+int get_int_b(char* prompt, int hi, int low);
 void show_options();
 void choose_from_year(struct movie* movies);
 void show_highest_rate(struct movie* movies);

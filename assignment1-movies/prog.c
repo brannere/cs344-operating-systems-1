@@ -39,6 +39,29 @@ unsigned int is_int(char* str){
 /**
  * Function: get_int()
  * Description: Gets an integer from user input 
+ * Parameters: Prompt to be printed
+ * Pre-Conditions: None
+ * Post-Conditions: Returns integer from input
+ */
+int get_int(char* prompt){
+    char input[32]; // statically allocated for now
+    char tmp; //for clearing the input buffer
+    //do{
+        do{
+            printf("%s", prompt);
+            scanf("%[^\n]", &input); // S1
+            scanf("%c",&tmp); // S1
+        }while(is_int(input)==0);
+        //if(!(atoi(input) >= hi && atoi(input) <= low)){
+        //    printf("You entered an incorrect choice. Try again.\n");
+        //}
+    //}while(!(atoi(input) >= hi && atoi(input) <= low));
+    return atoi(input); 
+}
+
+/**
+ * Function: get_int()
+ * Description: Gets an integer from user input 
  * Parameters: Prompt to be printed, upper and lower bound
  * Pre-Conditions: None
  * Post-Conditions: Returns integer from input
@@ -46,7 +69,7 @@ unsigned int is_int(char* str){
 // Used for reference on reading a string with spaces:
 // Also used for clearing the input buffer
 // S1: https://www.includehelp.com/c/c-program-to-read-string-with-spaces-using-scanf-function.aspx
-int get_int(char* prompt, int hi, int low){
+int get_int_b(char* prompt, int hi, int low){
     char input[32]; // statically allocated for now
     char tmp; //for clearing the input buffer
     do{
@@ -86,8 +109,8 @@ void show_options(){
  * Post-Conditions: movies printed to screen
  */
 
-void choose_from_year(struct movie* movies){ // MAKE VERSION WITH NO BOUNDS
-    int year = get_int("Enter the year for which you want to see movies: ",0, 9999);
+void choose_from_year(struct movie* movies){ 
+    int year = get_int("Enter the year for which you want to see movies: ");
     movie_show_from_year(movies, year); 
 }
 
@@ -136,7 +159,7 @@ void main_loop(struct movie* movies){
     int choice = -1; 
     do{
         show_options();
-        choice = get_int("Enter a choice from 1 to 4: ",1,4);
+        choice = get_int_b("Enter a choice from 1 to 4: ",1,4);
         printf("\n");
         switch(choice){
             case 1:
