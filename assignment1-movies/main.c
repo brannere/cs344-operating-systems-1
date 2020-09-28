@@ -1,18 +1,13 @@
-/*********************************************************************
-* ** Program Filename: asn1.c
-* ** Author: Erick Branner
-* ** Date: 24 September 2020
-* ** Description: Contains main function for assignment
-* ** Input: CSV Files
-* ** Output: Strings of text
-* *********************************************************************/
-/*********************************************************************
-* ** Function:
-* ** Description:
-* ** Parameters:
-* ** Pre-Conditions:
-* ** Post-Conditions:
-* *********************************************************************/
+/**
+ * Prgram Filename: main.c
+ * Author: Erick Branner
+ * Date: 12 October 2020
+ * Description: Contains main function/process for assginment
+ * Input: CSV Files
+ * Output: Strings of text
+ * 
+*/
+
 #include "./prog.h"
 #include "./movie.h"
 #include <fcntl.h>
@@ -20,6 +15,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+/**
+ * Function: main()
+ * Description: main process for program
+ * Parameters: argument count and argument number
+ * Pre-Conditions: csv file passed from command line exists
+ * Post-Conditions: None
+ */
 
 int main(int argc, char *argv[]){
     struct movie* movies = NULL;     

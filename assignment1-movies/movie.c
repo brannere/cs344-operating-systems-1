@@ -1,8 +1,26 @@
+/**
+ * Prgram Filename: movie.c
+ * Author: Erick Branner
+ * Date: 12 October 2020
+ * Description:	Source file for functions that act on
+ * a movie struct
+ * Input:
+ * Output:
+ * 
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "./movie.h"
-#include "./dynarray.h"
+
+/**
+ * The movies struct contains information 
+ * related to a movie provided froma csv file. 
+ * Language variables appear twice -- one is 
+ * the full list directly from the file, the 
+ * other is a representation of the languages 
+ * without delimiters in a 2d char array. 
+*/
 struct movie{
     char* title;
     int year;
@@ -14,12 +32,33 @@ struct movie{
 };
 
 /* Utilities */
+/* 	
+	These are helper functions and data strucutres 
+	that assist with movie functions 
+*/
 
+
+/**
+ * the _year_list structure is a linked list of integers
+ * to be created alongside an exisitng list of movies; 
+ * this strucutre assits in finding the max rating for
+ * each year.
+*/
 struct _year_list{
     int val;
-    double rate;
     struct _year_list* next; 
 };
+
+
+/**
+ * Function: _member()
+ * Description: Helper function that determines 
+ * if n exists in the integer list
+ * Parameters: a year list struct, number to find
+ * Pre-Conditions: The list exists
+ * Post-Conditions: Returns 1 if n exists, otherwise 
+ * returns 0
+ */
 
 /* 1 = yes, 0 = no*/
 int _member(struct _year_list* list, int n){
@@ -31,7 +70,18 @@ int _member(struct _year_list* list, int n){
     return 0;
 }
 
+/**
+ * Function: _count_langs()
+ * Description: Counts the number of languages in the 
+ * formatted string from the csv file
+ * Parameters: The language string
+ * Pre-Conditions: The language string exists and is 
+ * in format [Lang1;Lang2;Lang3]
+ * Post-Conditions: None
+ */
+
 int _count_langs(char* langs){
+		/* There number of languages is the delimiter plus one */
     int semi = 0; 
     for(int i = 0; i < strlen(langs); i++){
         if(langs[i] == 59) semi++;
@@ -40,8 +90,66 @@ int _count_langs(char* langs){
 }
 
 
+/**
+ * Function: _create_year_set()
+ * Description: Creates a set of all years from a movie list 
+ * Parameters: A movie list
+ * Pre-Conditions: The movie list exists 
+ * Post-Conditions: Pointer returned to memory allocated from
+ * list/set creation
+ */
+
+struct _year_list* _create_year_set(struct movie* movies){
+    struct movie* tmp = movies;
+    struct _year_list* head = NULL; 
+    struct _year_list* tail = NULL; 
+    /* Make a list (set) of all years */
+    while(tmp != NULL){
+        if(_member(head, tmp->year) == 0){
+            struct _year_list* new_node = malloc(sizeof(struct _year_list));  
+            new_node->val = tmp->year;
+            new_node->next = NULL; // be careful...
+            if(head == NULL){
+                head = new_node;
+                tail = new_node;
+            }
+            else{
+                tail->next = new_node; 
+                tail = new_node;
+            }
+        }
+        tmp = tmp->next;
+    }
+    return head;
+}
+
+/**
+ * Function: _free_year_list()
+ * Description: Frees memory of a struct year list 
+ * Parameters: year list struct
+ * Pre-Conditions: The list exists
+ * Post-Conditions: Memory that list used is freed
+ */
+
+void _free_year_list(struct _year_list* list){
+    struct _year_list* tmp = NULL;
+    for(tmp = list; tmp != NULL; tmp=tmp->next){
+        if(tmp != NULL) free(tmp);
+    }
+    if(tmp!=NULL) free(tmp);
+}
 
 /* Main functionality*/
+
+/**
+ * Function: movie_create()
+ * Description: Allocates a movie srtruct from a csv file line
+ * Parameters: Line of a csv file
+ * Pre-Conditions: String passed is in format --> 
+ * Title,Year,[language1;language2],Rating Value
+ * Post-Conditions: Pointer returned memory 
+ * allocated for a movie
+ */
 
 struct movie* movie_create(char* curr_line){
     struct movie* curr_movie = malloc(sizeof(struct movie));
@@ -77,6 +185,7 @@ struct movie* movie_create(char* curr_line){
     curr_movie->rating = atof(token);
     curr_movie->next = NULL;
 
+		/* Process languages into 2d char array interface */
     curr_movie->num_langs = _count_langs(curr_movie->langs);
     char* tmp_tk = strtok_r(curr_movie->langs, "][;",&tmp_saveptr);
     strcpy(curr_movie->lang_arr[0], tmp_tk);
@@ -84,26 +193,23 @@ struct movie* movie_create(char* curr_line){
        tmp_tk = strtok_r(NULL, "][;", &tmp_saveptr);
        strcpy(curr_movie->lang_arr[i], tmp_tk);
     }
-    /*for(int i = 0; i < curr_movie->num_langs; i++){
-        printf("!!!: %s\n", curr_movie->lang_arr[i]);
-    }*/
 
     free(rating);
     free(year);
     return curr_movie;
 }
 
-// assumes that elements of the list are movies
-/*void free_all_movies(struct list* list){
-
-    struct link* tmp = list->head;
-    
-    while(tmp != NULL){
-        movie_free(tmp->val);
-        tmp = tmp->next;
-    }
-    return;
-}*/
+/**
+ * Function: process_file()
+ * Description: Processes file one line at a time
+ * to store in a movie struct
+ * Parameters: Path to a csv file
+ * Pre-Conditions: First line of csv file need not be stored 
+ * File exists and is in format -->
+ * Title,Year,[language1;language2]
+ * Post-Conditions: Returns pointer to head of movie list
+ * memory allocated
+ */
 
 struct movie* process_file(char* file_path){
     FILE* movie_file = fopen(file_path, "r");
@@ -111,19 +217,18 @@ struct movie* process_file(char* file_path){
     size_t len = 0;
     ssize_t nread; 
     char* token;
-    //struct movie* new_node = NULL;
     int line1_flag = 0;
     unsigned int counter = 0;
 
-    //struct list* result = list_create();
     // head of linked list
     struct movie* head = NULL;
     // tail of linked list
     struct movie* tail = NULL;
     // void list_insert(the list, void* val)
     
+		/* For each line, make a movie */
     while((nread = getline(&curr_line, &len, movie_file)) != -1){
-        if(line1_flag != 0){
+        if(line1_flag != 0){ /* Skips the first line */
             struct movie* new_node = movie_create(curr_line);
             if(head == NULL){
                 head = new_node;
@@ -133,8 +238,6 @@ struct movie* process_file(char* file_path){
                 tail->next = new_node;
                 tail = new_node; 
             }
-            //list_insert(result, new_node);
-            //insert into linked list
             counter++;
         }else line1_flag = 1;
     }
@@ -143,6 +246,14 @@ struct movie* process_file(char* file_path){
     printf("Processed file %s and parsed data for %d movies\n", file_path, counter);
     return head;
 }
+
+/**
+ * Function: movie_free_all()
+ * Description: Frees all movies in a list
+ * Parameters: Head to a movie list
+ * Pre-Conditions: List exists and tail points to null
+ * Post-Conditions: Movie list freed
+ */
 
 void movie_free_all(struct movie* head){
     struct movie* tmp = head;
@@ -157,8 +268,18 @@ void movie_free_all(struct movie* head){
     }
     return;
 }
-// rating 1, yes; otherwise no
 
+/**
+ * Function: movie_print()
+ * Description: Prints one movie 
+ * Parameters: A movie to be printed, flag for rating
+ * do be displayed or not to be displayed; if rating is 1, 
+ * print the rating, otherwise don't print the rating 
+ * Pre-Conditions: Movie exists
+ * Post-Conditions: Movie printed to screen
+ */
+
+// rating 1, yes; otherwise no
 void movie_print(struct movie* head, int rating){
 
     printf("%d ", head->year);
@@ -166,6 +287,14 @@ void movie_print(struct movie* head, int rating){
     printf("%s\n", head->title);
     return;
 }
+
+/**
+ * Function: movie_print_all()
+ * Description: Prints all movies in a list
+ * Parameters: Head of a movie list, rating flag 
+ * Pre-Conditions: Movie exists 
+ * Post-Conditions: Movies printed to screen
+ */
 
 void movie_print_all(struct movie* head, int rating){
     struct movie* tmp = head;
@@ -175,6 +304,14 @@ void movie_print_all(struct movie* head, int rating){
     }
     return;
 }
+
+/**
+ * Function: movie_show_from_year()
+ * Description: Shows movies from a specific year
+ * Parameters: Head of a movie list, requested year
+ * Pre-Conditions: Movies exists in memory
+ * Post-Conditions: Prints movies, or none, to the screen
+ */
 
 void movie_show_from_year(struct movie* head, int year){
     struct movie* tmp = head; 
@@ -190,40 +327,18 @@ void movie_show_from_year(struct movie* head, int year){
     return;
 }
 
-struct _year_list* _create_year_set(struct movie* movies){
-    struct movie* tmp = movies;
-    struct _year_list* head = NULL; 
-    struct _year_list* tail = NULL; 
-    /* Make a list (set) of all years */
-    while(tmp != NULL){
-        if(_member(head, tmp->year) == 0){
-            struct _year_list* new_node = malloc(sizeof(struct _year_list));  
-            new_node->val = tmp->year;
-            new_node->next = NULL; // be careful...
-            if(head == NULL){
-                head = new_node;
-                tail = new_node;
-            }
-            else{
-                tail->next = new_node; 
-                tail = new_node;
-            }
-        }
-        tmp = tmp->next;
-    }
-    return head;
-}
 
-void _free_year_list(struct _year_list* list){
-    struct _year_list* tmp = NULL;
-    for(tmp = list; tmp != NULL; tmp=tmp->next){
-        if(tmp != NULL) free(tmp);
-    }
-    if(tmp!=NULL) free(tmp);
-}
+/**
+ * Function: movie_show_highest_rate()
+ * Description: Shows highest rated movie from each year
+ * Parameters: Movies list
+ * Pre-Conditions: Movies exist in memory
+ * Post-Conditions: Prints movies to the screen
+ */
 
 void movie_show_highest_rate(struct movie* movies){
-    struct _year_list* year_set = _create_year_set(movies); 
+		/* Make a set/list of all years */
+    struct _year_list* year_set = _create_year_set(movies);  
     struct _year_list* y_tmp = NULL; 
     struct movie* m_tmp = NULL;
     struct movie* curr_max_m = NULL; 
@@ -232,7 +347,9 @@ void movie_show_highest_rate(struct movie* movies){
      * matches and find the max */
     for(y_tmp = year_set; y_tmp != NULL; y_tmp=y_tmp->next){
         for(m_tmp = movies; m_tmp != NULL; m_tmp = m_tmp->next){
-            if(m_tmp->year == y_tmp->val){
+            /* If it's the year we're looking for */
+						if(m_tmp->year == y_tmp->val){
+								/* compute max */
                 if(m_tmp->rating > max){
                     max = m_tmp->rating; 
                     curr_max_m = m_tmp; 
@@ -246,6 +363,15 @@ void movie_show_highest_rate(struct movie* movies){
     _free_year_list(year_set);   
     return;
 }
+
+/**
+ * Function: movie_show_specif_lang()
+ * Description: Shows movies available in a specific language
+ * Parameters: Movies list, requested language 
+ * Pre-Conditions: Movies struct exists
+ * Post-Conditions: Movies from that language, or none, are 
+ * printed to the screen
+ */
 
 void movie_show_specif_lang(struct movie* movies, char* lang){
     struct movie* tmp = movies;

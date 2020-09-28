@@ -1,10 +1,28 @@
+/**
+ * Prgram Filename: prog.c
+ * Author: Erick Branner
+ * Date: 12 October 2020
+ * Description: Source file for prog.h
+ * Input:
+ * Output:
+ * 
+*/
+
 #include "./prog.h"
 #include "./movie.h"
-#include "./dynarray.h"
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+
+/**
+ * Function: is_int()
+ * Description: Determines if string is an integer
+ * Parameters: String
+ * Pre-Conditions: String is non-empty
+ * Post-Conditions: Returns 1 if true, 0 if false
+ */
 
 // this assumes the string is not empty
 // returns 1 if true, 0 if false
@@ -17,6 +35,14 @@ unsigned int is_int(char* str){
     }
     return 1;
 }
+
+/**
+ * Function: get_int()
+ * Description: Gets an integer from user input 
+ * Parameters: Prompt to be printed, upper and lower bound
+ * Pre-Conditions: None
+ * Post-Conditions: Returns integer from input
+ */
 // Used for reference on reading a string with spaces:
 // Also used for clearing the input buffer
 // S1: https://www.includehelp.com/c/c-program-to-read-string-with-spaces-using-scanf-function.aspx
@@ -36,6 +62,14 @@ int get_int(char* prompt, int hi, int low){
     return atoi(input); 
 }
 
+/**
+ * Function: show_options()
+ * Description: Prints user options to screen
+ * Parameters: none
+ * Pre-Conditions: none
+ * Post-Conditions: options printed to screen
+ */
+
 void show_options(){
     printf("\n1. Show movies released in the specified year\n");
     printf("2. Show highest rated movie for each year\n");
@@ -44,15 +78,40 @@ void show_options(){
     return;
 }
 
+/**
+ * Function: choose_from_year()
+ * Description: Containing function for showing movies by year
+ * Parameters: Movies struct list
+ * Pre-Conditions: None
+ * Post-Conditions: movies printed to screen
+ */
+
 void choose_from_year(struct movie* movies){ // MAKE VERSION WITH NO BOUNDS
     int year = get_int("Enter the year for which you want to see movies: ",0, 9999);
     movie_show_from_year(movies, year); 
 }
 
+/**
+ * Function: show_highest_rate()
+ * Description: containig function for showing highest rate
+ * Parameters: Movies struct list
+ * Pre-Conditions: None
+ * Post-Conditions: movies printed to screen
+ */
+
 void show_highest_rate(struct movie* movies){
     movie_show_highest_rate(movies);
     return;
 }
+
+/**
+ * Function: show_specif_lang()
+ * Description: Containing function for showing movies 
+ * in specific language 
+ * Parameters: Movies struct list
+ * Pre-Conditions: None
+ * Post-Conditions: Movies printed to screen
+ */
 
 void show_specif_lang(struct movie* movies){
     char lang[32];
@@ -63,6 +122,15 @@ void show_specif_lang(struct movie* movies){
     movie_show_specif_lang(movies, lang);
     return;
 }
+
+/**
+ * Function: main_loop()
+ * Description: Containing function for all 
+ * program functionality
+ * Parameters: Movies struct list
+ * Pre-Conditions: None
+ * Post-Conditions: None
+ */
 
 void main_loop(struct movie* movies){
     int choice = -1; 
