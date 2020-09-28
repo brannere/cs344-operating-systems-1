@@ -17,8 +17,12 @@ but may not work on different machines
 Used for reference on reading a string with spaces:
 Also used for clearing the input buffer
 S1: https://www.includehelp.com/c/c-program-to-read-string-with-spaces-using-scanf-function.aspx
-Cited as `//S1` within code (prog.c)
+Cited as `S1` within code (prog.c)
 
+Used for reference on using atoi to determine negative number (didn't
+work the way I wanted to -- not used)
+S2: https://stackoverflow.com/questions/31560778/why-doesnt-my-atoi-implementation-work-with-negative-numbers
+Cited as `S2` within code (prog.c)
 **Documentation templates**
 
 /**

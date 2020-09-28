@@ -29,8 +29,10 @@
 unsigned int is_int(char* str){
     for(unsigned int i = 0; str[i] != '\0'; i++){
         if(!(str[i] >= 48 && str[i] <=57)){
-            printf("You entered a non-number. Try again.\n");
-            return 0;
+            if(str[0] != 45){ //ignore negative numbers
+                printf("You entered a non-number. Try again.\n");
+                return 0;
+            }
         }
     }
     return 1;
@@ -43,9 +45,23 @@ unsigned int is_int(char* str){
  * Pre-Conditions: None
  * Post-Conditions: Returns integer from input
  */
+/*
+// Used for reference on reading a string with spaces:
+// Also used for clearing the input buffer
+// S1: https://www.includehelp.com/c/c-program-to-read-string-with-spaces-using-scanf-function.aspx
+ * Used this for reference on the string approach but it didn't end up working
+ * the way I wanted it to (negative numbers not working) -- didn't know why
+ * atoi wasn't working on negative numbers
+ * S2: https://stackoverflow.com/questions/31560778/why-doesnt-my-atoi-implementation-work-with-negative-numbers
+ * */
 int get_int(char* prompt){
-    char input[32]; // statically allocated for now
+    int i = -1; 
+    printf("%s", prompt);
+    scanf("%d", &i);
+    return i;
+    /*char input[32]; // statically allocated for now
     char tmp; //for clearing the input buffer
+    int sign = 1;
     //do{
         do{
             printf("%s", prompt);
@@ -56,11 +72,12 @@ int get_int(char* prompt){
         //    printf("You entered an incorrect choice. Try again.\n");
         //}
     //}while(!(atoi(input) >= hi && atoi(input) <= low));
-    return atoi(input); 
+    if(input[0] == 45) sign = -1; //S2; number is negative
+    return atoi(input)*sign;*/ 
 }
 
 /**
- * Function: get_int()
+ * Function: get_int_b()
  * Description: Gets an integer from user input 
  * Parameters: Prompt to be printed, upper and lower bound
  * Pre-Conditions: None
@@ -69,20 +86,42 @@ int get_int(char* prompt){
 // Used for reference on reading a string with spaces:
 // Also used for clearing the input buffer
 // S1: https://www.includehelp.com/c/c-program-to-read-string-with-spaces-using-scanf-function.aspx
+
+/*
+ * Used this for reference on the string approach but it didn't end up working
+ * the way I wanted it to (negative numbers not working) -- didn't know why
+ * atoi wasn't working on negative numbers
+ * S2: https://stackoverflow.com/questions/31560778/why-doesnt-my-atoi-implementation-work-with-negative-numbers
+ * */
 int get_int_b(char* prompt, int hi, int low){
-    char input[32]; // statically allocated for now
+    
+    int i = -1; 
+    do{
+        printf("%s", prompt);
+        scanf("%d", &i);
+        if(!(i >= hi && i <= low)){
+            printf("You entered an incorrect choice. Try again.\n");
+        }
+    }while(!(i>= hi && i <= low));
+    return i;
+    /*char input[32]; // statically allocated for now
     char tmp; //for clearing the input buffer
+    int sign = 1;
     do{
         do{
             printf("%s", prompt);
             scanf("%[^\n]", &input); // S1
             scanf("%c",&tmp); // S1
         }while(is_int(input)==0);
-        if(!(atoi(input) >= hi && atoi(input) <= low)){
+        if(input[0] == 45){ // number is negative
+            sign=-1; //S2
+        }
+        else sign = 1;
+        if(!(atoi(input)*sign >= hi && atoi(input)*sign <= low)){
             printf("You entered an incorrect choice. Try again.\n");
         }
-    }while(!(atoi(input) >= hi && atoi(input) <= low));
-    return atoi(input); 
+    }while(!(atoi(input)*sign >= hi && atoi(input)*sign <= low));
+    return (atoi(input)*sign);*/ 
 }
 
 /**
