@@ -198,7 +198,8 @@ void main_loop(struct movie* movies){
     int choice = -1; 
     do{
         show_options();
-        choice = get_int_b("Enter a choice from 1 to 4: ",1,4);
+        //choice = get_int_b("Enter a choice from 1 to 4: ",1,4);
+        choice = get_int("Enter a choice from 1 to 4: ");
         printf("\n");
         switch(choice){
             case 1:
@@ -214,8 +215,8 @@ void main_loop(struct movie* movies){
                 printf("Goodbye.\n");
                 break;
             default:
-                printf("Something went wrong");
-                exit(0);
+                printf("You entered an incorect choice. Try again.\n");
+                break;
             printf("\n\n");
         }
     }while(choice != 4);
