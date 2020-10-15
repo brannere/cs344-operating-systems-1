@@ -155,6 +155,7 @@ void read_curr_dir(){
   DIR* currDir = opendir(".");
   struct dirent *aDir;
   time_t lastModifTime;
+  off_t file_size = 0;
   struct stat dirStat;
   int i = 0;
   char entryName[256];
@@ -170,8 +171,10 @@ void read_curr_dir(){
 			between the current value of lastModifTime and the st_mtime 
 			value of the directory entry*/
 
-      if(i == 0 || difftime(dirStat.st_mtime, lastModifTime) > 0){
-          lastModifTime = dirStat.st_mtime;
+      // if(i == 0 || difftime(dirStat.st_mtime, lastModifTime) > 0){
+      if(i == 0 || dirStat.st_size > 0){
+          // lastModifTime = dirStat.st_mtime;
+          file_size = dirStat.st_size;
           memset(entryName, '\0', sizeof(entryName));
           strcpy(entryName, aDir->d_name);
         }
@@ -180,8 +183,9 @@ void read_curr_dir(){
   }
   // Close the directory
   closedir(currDir);
-  printf("The last file/directory starting with the prefix \"%s\" modified in the current directory is %s\n", PREFIX, entryName);
-    return;
+  // printf("The last file/directory starting with the prefix \"%s\" modified in the current directory is %s\n", PREFIX, entryName);
+  printf("The largest file/directory starting with the prefix \"%s\" in the current directory is %s\n", PREFIX, entryName);
+  return;
 }
 
 void select_from_file(){
