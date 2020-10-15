@@ -150,78 +150,101 @@ void show_options_file(){
     return;
 }
 
-void read_curr_dir(){
-  // Open the current directory
-  DIR* currDir = opendir(".");
-  struct dirent *aDir;
-  time_t lastModifTime;
-  off_t file_size = 0;
-  struct stat dirStat;
-  // int i = 0;
-  char entryName[256];
-
-  // Go through all the entries
-  while((aDir = readdir(currDir)) != NULL){
-
-    if(strncmp(PREFIX, aDir->d_name, strlen(PREFIX)) == 0){
-      // Get meta-data for the current entry
-      stat(aDir->d_name, &dirStat);  
-    
-      /* Use the difftime function to get the time difference 
-			between the current value of lastModifTime and the st_mtime 
-			value of the directory entry*/
-
-      // if(i == 0 || difftime(dirStat.st_mtime, lastModifTime) > 0){
-      if(dirStat.st_size > file_size){
-          // lastModifTime = dirStat.st_mtime;
-          file_size = dirStat.st_size;
-          memset(entryName, '\0', sizeof(entryName));
-          strcpy(entryName, aDir->d_name);
-        }
-      // i++;
+int _is_csv(char* file){
+    int len = 0;
+    len = strlen(file);
+    char exten[5];
+    exten[0] = file[len-4];
+    exten[1] = file[len-3];
+    exten[2] = file[len-2];
+    exten[3] = file[len-1];
+    exten[4] = '\0';
+    if(strcmp(exten, ".csv") ==0){
+        fprintf(stdout, "is csv\n");
+        return 1;
     }
-  }
-  // Close the directory
-  closedir(currDir);
-  // printf("The last file/directory starting with the prefix \"%s\" modified in the current directory is %s\n", PREFIX, entryName);
-  printf("The largest file/directory starting with the prefix \"%s\" in the current directory is %s\n", PREFIX, entryName);
-  return;
+    else{
+        fprintf(stdout, "is not csv\n");
+        return 0;
+    }
+    return -1;
 }
 
-void select_from_file(){
-    fprintf(stdout, "select from file\n");
-    show_options_file();
-    return;
-}
+void read_curr_dir(){
+    // Open the current directory
+    DIR* currDir = opendir(".");
+    struct dirent *aDir;
+    time_t lastModifTime;
+    off_t file_size = 0;
+    struct stat dirStat;
+    int len = 0;
+    // int i = 0;
+    char entryName[256];
 
-/**
- * Function: main_loop()
- * Description: Containing function for all 
- * program functionality
- * Parameters: Movies struct list
- * Pre-Conditions: None
- * Post-Conditions: None
- */
+    // Go through all the entries
+    while((aDir = readdir(currDir)) != NULL){
+        if(strncmp(PREFIX, aDir->d_name, strlen(PREFIX)) == 0){
+            if(_is_csv(aDir->d_name) == 1){
 
-void main_loop(){
-    int choice = -1; 
-    do{
-        show_options_main();
-        //choice = get_int_b("Enter a choice from 1 to 4: ",1,4);
-        choice = get_int("Enter a choice 1 to 2: ");
-        printf("\n");
-        switch(choice){
-            case 1:
-                fprintf(stdout, "select file to process\n");
-                break; 
-            case 2:
-                printf("Goodbye.\n");
-                break;
-            default:
-                printf("You entered an incorect choice. Try again.\n");
-                break;
-                printf("\n\n");
+                // Get meta-data for the current entry
+                stat(aDir->d_name, &dirStat);  
+
+                /* Use the difftime function to get the time difference 
+                   between the current value of lastModifTime and the st_mtime 
+                   value of the directory entry*/
+
+                // if(i == 0 || difftime(dirStat.st_mtime, lastModifTime) > 0){
+                if(dirStat.st_size > file_size){
+                    // lastModifTime = dirStat.st_mtime;
+                    file_size = dirStat.st_size;
+                    memset(entryName, '\0', sizeof(entryName));
+                    strcpy(entryName, aDir->d_name);
+                }
+                // i++;
+            } 
+            }
         }
-    }while(choice != 2);
-    return;
-}
+        // Close the directory
+        closedir(currDir);
+        // printf("The last file/directory starting with the prefix \"%s\" modified in the current directory is %s\n", PREFIX, entryName);
+        printf("The largest file/directory starting with the prefix \"%s\" in the current directory is %s\n", PREFIX, entryName);
+        return;
+    }
+
+    void select_from_file(){
+        fprintf(stdout, "select from file\n");
+        show_options_file();
+        return;
+    }
+
+    /**
+     * Function: main_loop()
+     * Description: Containing function for all 
+     * program functionality
+     * Parameters: Movies struct list
+     * Pre-Conditions: None
+     * Post-Conditions: None
+     */
+
+    void main_loop(){
+        int choice = -1; 
+        do{
+            show_options_main();
+            //choice = get_int_b("Enter a choice from 1 to 4: ",1,4);
+            choice = get_int("Enter a choice 1 to 2: ");
+            printf("\n");
+            switch(choice){
+                case 1:
+                    fprintf(stdout, "select file to process\n");
+                    break; 
+                case 2:
+                    printf("Goodbye.\n");
+                    break;
+                default:
+                    printf("You entered an incorect choice. Try again.\n");
+                    break;
+                    printf("\n\n");
+            }
+        }while(choice != 2);
+        return;
+    }
