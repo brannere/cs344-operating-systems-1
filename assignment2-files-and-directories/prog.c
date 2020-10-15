@@ -9,7 +9,6 @@
 */
 
 #include "./prog.h"
-#include "./movie.h"
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -132,56 +131,13 @@ int get_int_b(char* prompt, int hi, int low){
  * Post-Conditions: options printed to screen
  */
 
-void show_options(){
-    printf("\n1. Show movies released in the specified year\n");
-    printf("2. Show highest rated movie for each year\n");
-    printf("3. Show the title and year of release of all movies in a specific language\n");
-    printf("4. Exit from the program\n\n");
+void show_options_main(){
+    printf("\n1. Select file to process");
+    printf("2. Exit the program\n\n");
     return;
 }
-
-/**
- * Function: choose_from_year()
- * Description: Containing function for showing movies by year
- * Parameters: Movies struct list
- * Pre-Conditions: None
- * Post-Conditions: movies printed to screen
- */
-
-void choose_from_year(struct movie* movies){ 
-    int year = get_int("Enter the year for which you want to see movies: ");
-    movie_show_from_year(movies, year); 
-}
-
-/**
- * Function: show_highest_rate()
- * Description: containig function for showing highest rate
- * Parameters: Movies struct list
- * Pre-Conditions: None
- * Post-Conditions: movies printed to screen
- */
-
-void show_highest_rate(struct movie* movies){
-    movie_show_highest_rate(movies);
-    return;
-}
-
-/**
- * Function: show_specif_lang()
- * Description: Containing function for showing movies 
- * in specific language 
- * Parameters: Movies struct list
- * Pre-Conditions: None
- * Post-Conditions: Movies printed to screen
- */
-
-void show_specif_lang(struct movie* movies){
-    char lang[32];
-    char input[32]; // statically allocated for now
-    printf("Enter the language for which you want to see movies: ");
-    scanf("%s", lang);
-    scanf("%[^\n]", &input); // S1
-    movie_show_specif_lang(movies, lang);
+void select_from_file(){
+    fprintf(stdout, "select from file\n");
     return;
 }
 
@@ -194,24 +150,18 @@ void show_specif_lang(struct movie* movies){
  * Post-Conditions: None
  */
 
-void main_loop(struct movie* movies){
+void main_loop(){
     int choice = -1; 
     do{
-        show_options();
+        show_options_main();
         //choice = get_int_b("Enter a choice from 1 to 4: ",1,4);
-        choice = get_int("Enter a choice from 1 to 4: ");
+        choice = get_int("Enter a choice 1 to 2: ");
         printf("\n");
         switch(choice){
             case 1:
-                choose_from_year(movies);
-                break;
-            case 2:
-                show_highest_rate(movies);
-                break;
-            case 3:
-                show_specif_lang(movies); 
+                fprintf(stdout, "select file to process\n");
                 break; 
-            case 4:
+            case 2:
                 printf("Goodbye.\n");
                 break;
             default:
@@ -219,6 +169,6 @@ void main_loop(struct movie* movies){
                 break;
             printf("\n\n");
         }
-    }while(choice != 4);
+    }while(choice != 2);
     return;
 }

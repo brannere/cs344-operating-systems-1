@@ -1,10 +1,8 @@
 CC = gcc -g --std=gnu99 
-exe_file = movies
+exe_file = movies_by_year
 
-$(exe_file): movie.o prog.o main.o
-	$(CC)  movie.o prog.o main.o -o $(exe_file)
-movie.o: movie.c
-	$(CC) -c movie.c
+$(exe_file): prog.o main.o
+	$(CC)  prog.o main.o -o $(exe_file)
 prog.o: prog.c
 	$(CC) -c prog.c	
 main.o: main.c
