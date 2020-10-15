@@ -28,7 +28,7 @@ int main(int argc, char *argv[]){
     //    printf("Example usage: ./movies file.csv\n");
     //    return EXIT_FAILURE;                    
     //}
-    testing();
+    read_curr_dir();
     //main_loop();
         
     return EXIT_SUCCESS;                   

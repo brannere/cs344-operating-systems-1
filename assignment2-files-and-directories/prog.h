@@ -17,7 +17,7 @@ int get_int_b(char* prompt, int hi, int low);
 void show_options_main();
 void main_loop();
 void select_from_file(); 
-void testing();
+void read_curr_dir();
 //error handling prompt
 //need a string input function
 #endif
