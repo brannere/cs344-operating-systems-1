@@ -6,14 +6,14 @@
  * Input:
  * Output:
  * 
-*/
+ */
 
 #include "./prog.h"
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
+#include <dirent.h>
 
 /**
  * Function: is_int()
@@ -59,17 +59,17 @@ int get_int(char* prompt){
     scanf("%d", &i);
     return i;
     /*char input[32]; // statically allocated for now
-    char tmp; //for clearing the input buffer
-    int sign = 1;
+      char tmp; //for clearing the input buffer
+      int sign = 1;
     //do{
-        do{
-            printf("%s", prompt);
-            scanf("%[^\n]", &input); // S1
-            scanf("%c",&tmp); // S1
-        }while(is_int(input)==0);
-        //if(!(atoi(input) >= hi && atoi(input) <= low)){
-        //    printf("You entered an incorrect choice. Try again.\n");
-        //}
+    do{
+    printf("%s", prompt);
+    scanf("%[^\n]", &input); // S1
+    scanf("%c",&tmp); // S1
+    }while(is_int(input)==0);
+    //if(!(atoi(input) >= hi && atoi(input) <= low)){
+    //    printf("You entered an incorrect choice. Try again.\n");
+    //}
     //}while(!(atoi(input) >= hi && atoi(input) <= low));
     if(input[0] == 45) sign = -1; //S2; number is negative
     return atoi(input)*sign;*/ 
@@ -93,7 +93,7 @@ int get_int(char* prompt){
  * S2: https://stackoverflow.com/questions/31560778/why-doesnt-my-atoi-implementation-work-with-negative-numbers
  * */
 int get_int_b(char* prompt, int hi, int low){
-    
+
     int i = -1; 
     do{
         printf("%s", prompt);
@@ -104,23 +104,23 @@ int get_int_b(char* prompt, int hi, int low){
     }while(!(i>= hi && i <= low));
     return i;
     /*char input[32]; // statically allocated for now
-    char tmp; //for clearing the input buffer
-    int sign = 1;
-    do{
-        do{
-            printf("%s", prompt);
-            scanf("%[^\n]", &input); // S1
-            scanf("%c",&tmp); // S1
-        }while(is_int(input)==0);
-        if(input[0] == 45){ // number is negative
-            sign=-1; //S2
-        }
-        else sign = 1;
-        if(!(atoi(input)*sign >= hi && atoi(input)*sign <= low)){
-            printf("You entered an incorrect choice. Try again.\n");
-        }
-    }while(!(atoi(input)*sign >= hi && atoi(input)*sign <= low));
-    return (atoi(input)*sign);*/ 
+      char tmp; //for clearing the input buffer
+      int sign = 1;
+      do{
+      do{
+      printf("%s", prompt);
+      scanf("%[^\n]", &input); // S1
+      scanf("%c",&tmp); // S1
+      }while(is_int(input)==0);
+      if(input[0] == 45){ // number is negative
+      sign=-1; //S2
+      }
+      else sign = 1;
+      if(!(atoi(input)*sign >= hi && atoi(input)*sign <= low)){
+      printf("You entered an incorrect choice. Try again.\n");
+      }
+      }while(!(atoi(input)*sign >= hi && atoi(input)*sign <= low));
+      return (atoi(input)*sign);*/ 
 }
 
 /**
@@ -141,6 +141,19 @@ void show_options_file(){
     fprintf(stdout, "Enter 1 to pick the largest file\n");
     fprintf(stdout, "Enter 2 to pick the smallest file\n");
     fprintf(stdout, "Enter 3 to specify the name of a file\n\n");
+    return;
+}
+
+void testing(){
+    DIR* currDir = opendir(".");
+    struct dirent *aDir;
+
+    // Go through all the entries
+    while((aDir = readdir(currDir)) != NULL){
+        printf("%s  %lu\n", aDir->d_name, aDir->d_ino);    
+    }
+    //Close the directory
+    closedir(currDir);
     return;
 }
 
@@ -176,7 +189,7 @@ void main_loop(){
             default:
                 printf("You entered an incorect choice. Try again.\n");
                 break;
-            printf("\n\n");
+                printf("\n\n");
         }
     }while(choice != 2);
     return;
