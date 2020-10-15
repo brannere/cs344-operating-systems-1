@@ -136,8 +136,17 @@ void show_options_main(){
     printf("2. Exit the program\n\n");
     return;
 }
+void show_options_file(){
+    fprintf(stdout, "Which file you want to process? \n");
+    fprintf(stdout, "Enter 1 to pick the largest file\n");
+    fprintf(stdout, "Enter 2 to pick the smallest file\n");
+    fprintf(stdout, "Enter 3 to specify the name of a file\n\n");
+    return;
+}
+
 void select_from_file(){
     fprintf(stdout, "select from file\n");
+    show_options_file();
     return;
 }
 
