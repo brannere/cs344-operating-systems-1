@@ -157,7 +157,7 @@ void read_curr_dir(){
   time_t lastModifTime;
   off_t file_size = 0;
   struct stat dirStat;
-  int i = 0;
+  // int i = 0;
   char entryName[256];
 
   // Go through all the entries
@@ -172,13 +172,13 @@ void read_curr_dir(){
 			value of the directory entry*/
 
       // if(i == 0 || difftime(dirStat.st_mtime, lastModifTime) > 0){
-      if(i == 0 || dirStat.st_size > 0){
+      if(dirStat.st_size > file_size){
           // lastModifTime = dirStat.st_mtime;
           file_size = dirStat.st_size;
           memset(entryName, '\0', sizeof(entryName));
           strcpy(entryName, aDir->d_name);
         }
-      i++;
+      // i++;
     }
   }
   // Close the directory
