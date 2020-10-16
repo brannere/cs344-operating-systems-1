@@ -281,17 +281,16 @@ void select_from_file(){
       switch(choice){
         case 1:
 					file = curr_dir_largest();
-					fprintf(stdout, "file: %s\n", file);
+					fprintf(stdout, "Now processing the chosen file named %s\n", file);
 					free(file);
 					break; 
         case 2:
 					file = curr_dir_smallest();
-					fprintf(stdout, "file: %s\n", file);
+					fprintf(stdout, "Now processing the chosen file named %s\n", file);
 					free(file);
           break;
         case 3:
 					fprintf(stdout, "\t!!\t\n");
-					// _rand(0,99999);
 					break;
 				default:
           fprintf(stdout, "You entered an incorect choice. Try again.\n");
