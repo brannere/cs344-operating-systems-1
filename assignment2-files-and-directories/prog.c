@@ -138,8 +138,8 @@ int get_int_b(char* prompt, int hi, int low){
  */
 
 void show_options_main(){
-    printf("\n1. Select file to process");
-    printf("2. Exit the program\n\n");
+    fprintf(stdout, "\n1. Select file to process\n");
+    fprintf(stdout, "2. Exit the program\n\n");
     return;
 }
 void show_options_file(){
@@ -187,6 +187,8 @@ char* curr_dir_smallest(){
             if(_is_csv(aDir->d_name) == 1){
                 if(i==0){
                     file_size = dirStat.st_size;
+                    memset(entryName, '\0', sizeof(entryName));
+                    strcpy(entryName, aDir->d_name);
                     i = 1; 
                 }
                 // Get meta-data for the current entry
@@ -208,10 +210,10 @@ char* curr_dir_smallest(){
         }
         // Close the directory
         closedir(currDir);
-				fprintf(stdout,"length is: %d\n", strlen(entryName));
+				// fprintf(stdout,"length is: %d\n", strlen(entryName));
 				char* output = malloc(sizeof(char)*strlen(entryName)); // plus 1 for \0
 				strcpy(output, entryName);
-				fprintf(stdout, "output: %s\n", output);
+				// fprintf(stdout, "output: %s\n", output);
 				// printf("The last file/directory starting with the prefix \"%s\" modified in the current directory is %s\n", PREFIX, entryName);
         // printf("The smallest file/directory starting with the prefix \"%s\" in the current directory is %s\n", PREFIX, entryName);
 				return output;
@@ -249,10 +251,10 @@ char* curr_dir_largest(){
   // Close the directory
   closedir(currDir);
   // printf("The last file/directory starting with the prefix \"%s\" modified in the current directory is %s\n", PREFIX, entryName);
-	fprintf(stdout,"length is: %d\n", strlen(entryName));
-	char* output = malloc(sizeof(char)*strlen(entryName)); // plus 1 for \0
+	// fprintf(stdout,"length is: %d\n", strlen(entryName));
+	char* output = malloc(sizeof(char)*strlen(entryName)+1); // plus 1 for \0
 	strcpy(output, entryName);
-	fprintf(stdout, "output: %s\n", output);
+	// fprintf(stdout, "output: %s\n", output);
 
   // printf("The largest file/directory starting with the prefix \"%s\" in the current directory is %s\n", PREFIX, entryName);
   return output;
@@ -260,8 +262,32 @@ char* curr_dir_largest(){
 
 
 void select_from_file(){
-  fprintf(stdout, "select from file\n");
   show_options_file();
+	char* file = NULL;
+	int choice = -1;
+	do{
+		choice = get_int("Enter a choice from 1 to 3: ");
+		  printf("\n");
+      switch(choice){
+        case 1:
+					file = curr_dir_largest();
+					fprintf(stdout, "file: %s\n", file);
+					free(file);
+					break; 
+        case 2:
+					file = curr_dir_smallest();
+					fprintf(stdout, "file: %s\n", file);
+					free(file);
+          break;
+        case 3:
+					fprintf(stdout, "\t!!\t\n");
+					break;
+				default:
+          fprintf(stdout, "You entered an incorect choice. Try again.\n");
+          break;
+      }
+          // printf("\n\n");
+    }while(0);
   return;
 }
 /**
@@ -281,8 +307,8 @@ void main_loop(){
       printf("\n");
       switch(choice){
         case 1:
-            fprintf(stdout, "select file to process\n");
-            break; 
+            select_from_file();
+						break; 
         case 2:
             printf("Goodbye.\n");
             break;
