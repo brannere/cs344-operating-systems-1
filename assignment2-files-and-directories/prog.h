@@ -17,8 +17,8 @@ int get_int_b(char* prompt, int hi, int low);
 void show_options_main();
 void main_loop();
 void select_from_file(); 
-void curr_dir_largest();
-void curr_dir_smallest();
+char* curr_dir_largest();
+char* curr_dir_smallest();
 //error handling prompt
 //need a string input function
 #endif

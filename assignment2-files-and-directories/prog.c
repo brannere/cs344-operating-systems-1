@@ -170,7 +170,7 @@ int _is_csv(char* file){
     return -1;
 }
 
-void curr_dir_smallest(){
+char* curr_dir_smallest(){
     // Open the current directory
     DIR* currDir = opendir(".");
     struct dirent *aDir;
@@ -208,85 +208,89 @@ void curr_dir_smallest(){
         }
         // Close the directory
         closedir(currDir);
-        // printf("The last file/directory starting with the prefix \"%s\" modified in the current directory is %s\n", PREFIX, entryName);
-        printf("The smallest file/directory starting with the prefix \"%s\" in the current directory is %s\n", PREFIX, entryName);
+				fprintf(stdout,"length is: %d\n", strlen(entryName));
+				char* output = malloc(sizeof(char)*strlen(entryName)); // plus 1 for \0
+				strcpy(output, entryName);
+				fprintf(stdout, "output: %s\n", output);
+				// printf("The last file/directory starting with the prefix \"%s\" modified in the current directory is %s\n", PREFIX, entryName);
+        // printf("The smallest file/directory starting with the prefix \"%s\" in the current directory is %s\n", PREFIX, entryName);
+				return output;
 }
 
-void curr_dir_largest(){
-    // Open the current directory
-    DIR* currDir = opendir(".");
-    struct dirent *aDir;
-    time_t lastModifTime;
-    off_t file_size = 0;
-    struct stat dirStat;
-    int len = 0;
-    // int i = 0;
-    char entryName[256];
+char* curr_dir_largest(){
+  // Open the current directory
+  DIR* currDir = opendir(".");
+  struct dirent *aDir;
+  time_t lastModifTime;
+  off_t file_size = 0;
+  struct stat dirStat;
+  int len = 0;
+  // int i = 0;
+  char entryName[256];
+  // Go through all the entries
+  while((aDir = readdir(currDir)) != NULL){
+  	if(strncmp(PREFIX, aDir->d_name, strlen(PREFIX)) == 0){
+  		if(_is_csv(aDir->d_name) == 1){
+  			// Get meta-data for the current entry
+  			stat(aDir->d_name, &dirStat);  
+  			/* Use the difftime function to get the time difference 
+  			   between the current value of lastModifTime and the st_mtime 
+  			   value of the directory entry*/
+  			// if(i == 0 || difftime(dirStat.st_mtime, lastModifTime) > 0){
+  			if(dirStat.st_size > file_size){
+  				// lastModifTime = dirStat.st_mtime;
+  				file_size = dirStat.st_size;
+  				memset(entryName, '\0', sizeof(entryName));
+  				strcpy(entryName, aDir->d_name);
+  			}
+			} 
+  	}
+	}
+  // Close the directory
+  closedir(currDir);
+  // printf("The last file/directory starting with the prefix \"%s\" modified in the current directory is %s\n", PREFIX, entryName);
+	fprintf(stdout,"length is: %d\n", strlen(entryName));
+	char* output = malloc(sizeof(char)*strlen(entryName)); // plus 1 for \0
+	strcpy(output, entryName);
+	fprintf(stdout, "output: %s\n", output);
 
-    // Go through all the entries
-    while((aDir = readdir(currDir)) != NULL){
-        if(strncmp(PREFIX, aDir->d_name, strlen(PREFIX)) == 0){
-            if(_is_csv(aDir->d_name) == 1){
+  // printf("The largest file/directory starting with the prefix \"%s\" in the current directory is %s\n", PREFIX, entryName);
+  return output;
+}
 
-                // Get meta-data for the current entry
-                stat(aDir->d_name, &dirStat);  
 
-                /* Use the difftime function to get the time difference 
-                   between the current value of lastModifTime and the st_mtime 
-                   value of the directory entry*/
-
-                // if(i == 0 || difftime(dirStat.st_mtime, lastModifTime) > 0){
-                if(dirStat.st_size > file_size){
-                    // lastModifTime = dirStat.st_mtime;
-                    file_size = dirStat.st_size;
-                    memset(entryName, '\0', sizeof(entryName));
-                    strcpy(entryName, aDir->d_name);
-                }
-                // i++;
-            } 
-            }
-        }
-        // Close the directory
-        closedir(currDir);
-        // printf("The last file/directory starting with the prefix \"%s\" modified in the current directory is %s\n", PREFIX, entryName);
-        printf("The largest file/directory starting with the prefix \"%s\" in the current directory is %s\n", PREFIX, entryName);
-        return;
-    }
-
-    void select_from_file(){
-        fprintf(stdout, "select from file\n");
-        show_options_file();
-        return;
-    }
-
-    /**
-     * Function: main_loop()
-     * Description: Containing function for all 
-     * program functionality
-     * Parameters: Movies struct list
-     * Pre-Conditions: None
-     * Post-Conditions: None
-     */
-
-    void main_loop(){
-        int choice = -1; 
-        do{
-            show_options_main();
-            //choice = get_int_b("Enter a choice from 1 to 4: ",1,4);
-            choice = get_int("Enter a choice 1 to 2: ");
-            printf("\n");
-            switch(choice){
-                case 1:
-                    fprintf(stdout, "select file to process\n");
-                    break; 
-                case 2:
-                    printf("Goodbye.\n");
-                    break;
-                default:
-                    printf("You entered an incorect choice. Try again.\n");
-                    break;
-                    printf("\n\n");
-            }
-        }while(choice != 2);
-        return;
-    }
+void select_from_file(){
+  fprintf(stdout, "select from file\n");
+  show_options_file();
+  return;
+}
+/**
+ * Function: main_loop()
+ * Description: Containing function for all 
+ * program functionality
+ * Parameters: Movies struct list
+ * Pre-Conditions: None
+ * Post-Conditions: None
+ */
+void main_loop(){
+    int choice = -1; 
+    do{
+      show_options_main();
+      //choice = get_int_b("Enter a choice from 1 to 4: ",1,4);
+      choice = get_int("Enter a choice 1 to 2: ");
+      printf("\n");
+      switch(choice){
+        case 1:
+            fprintf(stdout, "select file to process\n");
+            break; 
+        case 2:
+            printf("Goodbye.\n");
+            break;
+        default:
+            printf("You entered an incorect choice. Try again.\n");
+            break;
+            printf("\n\n");
+      }
+    }while(choice != 2);
+    return;
+}
