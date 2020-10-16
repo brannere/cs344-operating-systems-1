@@ -137,6 +137,16 @@ int get_int_b(char* prompt, int hi, int low){
  * Post-Conditions: options printed to screen
  */
 
+int _rand(int lo, int hi){
+	time_t t;
+	srand((unsigned) time(&t));
+	int output = -1;
+	output = random()% (hi - lo + 1) +lo;
+	fprintf(stdout, "%d\n", output);
+
+	return output;
+}
+
 void show_options_main(){
     fprintf(stdout, "\n1. Select file to process\n");
     fprintf(stdout, "2. Exit the program\n\n");
@@ -281,6 +291,7 @@ void select_from_file(){
           break;
         case 3:
 					fprintf(stdout, "\t!!\t\n");
+					// _rand(0,99999);
 					break;
 				default:
           fprintf(stdout, "You entered an incorect choice. Try again.\n");

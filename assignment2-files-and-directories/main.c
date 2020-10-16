@@ -23,12 +23,6 @@
  */
 
 int main(int argc, char *argv[]){
-    //if (argc < 2){    
-    //    printf("You must provide the name of the file to process\n");
-    //    printf("Example usage: ./movies file.csv\n");
-    //    return EXIT_FAILURE;                    
-    //}
-    main_loop();
-        
+		main_loop();
     return EXIT_SUCCESS;                   
 }
