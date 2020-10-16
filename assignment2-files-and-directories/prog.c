@@ -147,6 +147,25 @@ int _rand(int lo, int hi){
 	return output;
 }
 
+
+
+void create_file(char* filename){
+	int file_descriptor;
+	FILE* output;
+	
+	output = fopen("test-file", "w+");
+	fprintf(output, "hello world\n");
+	fputs("fputs\n", output);
+	fclose(output);
+	// file_descriptor = open(filename, O_RDWR, S_IRUSR | S_IWUSR);
+	// if (file_descriptor == -1){
+	// 	printf("open() failed on \"%s\"\n", filename);
+	// 	perror("Error");
+	// 	exit(1);
+	// }	
+
+	return; 
+}
 void show_options_main(){
     fprintf(stdout, "\n1. Select file to process\n");
     fprintf(stdout, "2. Exit the program\n\n");

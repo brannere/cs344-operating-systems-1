@@ -19,6 +19,7 @@ void main_loop();
 void select_from_file(); 
 char* curr_dir_largest();
 char* curr_dir_smallest();
+void create_file(char* filename);
 //error handling prompt
 //need a string input function
 #endif
