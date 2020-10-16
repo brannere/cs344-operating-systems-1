@@ -28,7 +28,8 @@ int main(int argc, char *argv[]){
     //    printf("Example usage: ./movies file.csv\n");
     //    return EXIT_FAILURE;                    
     //}
-    read_curr_dir();
+    curr_dir_smallest();
+    curr_dir_largest();
     //main_loop();
         
     return EXIT_SUCCESS;                   

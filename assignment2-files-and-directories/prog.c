@@ -160,17 +160,59 @@ int _is_csv(char* file){
     exten[3] = file[len-1];
     exten[4] = '\0';
     if(strcmp(exten, ".csv") ==0){
-        fprintf(stdout, "is csv\n");
+        //fprintf(stdout, "is csv\n");
         return 1;
     }
     else{
-        fprintf(stdout, "is not csv\n");
+        //fprintf(stdout, "is not csv\n");
         return 0;
     }
     return -1;
 }
 
-void read_curr_dir(){
+void curr_dir_smallest(){
+    // Open the current directory
+    DIR* currDir = opendir(".");
+    struct dirent *aDir;
+    time_t lastModifTime;
+    off_t file_size = 0;
+    struct stat dirStat;
+    int len = 0;
+    int i = 0;
+    char entryName[256];
+
+    // Go through all the entries
+    while((aDir = readdir(currDir)) != NULL){
+        if(strncmp(PREFIX, aDir->d_name, strlen(PREFIX)) == 0){
+            if(_is_csv(aDir->d_name) == 1){
+                if(i==0){
+                    file_size = dirStat.st_size;
+                    i = 1; 
+                }
+                // Get meta-data for the current entry
+                stat(aDir->d_name, &dirStat);  
+
+                /* Use the difftime function to get the time difference 
+                   between the current value of lastModifTime and the st_mtime 
+                   value of the directory entry*/
+
+               // if(i == 0 || difftime(dirStat.st_mtime, lastModifTime) > 0){
+                if(dirStat.st_size < file_size){
+                    // lastModifTime = dirStat.st_mtime;
+                    file_size = dirStat.st_size;
+                    memset(entryName, '\0', sizeof(entryName));
+                    strcpy(entryName, aDir->d_name);
+                }
+            } 
+            }
+        }
+        // Close the directory
+        closedir(currDir);
+        // printf("The last file/directory starting with the prefix \"%s\" modified in the current directory is %s\n", PREFIX, entryName);
+        printf("The smallest file/directory starting with the prefix \"%s\" in the current directory is %s\n", PREFIX, entryName);
+}
+
+void curr_dir_largest(){
     // Open the current directory
     DIR* currDir = opendir(".");
     struct dirent *aDir;
