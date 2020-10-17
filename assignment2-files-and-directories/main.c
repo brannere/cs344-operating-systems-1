@@ -24,7 +24,7 @@
 
 int main(int argc, char *argv[]){
 	// create_file("test-file.txt");
-	create_dir("a-new-dir");
+	process_movies("movies_sample_1.csv");
 	// main_loop();
   return EXIT_SUCCESS;                   
 }

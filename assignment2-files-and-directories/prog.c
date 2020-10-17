@@ -9,6 +9,7 @@
  */
 
 #include "./prog.h"
+#include "./movie.h"
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,6 +23,7 @@
 
 #define PREFIX "movies_"
 #define FILE_MODE 0640
+#define DIR_PERMISSION 0750
 #define MAX_FILE_LEN 21 /* brannere.movies.nnnnn */
 #define GEN_FILE_PRFX "brannere.movies."
 /**
@@ -159,20 +161,22 @@ char* generate_dir_name(){
 	return output;
 }
 
-void create_dir(char* name){
-	mkdir(name, 0750);
-	return;
+char* create_dir(char* name){
+	mkdir(name, DIR_PERMISSION);
+	fprintf(stdout, "Created directory with name %s\n", name);
+	return name;
 }
 
-void create_file(char* filename){
+int create_file(char* filename){
 	int fd;
-	FILE* output;
+	// FILE* output;
 	
 	// output = fopen(filename, "w+");
 	// chmod(filename, FILE_MODE);
 	// fprintf(output, "hello world\n");
 	// fputs("fputs\n", output);
 	// fclose(output);
+	/* file name can be a path*/
 	fd = open(	filename, O_RDWR | O_CREAT | O_TRUNC, 
 													S_IRUSR | S_IWUSR | S_IRGRP);
 	if (fd == -1){
@@ -180,11 +184,11 @@ void create_file(char* filename){
 		perror("Error");
 		exit(1);
 	}
-	char message[] = "hello!\n";
-	int howMany = write(fd, message, strlen(message));
-  printf("wrote %d bytes to the file\n", howMany);	
+	// char message[] = "hello!\n";
+	// int howMany = write(fd, message, strlen(message));
+  // printf("wrote %d bytes to the file\n", howMany);	
 
-	return; 
+	return fd; 
 }
 
 void show_options_main(){
@@ -311,6 +315,18 @@ char* curr_dir_largest(){
   return output;
 }
 
+void process_movies(char* filename){
+	char path[MAX_FILE_LEN+1]; /* +1, space for '/' */
+	// memset(path, '\0', strlen);
+	char* dir_name = NULL;
+	dir_name = create_dir(generate_dir_name());
+	struct movie* movies = process_file(filename);
+	struct movie* tmp = movies;
+	strcpy(path, dir_name);
+	strncat(path, "/",1);
+	
+	return;
+}
 
 void select_from_file(){
   show_options_file();

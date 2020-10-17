@@ -19,9 +19,11 @@ void main_loop();
 void select_from_file(); 
 char* curr_dir_largest();
 char* curr_dir_smallest();
-void create_file(char* filename);
+int create_file(char* filename);
 char* generate_dir_name();
-void create_dir(char* name);
+char* create_dir(char* name);
+void process_movies(char* filename);
+
 //error handling prompt
 //need a string input function
 #endif
