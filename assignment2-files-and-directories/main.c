@@ -23,8 +23,7 @@
  */
 
 int main(int argc, char *argv[]){
-	char* foo = generate_dir_name();
-	fprintf(stdout, "dir name: %s\n", foo);
+	create_file("test-file.txt");
 	main_loop();
   return EXIT_SUCCESS;                   
 }

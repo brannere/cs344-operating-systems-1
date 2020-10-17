@@ -163,17 +163,18 @@ void create_file(char* filename){
 	int file_descriptor;
 	FILE* output;
 	
-	output = fopen(filename, "w+");
-	chmod(filename, FILE_MODE);
-	fprintf(output, "hello world\n");
-	fputs("fputs\n", output);
-	fclose(output);
-	// file_descriptor = open(filename, O_RDWR, S_IRUSR | S_IWUSR);
-	// if (file_descriptor == -1){
-	// 	printf("open() failed on \"%s\"\n", filename);
-	// 	perror("Error");
-	// 	exit(1);
-	// }	
+	// output = fopen(filename, "w+");
+	// chmod(filename, FILE_MODE);
+	// fprintf(output, "hello world\n");
+	// fputs("fputs\n", output);
+	// fclose(output);
+	file_descriptor = open(	filename, O_RDWR | O_CREAT | O_TRUNC, 
+													S_IRUSR | S_IWUSR | S_IRGRP);
+	if (file_descriptor == -1){
+		printf("open() failed on \"%s\"\n", filename);
+		perror("Error");
+		exit(1);
+	}	
 
 	return; 
 }
@@ -183,6 +184,7 @@ void show_options_main(){
     fprintf(stdout, "2. Exit the program\n\n");
     return;
 }
+
 void show_options_file(){
     fprintf(stdout, "Which file you want to process? \n");
     fprintf(stdout, "Enter 1 to pick the largest file\n");
