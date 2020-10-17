@@ -22,6 +22,8 @@
 
 #define PREFIX "movies_"
 #define FILE_MODE 0640
+#define MAX_FILE_LEN 21 /* brannere.movies.nnnnn */
+#define GEN_FILE_PRFX "brannere.movies."
 /**
  * Function: is_int()
  * Description: Determines if string is an integer
@@ -148,7 +150,14 @@ int _rand(int lo, int hi){
 	return output;
 }
 
+char* generate_file_name(){
+	char* output = malloc(sizeof(char)*MAX_FILE_LEN);
+	memset(output, '\0', sizeof(char)*MAX_FILE_LEN);
+	strcpy(output, GEN_FILE_PRFX);
+	fprintf(stdout, "filename: %s\n", output);
 
+	return NULL;
+}
 
 void create_file(char* filename){
 	int file_descriptor;
@@ -168,6 +177,7 @@ void create_file(char* filename){
 
 	return; 
 }
+
 void show_options_main(){
     fprintf(stdout, "\n1. Select file to process\n");
     fprintf(stdout, "2. Exit the program\n\n");
