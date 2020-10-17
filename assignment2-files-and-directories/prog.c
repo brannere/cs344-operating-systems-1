@@ -160,7 +160,7 @@ char* generate_dir_name(){
 }
 
 void create_file(char* filename){
-	int file_descriptor;
+	int fd;
 	FILE* output;
 	
 	// output = fopen(filename, "w+");
@@ -168,13 +168,16 @@ void create_file(char* filename){
 	// fprintf(output, "hello world\n");
 	// fputs("fputs\n", output);
 	// fclose(output);
-	file_descriptor = open(	filename, O_RDWR | O_CREAT | O_TRUNC, 
+	fd = open(	filename, O_RDWR | O_CREAT | O_TRUNC, 
 													S_IRUSR | S_IWUSR | S_IRGRP);
-	if (file_descriptor == -1){
+	if (fd == -1){
 		printf("open() failed on \"%s\"\n", filename);
 		perror("Error");
 		exit(1);
-	}	
+	}
+	char message[] = "hello!\n";
+	int howMany = write(fd, message, strlen(message));
+  printf("wrote %d bytes to the file\n", howMany);	
 
 	return; 
 }
