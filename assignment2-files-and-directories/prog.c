@@ -21,6 +21,7 @@
 
 
 #define PREFIX "movies_"
+#define FILE_MODE "0640"
 /**
  * Function: is_int()
  * Description: Determines if string is an integer
@@ -153,7 +154,8 @@ void create_file(char* filename){
 	int file_descriptor;
 	FILE* output;
 	
-	output = fopen("test-file", "w+");
+	output = fopen(filename, "w+");
+	chmod(filename, 0640);
 	fprintf(output, "hello world\n");
 	fputs("fputs\n", output);
 	fclose(output);

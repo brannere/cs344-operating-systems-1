@@ -24,6 +24,6 @@
 
 int main(int argc, char *argv[]){
 	create_file("a-test-file.txt");
-		main_loop();
-    return EXIT_SUCCESS;                   
+	main_loop();
+  return EXIT_SUCCESS;                   
 }
