@@ -145,18 +145,18 @@ int _rand(int lo, int hi){
 	srand((unsigned) time(&t));
 	int output = -1;
 	output = random()% (hi - lo + 1) +lo;
-	fprintf(stdout, "%d\n", output);
-
 	return output;
 }
 
-char* generate_file_name(){
-	char* output = malloc(sizeof(char)*MAX_FILE_LEN);
+char* generate_dir_name(){
+	char* output = NULL;
+	char extn[MAX_FILE_LEN - strlen(GEN_FILE_PRFX)];
+	output = malloc(sizeof(char)*MAX_FILE_LEN);
+	sprintf(extn, "%d", _rand(0,99999));
 	memset(output, '\0', sizeof(char)*MAX_FILE_LEN);
 	strcpy(output, GEN_FILE_PRFX);
-	fprintf(stdout, "filename: %s\n", output);
-
-	return NULL;
+	strncat(output, extn, strlen(extn));
+	return output;
 }
 
 void create_file(char* filename){

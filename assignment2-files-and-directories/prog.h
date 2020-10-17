@@ -20,7 +20,7 @@ void select_from_file();
 char* curr_dir_largest();
 char* curr_dir_smallest();
 void create_file(char* filename);
-char* generate_file_name();
+char* generate_dir_name();
 //error handling prompt
 //need a string input function
 #endif
