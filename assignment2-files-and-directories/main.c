@@ -23,7 +23,8 @@
  */
 
 int main(int argc, char *argv[]){
-	create_file("test-file.txt");
-	main_loop();
+	// create_file("test-file.txt");
+	create_dir("a-new-dir");
+	// main_loop();
   return EXIT_SUCCESS;                   
 }

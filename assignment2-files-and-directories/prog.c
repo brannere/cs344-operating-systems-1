@@ -159,6 +159,11 @@ char* generate_dir_name(){
 	return output;
 }
 
+void create_dir(char* name){
+	mkdir(name, 0750);
+	return;
+}
+
 void create_file(char* filename){
 	int fd;
 	FILE* output;
