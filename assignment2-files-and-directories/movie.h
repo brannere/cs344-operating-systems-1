@@ -11,7 +11,24 @@
 #ifndef MOVIE_H
 #define MOVIE_H
 
-struct movie;
+/**
+ * The movies struct contains information 
+ * related to a movie provided froma csv file. 
+ * Language variables appear twice -- one is 
+ * the full list directly from the file, the 
+ * other is a representation of the languages 
+ * without delimiters in a 2d char array. 
+*/
+struct movie{
+    char* title;
+    int year;
+    char* langs;
+    double rating;
+    struct movie* next;
+    char lang_arr[5][20];
+    int num_langs; 
+};
+
 
 // functions that act on movie
 void movie_free(struct movie* remove);

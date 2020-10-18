@@ -21,15 +21,15 @@
  * other is a representation of the languages 
  * without delimiters in a 2d char array. 
 */
-struct movie{
-    char* title;
-    int year;
-    char* langs;
-    double rating;
-    struct movie* next;
-    char lang_arr[5][20];
-    int num_langs; 
-};
+// struct movie{
+//     char* title;
+//     int year;
+//     char* langs;
+//     double rating;
+//     struct movie* next;
+//     char lang_arr[5][20];
+//     int num_langs; 
+// };
 
 /* Utilities */
 /* 	

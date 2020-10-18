@@ -157,7 +157,7 @@ char* generate_dir_name(){
 	sprintf(extn, "%d", _rand(0,99999));
 	memset(output, '\0', sizeof(char)*MAX_FILE_LEN);
 	strcpy(output, GEN_FILE_PRFX);
-	strncat(output, extn, strlen(extn));
+	strcat(output, extn);
 	return output;
 }
 
@@ -316,14 +316,25 @@ char* curr_dir_largest(){
 }
 
 void process_movies(char* filename){
+	int year = 0;
+	char full[50];
+	char nametxt[10];
 	char path[MAX_FILE_LEN+1]; /* +1, space for '/' */
 	// memset(path, '\0', strlen);
 	char* dir_name = NULL;
 	dir_name = create_dir(generate_dir_name());
 	struct movie* movies = process_file(filename);
-	struct movie* tmp = movies;
+	struct movie* tmp = NULL;
 	strcpy(path, dir_name);
-	strncat(path, "/",1);
+	strcat(path, "/");
+	for(tmp = movies; tmp != NULL; tmp = tmp->next){
+		sprintf(nametxt, "%d", tmp->year);
+		strcpy(full, path);
+		strcat(full, nametxt);
+		strcat(full, ".txt");
+		fprintf(stdout, "Full path: %s\n", full);
+		memset(full, '\0', 50);
+	}	
 	
 	return;
 }
