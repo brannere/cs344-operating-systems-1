@@ -316,6 +316,7 @@ char* curr_dir_largest(){
 }
 
 void process_movies(char* filename){
+	int fd = -1; 
 	int year = 0;
 	char full[50];
 	char nametxt[10];
@@ -328,11 +329,16 @@ void process_movies(char* filename){
 	strcpy(path, dir_name);
 	strcat(path, "/");
 	for(tmp = movies; tmp != NULL; tmp = tmp->next){
+		/* Filepath creation */
 		sprintf(nametxt, "%d", tmp->year);
 		strcpy(full, path);
 		strcat(full, nametxt);
 		strcat(full, ".txt");
-		fprintf(stdout, "Full path: %s\n", full);
+		// fprintf(stdout, "Full path: %s\n", full);
+		
+		/* Write to file */
+		create_file(full);
+
 		memset(full, '\0', 50);
 	}	
 	
