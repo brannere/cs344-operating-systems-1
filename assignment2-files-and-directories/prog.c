@@ -164,6 +164,7 @@ char* generate_dir_name(){
 char* create_dir(char* name){
 	mkdir(name, DIR_PERMISSION);
 	fprintf(stdout, "Created directory with name %s\n", name);
+	if(name != NULL) free(name);
 	return name;
 }
 
@@ -348,6 +349,7 @@ void process_movies(char* filename){
 		memset(outf, '\0', 255);
 		memset(full, '\0', 50);
 	}	
+	movie_free_all(movies);
 	return;
 }
 
