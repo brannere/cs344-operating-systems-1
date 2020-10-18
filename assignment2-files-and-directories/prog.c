@@ -177,7 +177,7 @@ int create_file(char* filename){
 	// fputs("fputs\n", output);
 	// fclose(output);
 	/* file name can be a path*/
-	fd = open(	filename, O_RDWR | O_CREAT | O_TRUNC, 
+	fd = open(	filename, O_RDWR | O_CREAT | O_APPEND, 
 													S_IRUSR | S_IWUSR | S_IRGRP);
 	if (fd == -1){
 		printf("open() failed on \"%s\"\n", filename);
@@ -337,8 +337,15 @@ void process_movies(char* filename){
 		// fprintf(stdout, "Full path: %s\n", full);
 		
 		/* Write to file */
-		create_file(full);
+		fd = create_file(full);
+ 		char outf[255];
+		memset(outf, '\0', 255); 
+		strcpy(outf, tmp->title);
+		int size_outf = write(fd, outf, strlen(outf));
+  	// printf("wrote %d bytes to the file\n", size_outf);	
+		write(fd, "\n", 1);
 
+		memset(outf, '\0', 255);
 		memset(full, '\0', 50);
 	}	
 	
