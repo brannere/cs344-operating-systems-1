@@ -329,12 +329,12 @@ void process_movies(char* filename){
 	strcpy(path, dir_name);
 	strcat(path, "/");
 	for(tmp = movies; tmp != NULL; tmp = tmp->next){
+		
 		/* Filepath creation */
-		sprintf(nametxt, "%d", tmp->year);
+		sprintf(nametxt, "%d", tmp->year); /* int to ascii */
 		strcpy(full, path);
 		strcat(full, nametxt);
 		strcat(full, ".txt");
-		// fprintf(stdout, "Full path: %s\n", full);
 		
 		/* Write to file */
 		fd = create_file(full);
@@ -342,20 +342,21 @@ void process_movies(char* filename){
 		memset(outf, '\0', 255); 
 		strcpy(outf, tmp->title);
 		int size_outf = write(fd, outf, strlen(outf));
-  	// printf("wrote %d bytes to the file\n", size_outf);	
 		write(fd, "\n", 1);
 
+		/* Setting strings to null terminator to prevent c string issues */
 		memset(outf, '\0', 255);
 		memset(full, '\0', 50);
 	}	
-	
 	return;
 }
 
 void select_from_file(){
   show_options_file();
 	char* file = NULL;
+	char input[255];
 	int choice = -1;
+	int fd = 0;
 	do{
 		choice = get_int("Enter a choice from 1 to 3: ");
 		  printf("\n");
@@ -363,22 +364,33 @@ void select_from_file(){
         case 1:
 					file = curr_dir_largest();
 					fprintf(stdout, "Now processing the chosen file named %s\n", file);
+					process_movies(file);
 					free(file);
 					break; 
         case 2:
 					file = curr_dir_smallest();
 					fprintf(stdout, "Now processing the chosen file named %s\n", file);
+					process_movies(file);
 					free(file);
           break;
         case 3:
-					fprintf(stdout, "\t!!\t\n");
+					fprintf(stdout, "Enter the complete file name: ");
+					scanf("%s", input);
+					if(open(input, O_RDONLY) == -1){
+						choice = -1; 
+						fprintf(stdout, "The file %s was not found. Try again\n", input);
+					}else{
+						fprintf(stdout, "Now processing the chosen file named %s\n", input);
+						process_movies(input);
+					}
+
 					break;
 				default:
           fprintf(stdout, "You entered an incorect choice. Try again.\n");
           break;
       }
           // printf("\n\n");
-    }while(0);
+    }while(choice > 3 || choice < 1);
   return;
 }
 /**

@@ -23,8 +23,6 @@
  */
 
 int main(int argc, char *argv[]){
-	// create_file("test-file.txt");
-	process_movies("movies_sample_1.csv");
-	// main_loop();
+	main_loop();
   return EXIT_SUCCESS;                   
 }
