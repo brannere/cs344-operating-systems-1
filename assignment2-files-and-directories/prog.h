@@ -1,7 +1,7 @@
 /**
  * Prgram Filename: prog.h
  * Author: Erick Branner
- * Date: 12 October 2020
+ * Date: 20 October 2020
  * Description: Header file for prog.c 
  * Input:
  * Output:

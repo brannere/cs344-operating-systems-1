@@ -136,11 +136,12 @@ int get_int_b(char* prompt, int hi, int low){
 }
 
 /**
- * Function: show_options()
- * Description: Prints user options to screen
- * Parameters: none
- * Pre-Conditions: none
- * Post-Conditions: options printed to screen
+ * Function: _rand()
+ * Description: Generates a random number in 
+ * range [lo, hi]
+ * Parameters: a floor, lo, and a ceiling, hi 
+ * Pre-Conditions: none 
+ * Post-Conditions: returns random number in range [lo, hi]
  */
 
 int _rand(int lo, int hi){
@@ -151,6 +152,15 @@ int _rand(int lo, int hi){
 	return output;
 }
 
+/**
+ * Function: generate_dir_name()
+ * Description: generates a director name
+ * Parameters: none
+ * Pre-Conditions: none
+ * Post-Conditions: Returns pointer to memory allocated 
+ * for dir name that was generated
+ */
+
 char* generate_dir_name(){
 	char* output = NULL;
 	char extn[MAX_FILE_LEN - strlen(GEN_FILE_PRFX)];
@@ -159,15 +169,33 @@ char* generate_dir_name(){
 	memset(output, '\0', sizeof(char)*MAX_FILE_LEN);
 	strcpy(output, GEN_FILE_PRFX);
 	strcat(output, extn);
-	fprintf(stdout, "output: %s\n", output);
 	return output;
 }
+
+/**
+ * Function: create_dir()
+ * Description: creates directory given a name
+ * Parameters: name of file
+ * Pre-Conditions: name of file is not null
+ * Post-Conditions: directory created with permissions of DIR_PERMISSION
+ * (in this context, drwxrw-x---), returns paramter, name
+ */
 
 char* create_dir(char* name){
 	mkdir(name, DIR_PERMISSION);
 	fprintf(stdout, "Created directory with name %s\n", name);
 	return name;
 }
+
+/**
+ * Function: create_file()
+ * Description: Creates a file given a file name
+ * Parameters: filename
+ * Pre-Conditions: filename is not null
+ * Post-Conditions: File is opened; file descriptor returned;
+ * file opened with read/write permissions, creates a file, 
+ * in appened mode, sets permissions to user and group -rw-rw----
+ */
 
 int create_file(char* filename){
 	int fd;
@@ -178,7 +206,7 @@ int create_file(char* filename){
 	// fprintf(output, "hello world\n");
 	// fputs("fputs\n", output);
 	// fclose(output);
-	/* file name can be a path*/
+	/* file name can be a path */
 	fd = open(	filename, O_RDWR | O_CREAT | O_APPEND, 
 													S_IRUSR | S_IWUSR | S_IRGRP);
 	if (fd == -1){
@@ -193,11 +221,28 @@ int create_file(char* filename){
 	return fd; 
 }
 
+/**
+ * Function: show_options_main()
+ * Description: writes main menu options to stdout
+ * Parameters: none
+ * Pre-Conditions: none
+ * Post-Conditions: none
+ */
+
 void show_options_main(){
     fprintf(stdout, "\n1. Select file to process\n");
     fprintf(stdout, "2. Exit the program\n\n");
     return;
 }
+
+/**
+ * Function: show_options_file()
+ * Description: Writes menu options for file operations 
+ * to stdout
+ * Parameters: none
+ * Pre-Conditions: none
+ * Post-Conditions: none
+ */
 
 void show_options_file(){
     fprintf(stdout, "Which file you want to process? \n");
@@ -206,6 +251,15 @@ void show_options_file(){
     fprintf(stdout, "Enter 3 to specify the name of a file\n\n");
     return;
 }
+
+/**
+ * Function: _is_csv()
+ * Description: Naively checks for .csv extension 
+ * Parameters: filename
+ * Pre-Conditions: filename is not null
+ * Post-Conditions: returns 1 for valid .csv EXTENSION,
+ * 0 for not csv; -1 is somehow the constrol strucutre goes wrong
+ */
 
 int _is_csv(char* file){
     int len = 0;
@@ -224,14 +278,13 @@ int _is_csv(char* file){
         //fprintf(stdout, "is not csv\n");
         return 0;
     }
-    return -1;
+    return -1; /* We shouldn't ever get here */
 }
-
 
 /**
  * Function: curr_dir_smallest()
  * Description: Finds smallest file in current directory
- * with predefined global constant 
+ * with prefix of global constant 
  * prefix and ending in .csv
  * Parameters: None
  * Pre-Conditions: Running user has read permission on
@@ -244,6 +297,7 @@ function to find out the name of the file or directory whose
 name starts with the prefix student and which was modified last 
 in the current directory" From Directories modules  */
 /* Same overall constrol structure for looping over all files */
+
 char* curr_dir_smallest(){
     // Open the current directory
     DIR* currDir = opendir(".");
@@ -293,11 +347,10 @@ char* curr_dir_smallest(){
 				return output;
 }
 
-
 /**
  * Function: curr_dir_largest()
  * Description: Finds largest file in current directory
- * with predefined global constant 
+ * with prefix of global constant 
  * prefix and ending in .csv
  * Parameters: None
  * Pre-Conditions: Running user has read permission on
@@ -310,6 +363,7 @@ function to find out the name of the file or directory whose
 name starts with the prefix student and which was modified last 
 in the current directory" From Directories modules  */
 /* Same overall constrol structure for looping over all files */
+
 char* curr_dir_largest(){
   // Open the current directory
   DIR* currDir = opendir(".");
@@ -369,6 +423,8 @@ void process_movies(char* filename){
 	char full[50];
 	char nametxt[10];
 	char path[MAX_FILE_LEN+1]; /* +1, space for '/' */
+	
+	/* Set up dir name: `GEN_FILE_PRFX.movies.nnnnn/` */
 	memset(path, '\0', strlen(path));
 	char* dir_name = NULL;
 	dir_name = create_dir(generate_dir_name());
@@ -400,6 +456,14 @@ void process_movies(char* filename){
 	free(dir_name);
 	return;
 }
+
+/**
+ * Function: sekect_from_file()
+ * Description: select_from_file constrol structure
+ * Parameters: None
+ * Pre-Conditions: none
+ * Post-Conditions: none
+ */
 
 void select_from_file(){
   show_options_file();
@@ -443,14 +507,16 @@ void select_from_file(){
     }while(choice > 3 || choice < 1);
   return;
 }
+
 /**
  * Function: main_loop()
  * Description: Containing function for all 
  * program functionality
- * Parameters: Movies struct list
+ * Parameters: None
  * Pre-Conditions: None
  * Post-Conditions: None
  */
+
 void main_loop(){
     int choice = -1; 
     do{

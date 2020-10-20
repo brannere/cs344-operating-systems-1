@@ -1,7 +1,7 @@
 /**
  * Prgram Filename: movie.h
  * Author: Erick Branenr
- * Date: 12 October 2020
+ * Date: 20 October 2020
  * Description: Header file for movie.c and movie data type
  * Input:
  * Output:
