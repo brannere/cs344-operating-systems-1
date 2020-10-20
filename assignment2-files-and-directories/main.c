@@ -1,10 +1,10 @@
 /**
  * Prgram Filename: main.c
  * Author: Erick Branner
- * Date: 12 October 2020
+ * Date: 20 October 2020
  * Description: Contains main function/process for assginment
- * Input: CSV Files
- * Output: Strings of text
+ * Input: Strings of text relating to file names
+ * Output: Files, directoires
  * 
 */
 

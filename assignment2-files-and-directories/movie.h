@@ -19,6 +19,10 @@
  * other is a representation of the languages 
  * without delimiters in a 2d char array. 
 */
+
+/* 	Moved definition to header file because 
+	 	because prog.h needs to know the attributes
+	 	of a movie */
 struct movie{
     char* title;
     int year;

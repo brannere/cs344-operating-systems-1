@@ -1,12 +1,12 @@
 /**
- * Prgram Filename: prog.c
+ * Prgram Filename:
  * Author: Erick Branner
- * Date: 12 October 2020
- * Description: Source file for prog.h
+ * Date: 20 October 2020
+ * Description: source file for prog.h; main functionality
  * Input:
  * Output:
- * 
- */
+ *
+*/
 
 #include "./prog.h"
 #include "./movie.h"
@@ -26,6 +26,7 @@
 #define DIR_PERMISSION 0750
 #define MAX_FILE_LEN 21 /* brannere.movies.nnnnn */
 #define GEN_FILE_PRFX "brannere.movies."
+
 /**
  * Function: is_int()
  * Description: Determines if string is an integer
@@ -158,13 +159,13 @@ char* generate_dir_name(){
 	memset(output, '\0', sizeof(char)*MAX_FILE_LEN);
 	strcpy(output, GEN_FILE_PRFX);
 	strcat(output, extn);
+	fprintf(stdout, "output: %s\n", output);
 	return output;
 }
 
 char* create_dir(char* name){
 	mkdir(name, DIR_PERMISSION);
 	fprintf(stdout, "Created directory with name %s\n", name);
-	if(name != NULL) free(name);
 	return name;
 }
 
@@ -226,6 +227,23 @@ int _is_csv(char* file){
     return -1;
 }
 
+
+/**
+ * Function: curr_dir_smallest()
+ * Description: Finds smallest file in current directory
+ * with predefined global constant 
+ * prefix and ending in .csv
+ * Parameters: None
+ * Pre-Conditions: Running user has read permission on
+ * current directory 
+ * Post-Conditions: Returns name of smallest file
+ */
+
+/* Used example: "In the following program, we use the stat 
+function to find out the name of the file or directory whose 
+name starts with the prefix student and which was modified last 
+in the current directory" From Directories modules  */
+/* Same overall constrol structure for looping over all files */
 char* curr_dir_smallest(){
     // Open the current directory
     DIR* currDir = opendir(".");
@@ -275,6 +293,23 @@ char* curr_dir_smallest(){
 				return output;
 }
 
+
+/**
+ * Function: curr_dir_largest()
+ * Description: Finds largest file in current directory
+ * with predefined global constant 
+ * prefix and ending in .csv
+ * Parameters: None
+ * Pre-Conditions: Running user has read permission on
+ * current directory 
+ * Post-Conditions: Returns name of largest file
+ */
+
+/* Used example: "In the following program, we use the stat 
+function to find out the name of the file or directory whose 
+name starts with the prefix student and which was modified last 
+in the current directory" From Directories modules  */
+/* Same overall constrol structure for looping over all files */
 char* curr_dir_largest(){
   // Open the current directory
   DIR* currDir = opendir(".");
@@ -316,13 +351,25 @@ char* curr_dir_largest(){
   return output;
 }
 
+/**
+ * Function: process_movies()
+ * Description: Processes a movies csv file and stores names of 
+ * movies from each year in a .txt file (one file per year) 
+ * in a parent directory that it creaters
+ * Parameters: Name of file to processed
+ * Pre-Conditions: Provided filename exists and is in format -->
+ * Title,Year,[language1;language2],Rating Value
+ * Post-Conditions: Creates directory named 
+ * `GEN_FILE_PRFX.movies.nnnnn` with -
+ */
+
 void process_movies(char* filename){
 	int fd = -1; 
 	int year = 0;
 	char full[50];
 	char nametxt[10];
 	char path[MAX_FILE_LEN+1]; /* +1, space for '/' */
-	// memset(path, '\0', strlen);
+	memset(path, '\0', strlen(path));
 	char* dir_name = NULL;
 	dir_name = create_dir(generate_dir_name());
 	struct movie* movies = process_file(filename);
@@ -350,6 +397,7 @@ void process_movies(char* filename){
 		memset(full, '\0', 50);
 	}	
 	movie_free_all(movies);
+	free(dir_name);
 	return;
 }
 
