@@ -39,24 +39,11 @@ struct cmd_line* cmd_line_process(char* line){
 			if(token != NULL){
 				output->args[i] = calloc(strlen(token)+1, sizeof(char));
 				strcpy(output->args[i], token);
-				fprintf(stdout, "args[%d]: %s\n", i, output->args[i]);
+				// fprintf(stdout, "args[%d]: %s\n", i, output->args[i]);
 			}
-			// fprintf(stdout, "token: %s\n", token);
 
 		}
-		// curr_movie->title = calloc(strlen(token)+1, sizeof(char));
-    // strcpy(curr_movie->title, token);
-
-    // the next token is the year 
-    // token = strtok_r(NULL, " ", &saveptr);
-    // year = calloc(strlen(token)+1,sizeof(char));
-    // strcpy(year, token);
-    // //curr_movie->year = malloc(sizeof(int));
-    // curr_movie->year = atoi(token);
-
-
-
-	return NULL;
+	return output;
 }
 
 
@@ -72,11 +59,13 @@ void main_proc(){
 		fprintf(stdout, PS1);
 		getline(&buff, &buffsize, stdin);
 		foo = cmd_line_process(buff);
-		
+		if(strcmp(foo->args[0], "exit") == 0) ex = 1;
+		free(foo->args);
+		free(foo);
 	}
 	
 
-
+	free(foo);
 	free(buff);
 	return;
 }
