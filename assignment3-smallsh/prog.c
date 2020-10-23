@@ -8,20 +8,75 @@
 #include <string.h>
 #include "./prog.h"
 
+#define BUFF_SIZE 2048
+#define MAX_ARGS 512
+
+struct cmd_line{
+	char* args[MAX_ARGS];	
+
+};
+
+
+/* Create and return a cmd line struct */
+/* Null terminated string */
+// might need one more command line arg space (for null)
+struct cmd_line* cmd_line_process(char* line){
+	  struct cmd_line* output = malloc(sizeof(struct cmd_line));
+
+    // For use with strtok_r
+    char* saveptr = NULL;
+		char* flagptr = line; 
+		char* token;
+    int i; 
+		// the first token is the title
+		/* 	Set flagptr to null after first iteration to ensure strtok 
+				works for the remaining interations*/
+    for(	i = 0, flagptr = line;
+					token != NULL; flagptr = NULL, i++)
+		{
+			
+			token = strtok_r(flagptr, " \n", &saveptr);
+			if(token != NULL){
+				output->args[i] = calloc(strlen(token)+1, sizeof(char));
+				strcpy(output->args[i], token);
+				fprintf(stdout, "args[%d]: %s\n", i, output->args[i]);
+			}
+			// fprintf(stdout, "token: %s\n", token);
+
+		}
+		// curr_movie->title = calloc(strlen(token)+1, sizeof(char));
+    // strcpy(curr_movie->title, token);
+
+    // the next token is the year 
+    // token = strtok_r(NULL, " ", &saveptr);
+    // year = calloc(strlen(token)+1,sizeof(char));
+    // strcpy(year, token);
+    // //curr_movie->year = malloc(sizeof(int));
+    // curr_movie->year = atoi(token);
+
+
+
+	return NULL;
+}
+
+
 void main_proc(){
 	char PS1[] = ": ";
-	char* buff = malloc(sizeof(char)*255);
-	size_t buffsize = 255;
+	char* buff = malloc(sizeof(char)*BUFF_SIZE);
+	size_t buffsize = BUFF_SIZE;
+	struct cmd_line* foo; 
 	int ex = 0;
 	
 	while(ex != 1){
+		memset(buff, '\0', BUFF_SIZE);
 		fprintf(stdout, PS1);
 		getline(&buff, &buffsize, stdin);
-
+		foo = cmd_line_process(buff);
+		
 	}
 	
 
 
-
+	free(buff);
 	return;
 }

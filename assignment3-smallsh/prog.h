@@ -4,6 +4,8 @@
 
 
 
+struct cmd_line_input;
+
 void main_proc();
 
 #endif
