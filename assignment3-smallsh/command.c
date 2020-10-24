@@ -8,18 +8,29 @@
 #include "./globals.h"
 #include "./command.h"
 
+
+/* For testing */
+#include <limits.h>
+
+/****************/
+
 /* Ignores following arguments */
 int change_dir(struct cmd_line* l){
 	switch(l->len){
 		case 0: 
 			fprintf(stdout, "Too few arguments.. ");
 			fprintf(stdout, "This shouldn't even be possible\n");
+			exit(1); /* The caller of this function did something wrong if we get
+									here -- stop everything */
+			break;
 		case 1:
-			fprintf(stdout, "Too few agruments\n");
+		/* Go to home directory */
+			fprintf(stdout, "Home dir\n");
 			break;
 		default: 
+			/* Go to path supplied */
 			fprintf(stdout, "Enough arguments\n");
-
+			return chdir(l->args[1]);
 	}	
 
 	return -1;
@@ -35,7 +46,7 @@ int is_comment(struct cmd_line* l){
 }
 /* Returns true (1) if exit */
 int handle_input(struct cmd_line* line){
-
+	int status = -2; 
 	if(is_comment(line) == true){
 		/* This is a comment, do nothing */
 	} else {
@@ -47,7 +58,16 @@ int handle_input(struct cmd_line* line){
 		}
 		else if(strcmp(line->args[0], "cd") == 0){
 			// fprintf(stdout, "change dirs\n");
-			change_dir(line);
+			status = change_dir(line);
+			fprintf(stdout, "stats: %d\n", status);
+			   char cwd[PATH_MAX];
+   		if (getcwd(cwd, sizeof(cwd)) != NULL) {
+      	printf("Current working dir: %s\n", cwd);
+   		} 
+			else {
+      	perror("getcwd() error");
+       	return 1;	
+   		}
 		}
 		else if(strcmp(line->args[0], "status") == 0){
 			// fprintf(stdout, "status\n");
