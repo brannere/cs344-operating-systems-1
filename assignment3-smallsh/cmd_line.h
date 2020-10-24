@@ -1,6 +1,7 @@
 #ifndef CMD_LINE_H
 #define CMD_LINE_H
-#define MAX_ARGS 513 /* +1 from max to add null*/
+// #define MAX_ARGS 513 /* +1 from max to add null*/
+#include "./globals.h"
 
 
 struct cmd_line{

@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include "./prog.h"
+#include "./globals.h"
 
 /**
  * Function: main()

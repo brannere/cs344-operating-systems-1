@@ -33,7 +33,6 @@ struct cmd_line* cmd_line_process(char* line){
 			// fprintf(stdout, "args[%d]: %s\n", i, output->args[i]);
 		}
 	}
-	fprintf(stdout, "len: %d\n", output->len);
 	return output;
 }
 

@@ -8,8 +8,10 @@
 #include <string.h>
 #include "./prog.h"
 #include "./cmd_line.h"
+#include "./command.h"
+#include "./globals.h"
 
-#define BUFF_SIZE 2048
+// #define BUFF_SIZE 2048
 // #define MAX_ARGS 513 /* +1 from max to add null*/
 
 
@@ -27,6 +29,7 @@ void main_proc(){
 		getline(&buff, &buffsize, stdin);
 		foo = cmd_line_process(buff);
 		if(strcmp(foo->args[0], "exit") == 0) ex = 1;
+		handle_input(foo);
 		cmd_line_free(foo);
 	}
 	
