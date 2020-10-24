@@ -8,6 +8,22 @@
 #include "./globals.h"
 #include "./command.h"
 
+/* Ignores following arguments */
+int change_dir(struct cmd_line* l){
+	switch(l->len){
+		case 0: 
+			fprintf(stdout, "Too few arguments.. ");
+			fprintf(stdout, "This shouldn't even be possible\n");
+		case 1:
+			fprintf(stdout, "Too few agruments\n");
+			break;
+		default: 
+			fprintf(stdout, "Enough arguments\n");
+
+	}	
+
+	return -1;
+}
 
 
 int is_comment(struct cmd_line* l){
@@ -30,13 +46,14 @@ int handle_input(struct cmd_line* line){
 											and call repsective exit functions */
 		}
 		else if(strcmp(line->args[0], "cd") == 0){
-			fprintf(stdout, "change dirs\n");
+			// fprintf(stdout, "change dirs\n");
+			change_dir(line);
 		}
 		else if(strcmp(line->args[0], "status") == 0){
-			fprintf(stdout, "status\n");
+			// fprintf(stdout, "status\n");
 		}
 		else{
-			fprintf(stdout, "not built in\n");
+			// fprintf(stdout, "not built in\n");
 		}
 	}
 	return -1; 
