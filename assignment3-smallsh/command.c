@@ -13,6 +13,24 @@
 #include <limits.h>
 
 /****************/
+/* 
+	S1: https://stackoverflow.com/questions/298510/how-to-get-the-current-directory-in-a-c-program
+*/
+/* USE THIS FOR CHANGING DIRECTORIES */
+char* curr_dir(){
+	/* Make Dynamic */
+	char cwd[PATH_MAX];
+	memset(cwd, '\0', PATH_MAX);
+  if (getcwd(cwd, sizeof(cwd)) != NULL) {
+  	// printf("Current working dir: %s\n", cwd);
+  } 
+	else {
+  	perror("getcwd() error");
+   	return NULL;	
+  }
+			// fprintf(stdout, "max: %d\t len: %d\n", PATH_MAX, strlen(cwd));
+	return NULL;
+}
 
 /* Ignores following arguments */
 int change_dir(struct cmd_line* l){
@@ -60,14 +78,8 @@ int handle_input(struct cmd_line* line){
 			// fprintf(stdout, "change dirs\n");
 			status = change_dir(line);
 			fprintf(stdout, "stats: %d\n", status);
-			   char cwd[PATH_MAX];
-   		if (getcwd(cwd, sizeof(cwd)) != NULL) {
-      	printf("Current working dir: %s\n", cwd);
-   		} 
-			else {
-      	perror("getcwd() error");
-       	return 1;	
-   		}
+			curr_dir();
+
 		}
 		else if(strcmp(line->args[0], "status") == 0){
 			// fprintf(stdout, "status\n");
