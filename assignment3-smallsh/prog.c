@@ -23,13 +23,13 @@ void main_proc(){
 	struct cmd_line* foo; 
 	int ex = 0;
 	
-	while(ex != 1){
+	while(ex != true){
 		memset(buff, '\0', BUFF_SIZE);
 		fprintf(stdout, PS1);
 		getline(&buff, &buffsize, stdin);
 		foo = cmd_line_process(buff);
-		if(strcmp(foo->args[0], "exit") == 0) ex = 1;
-		handle_input(foo);
+		// if(strcmp(foo->args[0], "exit") == 0) ex = 1;
+		ex = handle_input(foo);
 		cmd_line_free(foo);
 	}
 	

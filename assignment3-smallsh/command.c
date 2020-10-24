@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include <sys/types.h>
 #include "./cmd_line.h"
 #include "./globals.h"
@@ -16,13 +17,28 @@ int is_comment(struct cmd_line* l){
 	} else return false;
 
 }
-
+/* Returns true (1) if exit */
 int handle_input(struct cmd_line* line){
 
 	if(is_comment(line) == true){
-		fprintf(stdout, "is comment\n");
-	} else fprintf(stdout, "is not comment\n");
-
+		/* This is a comment, do nothing */
+	} else {
+		/* Is not a comment */
+		// if(strcmp(foo->args[0], "exit") == 0) ex = 1;
+		if(strcmp(line->args[0], "exit") == 0){
+			return true; /* return true or 1 to indicate we want to exit
+											and call repsective exit functions */
+		}
+		else if(strcmp(line->args[0], "cd") == 0){
+			fprintf(stdout, "change dirs\n");
+		}
+		else if(strcmp(line->args[0], "status") == 0){
+			fprintf(stdout, "status\n");
+		}
+		else{
+			fprintf(stdout, "not built in\n");
+		}
+	}
 	return -1; 
 }
 
