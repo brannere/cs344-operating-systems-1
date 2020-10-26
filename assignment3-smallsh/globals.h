@@ -5,6 +5,7 @@
 #define BUFF_SIZE 2048
 #define true 1
 #define false 0
+int STATUS_I = 0; 
 
 
 #endif

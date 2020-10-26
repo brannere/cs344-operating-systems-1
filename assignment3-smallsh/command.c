@@ -112,8 +112,8 @@ int handle_input(struct cmd_line* line){
 		}
 		else if(strcmp(line->args[0], "cd") == 0){
 			// fprintf(stdout, "change dirs\n");
-			status = change_dir(line);
-			if(status == -1){
+			STATUS_I = change_dir(line);
+			if(STATUS_I == -1){
 				fprintf(stdout, "-smallsh: cd: %s: No such file or directory\n",
 								line->args[1]);
 			}
