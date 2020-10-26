@@ -17,19 +17,25 @@
 	S1: https://stackoverflow.com/questions/298510/how-to-get-the-current-directory-in-a-c-program
 */
 /* USE THIS FOR CHANGING DIRECTORIES */
+/* Caller is responsible for freeding memory */
 char* curr_dir(){
 	/* Make Dynamic */
 	char cwd[PATH_MAX];
+	char* output = malloc(sizeof(char)*PATH_MAX);
+	memset(output, '\0', PATH_MAX);
 	memset(cwd, '\0', PATH_MAX);
   if (getcwd(cwd, sizeof(cwd)) != NULL) {
   	// printf("Current working dir: %s\n", cwd);
+		strcpy(output, cwd);
+		return output;
   } 
 	else {
   	perror("getcwd() error");
+		free(output);
    	return NULL;	
   }
 			// fprintf(stdout, "max: %d\t len: %d\n", PATH_MAX, strlen(cwd));
-	return NULL;
+	return output;
 }
 
 /* Ignores following arguments */
@@ -44,6 +50,8 @@ int change_dir(struct cmd_line* l){
 		case 1:
 		/* Go to home directory */
 			fprintf(stdout, "Home dir\n");
+			// fprintf(stdout, "HOME: %s\n", getenv("HOME"));
+			return chdir(getenv("HOME"));
 			break;
 		default: 
 			/* Go to path supplied */
@@ -54,17 +62,25 @@ int change_dir(struct cmd_line* l){
 	return -1;
 }
 
-
+/* also checks if is empty */
 int is_comment(struct cmd_line* l){
 	// fprintf(stdout, "args[0][0]: %s\n",l->args[0] );
-	if(l->args[0][0] == 35){
+	/* This ordering is possibly dangerous */
+	if(l->len == 0){
+		return true;
+	}
+	else if(l->args[0][0] == 35){
 		return true; 
-	} else return false;
-
+	} 
+	else {
+		return false;
+	} 
+	return false;
 }
 /* Returns true (1) if exit */
 int handle_input(struct cmd_line* line){
 	int status = -2; 
+	char* tmp = NULL;
 	if(is_comment(line) == true){
 		/* This is a comment, do nothing */
 	} else {
@@ -78,7 +94,8 @@ int handle_input(struct cmd_line* line){
 			// fprintf(stdout, "change dirs\n");
 			status = change_dir(line);
 			fprintf(stdout, "stats: %d\n", status);
-			curr_dir();
+			tmp = curr_dir();
+			fprintf(stdout, "curr dir: %s\n", tmp);
 
 		}
 		else if(strcmp(line->args[0], "status") == 0){
@@ -86,6 +103,10 @@ int handle_input(struct cmd_line* line){
 		}
 		else{
 			// fprintf(stdout, "not built in\n");
+		}
+		if(tmp!=NULL){ 
+			free(tmp);
+			tmp = NULL;
 		}
 	}
 	return -1; 
