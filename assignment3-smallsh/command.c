@@ -38,8 +38,19 @@ char* curr_dir(){
 	return output;
 }
 
+/* Assumes cmd_line length is more than 1*/
+char* _change_dir_rel(struct cmd_line* l){
+	char* curr = curr_dir();
+	char* output = malloc(sizeof(char)*(strlen(curr) + strlen(l->args[1]) +1));
+	strcpy(output, curr);
+	strcat(output, "/");
+	strcat(output, l->args[1]);
+	strcat(output, "\0");
+	return output; 
+}
 /* Ignores following arguments */
 int change_dir(struct cmd_line* l){
+	// char* relative = NULL;
 	switch(l->len){
 		case 0: 
 			fprintf(stdout, "Too few arguments.. ");
@@ -49,14 +60,23 @@ int change_dir(struct cmd_line* l){
 			break;
 		case 1:
 		/* Go to home directory */
-			fprintf(stdout, "Home dir\n");
+			// fprintf(stdout, "Home dir\n");
 			// fprintf(stdout, "HOME: %s\n", getenv("HOME"));
 			return chdir(getenv("HOME"));
 			break;
 		default: 
 			/* Go to path supplied */
-			fprintf(stdout, "Enough arguments\n");
+			// relative = _change_dir_rel(l);
+			// fprintf(stdout, "rel returned: %s\n", relative);
+			// fprintf(stdout, "Enough arguments\n");
+			// if (chdir(l->args[1]) == -1){
+			// 	fprintf(stdout, "Trying relative\n");
+			// 	return chdir(relative);
+			// }
+			// fprintf(stdout, "returning\n");
 			return chdir(l->args[1]);
+			
+			// return chdir(l->args[1]);
 	}	
 
 	return -1;
@@ -93,9 +113,12 @@ int handle_input(struct cmd_line* line){
 		else if(strcmp(line->args[0], "cd") == 0){
 			// fprintf(stdout, "change dirs\n");
 			status = change_dir(line);
-			fprintf(stdout, "stats: %d\n", status);
+			if(status == -1){
+				fprintf(stdout, "-smallsh: cd: %s: No such file or directory\n",
+								line->args[1]);
+			}
 			tmp = curr_dir();
-			fprintf(stdout, "curr dir: %s\n", tmp);
+			// fprintf(stdout, "curr dir: %s\n", tmp);
 
 		}
 		else if(strcmp(line->args[0], "status") == 0){
