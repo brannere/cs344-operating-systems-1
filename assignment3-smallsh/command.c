@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include "./cmd_line.h"
 #include "./globals.h"
 #include "./command.h"
@@ -21,7 +22,9 @@
 int fork_t(struct cmd_line* l){
 	pid_t spawnpid = -5;
 	int intVal = 10;
-  // If fork is successful, the value of spawnpid will be 0 in the child, the child's pid in the parent
+	int childStatus;
+  int childPid;
+	// If fork is successful, the value of spawnpid will be 0 in the child, the child's pid in the parent
 	spawnpid = fork();
 	switch (spawnpid){
 		case -1:
@@ -32,16 +35,21 @@ int fork_t(struct cmd_line* l){
 		case 0:
       // spawnpid is 0. This means the child will execute the code in this branch
 			intVal = intVal + 1;
-			fprintf(stdout, "I am the child! intVal = %d\n", intVal);
+			// fprintf(stdout, "I am the child! intVal = %d\n", intVal);
 			execvp(l->args[0], l->args);
 			break;
 		default:
       // spawnpid is the pid of the child. This means the parent will execute the code in this branch
 			intVal = intVal - 1;
-			fprintf(stdout, "I am the parent! ten = %d\n", intVal);
+			// fprintf(stdout, "I am the parent! ten = %d\n", intVal);
+			childPid = wait(&childStatus);
+			kill(childPid, SIGTERM);
+			// printf("Parent's waiting is done as the child with pid %d exited\n", childPid);
+			// break;
 			break;
 	}
-	printf("This will be executed by both of us!\n");
+	// printf("This will be executed by both of us!\n");
+	return childPid;
 }
 
 
@@ -155,7 +163,7 @@ int handle_input(struct cmd_line* line){
 			// fprintf(stdout, "status\n");
 		}
 		else{
-			fprintf(stdout, "not built in\n");
+			// fprintf(stdout, "not built in\n");
 			fork_t(line);
 		}
 		if(tmp!=NULL){ 

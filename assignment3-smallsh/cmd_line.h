@@ -7,6 +7,7 @@
 struct cmd_line{
 	char* args[MAX_ARGS];	
 	int len;
+	int status;
 };
 
 struct cmd_line* cmd_line_process(char* line);
