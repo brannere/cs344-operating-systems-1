@@ -16,6 +16,35 @@
 /* 
 	S1: https://stackoverflow.com/questions/298510/how-to-get-the-current-directory-in-a-c-program
 */
+
+
+int fork_t(struct cmd_line* l){
+	pid_t spawnpid = -5;
+	int intVal = 10;
+  // If fork is successful, the value of spawnpid will be 0 in the child, the child's pid in the parent
+	spawnpid = fork();
+	switch (spawnpid){
+		case -1:
+      // Code in this branch will be exected by the parent when fork() fails and the creation of child process fails as well
+			perror("fork() failed!");
+			exit(1);
+			break;
+		case 0:
+      // spawnpid is 0. This means the child will execute the code in this branch
+			intVal = intVal + 1;
+			fprintf(stdout, "I am the child! intVal = %d\n", intVal);
+			execvp(l->args[0], l->args);
+			break;
+		default:
+      // spawnpid is the pid of the child. This means the parent will execute the code in this branch
+			intVal = intVal - 1;
+			fprintf(stdout, "I am the parent! ten = %d\n", intVal);
+			break;
+	}
+	printf("This will be executed by both of us!\n");
+}
+
+
 /* USE THIS FOR CHANGING DIRECTORIES */
 /* Caller is responsible for freeding memory */
 char* curr_dir(){
@@ -86,6 +115,7 @@ int change_dir(struct cmd_line* l){
 int is_comment(struct cmd_line* l){
 	// fprintf(stdout, "args[0][0]: %s\n",l->args[0] );
 	/* This ordering is possibly dangerous */
+	// fprintf(stdout, "LEN: %d\n", l->len);
 	if(l->len == 0){
 		return true;
 	}
@@ -112,8 +142,8 @@ int handle_input(struct cmd_line* line){
 		}
 		else if(strcmp(line->args[0], "cd") == 0){
 			// fprintf(stdout, "change dirs\n");
-			STATUS_I = change_dir(line);
-			if(STATUS_I == -1){
+			status = change_dir(line);
+			if(status == -1){
 				fprintf(stdout, "-smallsh: cd: %s: No such file or directory\n",
 								line->args[1]);
 			}
@@ -125,7 +155,8 @@ int handle_input(struct cmd_line* line){
 			// fprintf(stdout, "status\n");
 		}
 		else{
-			// fprintf(stdout, "not built in\n");
+			fprintf(stdout, "not built in\n");
+			fork_t(line);
 		}
 		if(tmp!=NULL){ 
 			free(tmp);
@@ -135,27 +166,3 @@ int handle_input(struct cmd_line* line){
 	return -1; 
 }
 
-// int fork_t(){
-// 	pid_t spawnpid = -5;
-// 	int intVal = 10;
-//   // If fork is successful, the value of spawnpid will be 0 in the child, the child's pid in the parent
-// 	spawnpid = fork();
-// 	switch (spawnpid){
-// 		case -1:
-//       // Code in this branch will be exected by the parent when fork() fails and the creation of child process fails as well
-// 			perror("fork() failed!");
-// 			exit(1);
-// 			break;
-// 		case 0:
-//       // spawnpid is 0. This means the child will execute the code in this branch
-// 			intVal = intVal + 1;
-// 			fprintf(stdout, "I am the child! intVal = %d\n", intVal);
-// 			break;
-// 		default:
-//       // spawnpid is the pid of the child. This means the parent will execute the code in this branch
-// 			intVal = intVal - 1;
-// 			fprintf(stdout, "I am the parent! ten = %d\n", intVal);
-// 			break;
-// 	}
-// 	printf("This will be executed by both of us!\n");
-// }

@@ -21,16 +21,21 @@ struct cmd_line* cmd_line_process(char* line){
 	// the first token is the title
 	/* 	Set flagptr to null after first iteration to ensure strtok 
 			works for the remaining interations*/
-  for(	i = 0, flagptr = line;
-				token != NULL; flagptr = NULL, i++)
-	{
-		
-		token = strtok_r(flagptr, " \n", &saveptr);
-		if(token != NULL){
-			output->args[i] = calloc(strlen(token)+1, sizeof(char));
-			strcpy(output->args[i], token);
-			output->len++;
-			// fprintf(stdout, "args[%d]: %s\n", i, output->args[i]);
+
+	if(strcmp(line, "\n") != 0){
+  	for(	i = 0, flagptr = line;
+					token != NULL; flagptr = NULL, i++)
+		{
+
+			token = strtok_r(flagptr, " \n", &saveptr);
+			if(token != NULL){
+				output->args[i] = calloc(strlen(token)+1, sizeof(char));
+				strcpy(output->args[i], token);
+				output->len++;
+				// output->args[i+1] = NULL;
+				// fprintf(stdout, "args[%d]: %s\n", i, output->args[i]);
+			}
+			output->args[output->len] = NULL;
 		}
 	}
 	return output;
