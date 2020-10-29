@@ -119,6 +119,7 @@ int change_dir(struct cmd_line* l){
 	return -1;
 }
 
+
 /* also checks if is empty */
 int is_comment(struct cmd_line* l){
 	// fprintf(stdout, "args[0][0]: %s\n",l->args[0] );
@@ -135,6 +136,7 @@ int is_comment(struct cmd_line* l){
 	} 
 	return false;
 }
+
 /* Returns true (1) if exit */
 int handle_input(struct cmd_line* line){
 	int status = -2; 

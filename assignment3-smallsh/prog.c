@@ -27,7 +27,8 @@ void main_proc(){
 		memset(buff, '\0', BUFF_SIZE);
 		fprintf(stdout, PS1);
 		getline(&buff, &buffsize, stdin);
-		foo = cmd_line_process(buff);
+		// foo = cmd_line_process(buff);
+		foo = cmd_line_expand(cmd_line_process(buff));
 		// if(strcmp(foo->args[0], "exit") == 0) ex = 1;
 		ex = handle_input(foo);
 		cmd_line_free(foo);
