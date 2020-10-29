@@ -45,14 +45,21 @@ struct cmd_line* cmd_line_process(char* line){
 /* Expand instances of $$ with current process id */
 struct cmd_line* cmd_line_expand(struct cmd_line* l){
   // char* pch; // for use with strstr
-
-	fprintf(stdout, "curr proc id: %d\n", getpid());
-	for(int i = 0; i < l->len; i++){	
+	int pairs = 0;
+	char pid[256];
+	char* gen = NULL;
+	sprintf(pid, "%d", getpid());
+	fprintf(stdout, "curr proc id: %s\n", pid);
+	for(int i = 0; i < l->len; i+=3){
+		pairs = 0;	
 		for(int j = 1; j < strlen(l->args[i]); j++){
 			if(l->args[i][j] == 36 && l->args[i][j-1] == 36){
 				fprintf(stdout, "Found $$ pair\n");
+				pairs++; 
 			}
 		}
+		gen = malloc(sizeof(char)*((strlen(pid)*pairs) + (strlen(l->args[i]))));
+		// strcpy 
 	}
   return l;
 }
