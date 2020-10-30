@@ -80,7 +80,7 @@ struct cmd_line* cmd_line_process(char* line){
 				strcpy(output->args[i], result);
 				output->len++;
 				// output->args[i+1] = NULL;
-				fprintf(stdout, "args[%d]: %s\n", i, output->args[i]);
+				// fprintf(stdout, "args[%d]: %s\n", i, output->args[i]);
 				// free(result);
 			}
 			output->args[output->len] = NULL;
