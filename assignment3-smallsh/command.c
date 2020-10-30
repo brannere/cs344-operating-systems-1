@@ -23,8 +23,7 @@ int fork_t(struct cmd_line* l){
 	pid_t spawnpid = -5;
 	int intVal = 10;
 	int childStatus;
-  int childPid;
-	int stat = 0;
+  pid_t childPid;
 
 	// If fork is successful, the value of spawnpid will be 0 in the child, the child's pid in the parent
 	spawnpid = fork();
@@ -38,8 +37,7 @@ int fork_t(struct cmd_line* l){
       // spawnpid is 0. This means the child will execute the code in this branch
 			intVal = intVal + 1;
 			// fprintf(stdout, "I am the child! intVal = %d\n", intVal);
-			stat = execvp(l->args[0], l->args);
-			if(stat == -1) exit(1);
+			if(execvp(l->args[0], l->args) == -1) exit(1);
 			break;
 		default:
       // spawnpid is the pid of the child. This means the parent will execute the code in this branch
@@ -47,12 +45,17 @@ int fork_t(struct cmd_line* l){
 			// fprintf(stdout, "I am the parent! ten = %d\n", intVal);
 			childPid = wait(&childStatus);
 			kill(childPid, SIGTERM);
-			// printf("Parent's waiting is done as the child with pid %d exited\n", childPid);
-			// break;
+			/* false is 0 */
+			if(WIFEXITED(childStatus)){
+      	printf("Child %d exited normally with status %d\n", childPid, WEXITSTATUS(childStatus));
+    	} else{
+    	  printf("Child %d exited abnormally due to signal %d\n", childPid, WTERMSIG(childStatus));
+    	}
+			printf("Parent's waiting is done as the child with pid %d exited\n", childPid);
 			break;
 	}
 	// printf("This will be executed by both of us!\n");
-	return stat;
+	return WEXITSTATUS(childStatus);
 }
 
 
@@ -170,6 +173,7 @@ int handle_input(struct cmd_line* line){
 		else{
 			// fprintf(stdout, "not built in\n");
 			status = fork_t(line);
+			fprintf(stdout, "status: %d\n", status);
 			if(status == -1){
 				fprintf(stdout, "-smallsh: %s: command not found\n",
 					line->args[0]);
