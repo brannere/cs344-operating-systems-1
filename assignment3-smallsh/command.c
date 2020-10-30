@@ -8,7 +8,13 @@
 #include "./cmd_line.h"
 #include "./globals.h"
 #include "./command.h"
+#include "./child_proc.h"
 
+/* Work in this order
+Parse line(done) -> replace $$ with pid(done) -> handle comments(done) -> 
+handle exit, status -> handle cd(done) -> executing programs(done) -> 
+redirection -> fg/bg -> signals
+*/
 
 /* For testing */
 #include <limits.h>
@@ -19,7 +25,9 @@
 */
 
 
-int fork_t(struct cmd_line* l){
+/* handle exit should kill all child processes */ 
+
+int fork_t(struct cmd_line* l, struct child_proc* head_childs){
 	pid_t spawnpid = -5;
 	int intVal = 10;
 	int childStatus;
@@ -43,21 +51,23 @@ int fork_t(struct cmd_line* l){
       // spawnpid is the pid of the child. This means the parent will execute the code in this branch
 			intVal = intVal - 1;
 			// fprintf(stdout, "I am the parent! ten = %d\n", intVal);
+			childPid = spawnpid;
+			head_childs = child_proc_insert(head_childs, childPid);
+			fprintf(stdout, "childPid: %d\n", childPid);
 			childPid = wait(&childStatus);
 			kill(childPid, SIGTERM);
 			/* false is 0 */
-			if(WIFEXITED(childStatus)){
-      	printf("Child %d exited normally with status %d\n", childPid, WEXITSTATUS(childStatus));
-    	} else{
-    	  printf("Child %d exited abnormally due to signal %d\n", childPid, WTERMSIG(childStatus));
-    	}
-			printf("Parent's waiting is done as the child with pid %d exited\n", childPid);
+			// if(WIFEXITED(childStatus)){
+      // 	printf("Child %d exited normally with status %d\n", childPid, WEXITSTATUS(childStatus));
+    	// } else{
+    	//   printf("Child %d exited abnormally due to signal %d\n", childPid, WTERMSIG(childStatus));
+    	// }
+			// printf("Parent's waiting is done as the child with pid %d exited\n", childPid);
 			break;
 	}
 	// printf("This will be executed by both of us!\n");
 	return WEXITSTATUS(childStatus);
 }
-
 
 /* USE THIS FOR CHANGING DIRECTORIES */
 /* Caller is responsible for freeding memory */
@@ -125,7 +135,6 @@ int change_dir(struct cmd_line* l){
 	return -1;
 }
 
-
 /* also checks if is empty */
 int is_comment(struct cmd_line* l){
 	// fprintf(stdout, "args[0][0]: %s\n",l->args[0] );
@@ -144,7 +153,9 @@ int is_comment(struct cmd_line* l){
 }
 
 /* Returns true (1) if exit */
-int handle_input(struct cmd_line* line){
+int handle_input(	struct cmd_line* line, 
+									int* prev_stat, struct child_proc* head_childs)
+{
 	int status = -2; 
 	char* tmp = NULL;
 	if(is_comment(line) == true){
@@ -168,17 +179,17 @@ int handle_input(struct cmd_line* line){
 
 		}
 		else if(strcmp(line->args[0], "status") == 0){
-			// fprintf(stdout, "status\n");
+			if(*prev_stat){
+      	printf("%d\n", *prev_stat);
+    	} else{
+    	  printf("%d\n", WTERMSIG(*prev_stat));
+    	}
+			// fprintf(stdout, "%d\n",prev_stat);
 		}
 		else{
 			// fprintf(stdout, "not built in\n");
-			status = fork_t(line);
-			fprintf(stdout, "status: %d\n", status);
-			if(status == -1){
-				fprintf(stdout, "-smallsh: %s: command not found\n",
-					line->args[0]);
-
-			}
+			status = fork_t(line, head_childs);
+			*prev_stat = status; 
 		}
 		if(tmp!=NULL){ 
 			free(tmp);
