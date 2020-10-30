@@ -12,5 +12,6 @@
 // int fork_t();
 int is_comment(struct cmd_line* l);
 int handle_input(struct cmd_line* line, int* prev_stat, struct child_proc* head_childs);
+void exit_ka(struct child_proc* head);
 
 #endif

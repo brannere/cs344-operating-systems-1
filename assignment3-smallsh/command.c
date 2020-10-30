@@ -53,7 +53,7 @@ int fork_t(struct cmd_line* l, struct child_proc* head_childs){
 			// fprintf(stdout, "I am the parent! ten = %d\n", intVal);
 			childPid = spawnpid;
 			head_childs = child_proc_insert(head_childs, childPid);
-			fprintf(stdout, "childPid: %d\n", childPid);
+			// fprintf(stdout, "childPid: %d\n", childPid);
 			childPid = wait(&childStatus);
 			kill(childPid, SIGTERM);
 			/* false is 0 */
@@ -199,3 +199,17 @@ int handle_input(	struct cmd_line* line,
 	return -1; 
 }
 
+void exit_ka(struct child_proc* head){
+	/*Ignore the first because of the bug*/
+	if(head->next == NULL){
+		return;
+	}else{
+		for(struct child_proc* tmp = head->next;
+				tmp!=NULL; tmp=tmp->next)
+		{
+			fprintf(stdout, "killing: %d\n", tmp->pid);
+			kill(tmp->pid, SIGTERM);
+		}
+	}
+	return;
+}

@@ -37,7 +37,8 @@ void main_proc(){
 	}
 	//free the children IF are still alive in some exit function
 	free(buff);
-	child_proc_print_all(children);
+	// child_proc_print_all(children);
+	exit_ka(children);
 	child_proc_free_all(children);
 	return;
 }
