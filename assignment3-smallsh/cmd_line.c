@@ -75,6 +75,28 @@ char* _outf(struct cmd_line* l){
 	return file;
 }
 
+void _remove(struct cmd_line* l, char* word){
+	int removed = 0;
+	/* For each letter in each word, change > or < to " "  */	
+	for(int i = 0; i < l->len; i++){
+		if(strcmp(l->args[i], word) == 0){
+			removed++;
+			fprintf(stdout ,"i: %d\n", i);
+			for(int j = i; j < l->len; j++){
+				if(l->args[j+1] != NULL){
+					fprintf(stdout, "on %d changed %s to ",i, l->args[j]);
+					free(l->args[j]);
+					l->args[j] = calloc(strlen(l->args[j+1])+1, sizeof(char));
+					strcpy(l->args[j], l->args[j+1]);
+					fprintf(stdout, "%s\n", l->args[j]);
+				}else l->args[j] = NULL;
+			}
+		}
+		l->len = l->len - removed;
+	}
+	return; 
+}
+
 /* Create and return a cmd line struct */
 /* Null terminated string */
 // might need one more command line arg space (for null)
@@ -120,6 +142,7 @@ struct cmd_line* cmd_line_process(char* line){
 		output->in = _inf(output);
 		// fprintf(stdout, "in file: %s\n", output->in);
 		output->out = _outf(output);
+		_remove(output, ">");
 		// fprintf(stdout, "outf: %s\n", output->out);
 	}
 	return output;
@@ -128,20 +151,20 @@ struct cmd_line* cmd_line_process(char* line){
 
 
 /* Expand instances of $$ with current process id */
-struct cmd_line* cmd_line_expand(struct cmd_line* l){
-  // char* pch; // for use with strstr
-	// int pairs = 0;
-	// char* res = NULL;
-	// char* gen = NULL;
-	// char pid[256];
-	// sprintf(pid, "%d", getpid());
-	// for(int i = 0; i < l->len; i++){
-	// 	res = _str_replace(l->args[i], pid);
-	// 	free(l->args[i]);
+// struct cmd_line* cmd_line_expand(struct cmd_line* l){
+//   // char* pch; // for use with strstr
+// 	// int pairs = 0;
+// 	// char* res = NULL;
+// 	// char* gen = NULL;
+// 	// char pid[256];
+// 	// sprintf(pid, "%d", getpid());
+// 	// for(int i = 0; i < l->len; i++){
+// 	// 	res = _str_replace(l->args[i], pid);
+// 	// 	free(l->args[i]);
 
-	// }
-	return l;
-}
+// 	// }
+// 	return l;
+// }
 
 
 void cmd_line_free(struct cmd_line* c){

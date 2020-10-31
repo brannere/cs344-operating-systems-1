@@ -5,7 +5,9 @@
 
 
 struct cmd_line{
-	char* args[MAX_ARGS];	
+	char* args[MAX_ARGS];
+	// char* args_strip[MAX_ARGS];	
+	// char args[MAX_ARGS][BUFF_SIZE];	
 	int len;
 	int status;
 	char* out;

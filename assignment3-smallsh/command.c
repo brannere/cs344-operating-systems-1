@@ -29,7 +29,41 @@ redirection -> fg/bg -> signals
 
 
 
-/* handle exit should kill all child processes */ 
+/* Retruns true if file could be opened (same as null case), false otherwise  */
+
+int _redir_in(struct cmd_line* l){
+
+
+	return false;
+} 
+
+/* Retruns true if file could be opened, false otherwise and null case */
+int _redir_out(struct cmd_line* l){
+
+	if(l->in !=NULL){
+		fprintf(stdout, "l->out: %s\n", l->out);
+		int targetFD = open(l->out, O_WRONLY | O_CREAT | O_TRUNC, 0640);
+  	if (targetFD == -1) {
+  	  perror("open()");
+  	  exit(1);
+  	}
+  	 // Currently printf writes to the terminal
+  	fprintf(stdout, "The file descriptor for targetFD is %d\n", targetFD);
+
+  	// Use dup2 to point FD 1, i.e., standard output to targetFD
+  	int result = dup2(targetFD, 1);
+  	if (result == -1) {
+  	  perror("dup2");
+			return false;  
+  	  // exit(2); 
+  }
+	}
+	else return false;
+
+	return false;
+} 
+
+/* THEN RESET */
 
 int fork_t(struct cmd_line* l, struct child_proc* head_childs){
 	pid_t spawnpid = -5;
@@ -38,6 +72,10 @@ int fork_t(struct cmd_line* l, struct child_proc* head_childs){
   pid_t childPid;
 	
 	/* INPUT AND OUTPUT REDIRECTION HERE*/
+	if (_redir_out(l) == true){
+		fprintf(stdout,"redirected\n");
+		
+	}else fprintf(stdout,"not redirected\n");
 
 	// If fork is successful, the value of spawnpid will be 0 in the child, the child's pid in the parent
 	spawnpid = fork();
