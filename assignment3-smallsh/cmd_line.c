@@ -142,13 +142,16 @@ struct cmd_line* cmd_line_process(char* line){
 		output->in = _inf(output);
 		// fprintf(stdout, "in file: %s\n", output->in);
 		output->out = _outf(output);
-		_remove(output, ">");
-		// fprintf(stdout, "outf: %s\n", output->out);
+		fprintf(stdout, "outf: %s\n", output->out);
 	}
 	return output;
 }
 
-
+void cmd_line_strip(struct cmd_line* l, char* word){
+	_remove(l, ">");
+	_remove(l, l->out);
+	return;
+}
 
 /* Expand instances of $$ with current process id */
 // struct cmd_line* cmd_line_expand(struct cmd_line* l){

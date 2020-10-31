@@ -1,0 +1,25 @@
+redirected out
+i: 1
+on 1 changed > to out.txt
+i: 1
+child_proc.c
+child_proc.h
+child_proc.o
+cmd_line.c
+cmd_line.h
+cmd_line.o
+command.c
+command.h
+command.o
+globals.h
+main.c
+main.o
+Makefile
+out.txt
+p3testscript
+prog.c
+prog.h
+prog.o
+smallsh
+testing
+: : : 

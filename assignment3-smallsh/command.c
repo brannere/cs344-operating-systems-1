@@ -40,7 +40,7 @@ int _redir_in(struct cmd_line* l){
 /* Retruns true if file could be opened, false otherwise and null case */
 int _redir_out(struct cmd_line* l){
 
-	if(l->in !=NULL){
+	if(l->out !=NULL){
 		fprintf(stdout, "l->out: %s\n", l->out);
 		int targetFD = open(l->out, O_WRONLY | O_CREAT | O_TRUNC, 0640);
   	if (targetFD == -1) {
@@ -54,13 +54,14 @@ int _redir_out(struct cmd_line* l){
   	int result = dup2(targetFD, 1);
   	if (result == -1) {
   	  perror("dup2");
-			return false;  
-  	  // exit(2); 
-  }
+			// return false;  
+  	  exit(2); 
+  	}
+		return true;
 	}
-	else return false;
+	else{return false;}
 
-	return false;
+	return true;
 } 
 
 /* THEN RESET */
@@ -73,9 +74,11 @@ int fork_t(struct cmd_line* l, struct child_proc* head_childs){
 	
 	/* INPUT AND OUTPUT REDIRECTION HERE*/
 	if (_redir_out(l) == true){
-		fprintf(stdout,"redirected\n");
+		fprintf(stdout,"redirected out\n");
+		cmd_line_strip(l, ">");
+		cmd_line_strip(l, l->out);
 		
-	}else fprintf(stdout,"not redirected\n");
+	}else fprintf(stdout,"out not redirected\n");
 
 	// If fork is successful, the value of spawnpid will be 0 in the child, the child's pid in the parent
 	spawnpid = fork();
