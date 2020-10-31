@@ -12,7 +12,8 @@
 
 /* Work in this order
 Parse line(done) -> replace $$ with pid(done) -> handle comments(done) -> 
-handle exit, status -> handle cd(done) -> executing programs(done) -> 
+handle exit(done?), status(possible done?) -> handle cd(done) -> 
+executing programs(done) -> 
 redirection -> fg/bg -> signals
 */
 
@@ -25,6 +26,9 @@ redirection -> fg/bg -> signals
 */
 
 
+
+
+
 /* handle exit should kill all child processes */ 
 
 int fork_t(struct cmd_line* l, struct child_proc* head_childs){
@@ -32,6 +36,8 @@ int fork_t(struct cmd_line* l, struct child_proc* head_childs){
 	int intVal = 10;
 	int childStatus;
   pid_t childPid;
+	
+	/* INPUT AND OUTPUT REDIRECTION HERE*/
 
 	// If fork is successful, the value of spawnpid will be 0 in the child, the child's pid in the parent
 	spawnpid = fork();

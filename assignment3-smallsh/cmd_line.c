@@ -44,6 +44,36 @@ char* _str_replace(char* dest, char* word){
 	return dest;
 }
 
+/* Returns outputfile name, null if none exists */
+char* _inf(struct cmd_line* l){
+	char* file = NULL;
+	for(int i = 0; i < l->len; i++){
+		if(strcmp(l->args[i], "<") == 0){
+			// fprintf(stdout, "Found <:\n");
+			if(i == l->len-1 || i == 0){
+				file = NULL;
+			}else {
+				file = l->args[i+1];
+			}
+		}
+	}
+	return file;
+}
+
+char* _outf(struct cmd_line* l){
+	char* file = NULL;
+	for(int i = 0; i < l->len; i++){
+		if(strcmp(l->args[i], ">") == 0){
+			// fprintf(stdout, "Found >:\n");
+			if(i == l->len-1 || i == 0){
+				file = NULL;
+			}else {
+				file = l->args[i+1];
+			}
+		}
+	}
+	return file;
+}
 
 /* Create and return a cmd line struct */
 /* Null terminated string */
@@ -82,9 +112,15 @@ struct cmd_line* cmd_line_process(char* line){
 				// output->args[i+1] = NULL;
 				// fprintf(stdout, "args[%d]: %s\n", i, output->args[i]);
 				// free(result);
+				// output->in = NULL;
 			}
 			output->args[output->len] = NULL;
+			 
 		}
+		output->in = _inf(output);
+		// fprintf(stdout, "in file: %s\n", output->in);
+		output->out = _outf(output);
+		// fprintf(stdout, "outf: %s\n", output->out);
 	}
 	return output;
 }
