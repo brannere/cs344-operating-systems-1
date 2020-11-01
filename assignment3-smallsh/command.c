@@ -33,9 +33,17 @@ redirection -> fg/bg -> signals
 
 int _redir_in(struct cmd_line* l){
 
-
 	return false;
 } 
+
+void _to_stdin(){
+  int result = dup2(1, 1);
+	if (result == -1) {
+  	perror("dup2");
+		// return false;  
+  	exit(2); 
+  }
+}
 
 /* Retruns true if file could be opened, false otherwise and null case */
 int _redir_out(struct cmd_line* l){
@@ -71,14 +79,8 @@ int fork_t(struct cmd_line* l, struct child_proc* head_childs){
 	int intVal = 10;
 	int childStatus;
   pid_t childPid;
-	
+	// int out = _redir_out(l);
 	/* INPUT AND OUTPUT REDIRECTION HERE*/
-	if (_redir_out(l) == true){
-		fprintf(stdout,"redirected out\n");
-		cmd_line_strip(l, ">");
-		cmd_line_strip(l, l->out);
-		
-	}else fprintf(stdout,"out not redirected\n");
 
 	// If fork is successful, the value of spawnpid will be 0 in the child, the child's pid in the parent
 	spawnpid = fork();
@@ -92,6 +94,11 @@ int fork_t(struct cmd_line* l, struct child_proc* head_childs){
       // spawnpid is 0. This means the child will execute the code in this branch
 			intVal = intVal + 1;
 			// fprintf(stdout, "I am the child! intVal = %d\n", intVal);
+			if (_redir_out(l) == true){
+				fprintf(stdout,"redirected out\n");
+				cmd_line_strip(l, ">");
+				cmd_line_strip(l, l->out);		
+			}else fprintf(stdout,"out not redirected\n");
 			if(execvp(l->args[0], l->args) == -1) exit(1);
 			break;
 		default:
@@ -103,6 +110,7 @@ int fork_t(struct cmd_line* l, struct child_proc* head_childs){
 			// fprintf(stdout, "childPid: %d\n", childPid);
 			childPid = wait(&childStatus);
 			kill(childPid, SIGTERM);
+			// _to_stdin();
 			/* false is 0 */
 			// if(WIFEXITED(childStatus)){
       // 	printf("Child %d exited normally with status %d\n", childPid, WEXITSTATUS(childStatus));
