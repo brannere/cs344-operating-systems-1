@@ -81,10 +81,10 @@ void _remove(struct cmd_line* l, char* word){
 	for(int i = 0; i < l->len; i++){
 		if(strcmp(l->args[i], word) == 0){
 			removed++;
-			fprintf(stdout ,"i: %d\n", i);
+			// fprintf(stdout ,"i: %d\n", i);
 			for(int j = i; j < l->len; j++){
 				if(l->args[j+1] != NULL){
-					fprintf(stdout, "on %d changed %s to ",i, l->args[j]);
+					// fprintf(stdout, "on %d changed %s to ",i, l->args[j]);
 					free(l->args[j]);
 					l->args[j] = calloc(strlen(l->args[j+1])+1, sizeof(char));
 					strcpy(l->args[j], l->args[j+1]);
@@ -142,7 +142,7 @@ struct cmd_line* cmd_line_process(char* line){
 		output->in = _inf(output);
 		// fprintf(stdout, "in file: %s\n", output->in);
 		output->out = _outf(output);
-		fprintf(stdout, "outf: %s\n", output->out);
+		// fprintf(stdout, "outf: %s\n", output->out);
 	}
 	return output;
 }

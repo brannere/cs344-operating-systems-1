@@ -49,14 +49,14 @@ void _to_stdin(){
 int _redir_out(struct cmd_line* l){
 
 	if(l->out !=NULL){
-		fprintf(stdout, "l->out: %s\n", l->out);
+		// fprintf(stdout, "l->out: %s\n", l->out);
 		int targetFD = open(l->out, O_WRONLY | O_CREAT | O_TRUNC, 0640);
   	if (targetFD == -1) {
   	  perror("open()");
   	  exit(1);
   	}
   	 // Currently printf writes to the terminal
-  	fprintf(stdout, "The file descriptor for targetFD is %d\n", targetFD);
+  	// fprintf(stdout, "The file descriptor for targetFD is %d\n", targetFD);
 
   	// Use dup2 to point FD 1, i.e., standard output to targetFD
   	int result = dup2(targetFD, 1);
@@ -95,10 +95,10 @@ int fork_t(struct cmd_line* l, struct child_proc* head_childs){
 			intVal = intVal + 1;
 			// fprintf(stdout, "I am the child! intVal = %d\n", intVal);
 			if (_redir_out(l) == true){
-				fprintf(stdout,"redirected out\n");
+				// fprintf(stdout,"redirected out\n");
 				cmd_line_strip(l, ">");
 				cmd_line_strip(l, l->out);		
-			}else fprintf(stdout,"out not redirected\n");
+			}//else fprintf(stdout,"out not redirected\n");
 			if(execvp(l->args[0], l->args) == -1) exit(1);
 			break;
 		default:
