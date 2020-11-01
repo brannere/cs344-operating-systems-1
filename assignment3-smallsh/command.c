@@ -14,7 +14,7 @@
 Parse line(done) -> replace $$ with pid(done) -> handle comments(done) -> 
 handle exit(done?), status(possible done?) -> handle cd(done) -> 
 executing programs(done) -> 
-redirection -> fg/bg -> signals
+redirection(done!) -> fg/bg -> signals
 */
 
 /* For testing */
@@ -32,18 +32,39 @@ redirection -> fg/bg -> signals
 /* Retruns true if file could be opened (same as null case), false otherwise  */
 
 int _redir_in(struct cmd_line* l){
+	
+	if(l->in != NULL){
+		// Open source file
+  	int sourceFD = open(l->in, O_RDONLY);
+  	if (sourceFD == -1) { 
+  	    perror("source open()"); 
+  	    exit(1); 
+  	}
+  	// Written to terminal
+  	printf("sourceFD == %d\n", sourceFD); 
 
+  	// Redirect stdin to source file
+  	int result = dup2(sourceFD, 0);
+  	if (result == -1) { 
+  	  perror("source dup2()"); 
+  	  exit(2); 
+  	}
+		// cmd_line_proc_from_file(l);
+		fprintf(stdout, "RETURN T\n");
+		return true;
+	}
+		fprintf(stdout, "RETURN F\n");
 	return false;
 } 
 
-void _to_stdin(){
-  int result = dup2(1, 1);
-	if (result == -1) {
-  	perror("dup2");
-		// return false;  
-  	exit(2); 
-  }
-}
+// void _to_stdin(){
+//   int result = dup2(1, 1);
+// 	if (result == -1) {
+//   	perror("dup2");
+// 		// return false;  
+//   	exit(2); 
+//   }
+// }
 
 /* Retruns true if file could be opened, false otherwise and null case */
 int _redir_out(struct cmd_line* l){
@@ -56,7 +77,7 @@ int _redir_out(struct cmd_line* l){
   	  exit(1);
   	}
   	 // Currently printf writes to the terminal
-  	// fprintf(stdout, "The file descriptor for targetFD is %d\n", targetFD);
+  	fprintf(stdout, "The file descriptor for targetFD is %d\n", targetFD);
 
   	// Use dup2 to point FD 1, i.e., standard output to targetFD
   	int result = dup2(targetFD, 1);
@@ -93,12 +114,19 @@ int fork_t(struct cmd_line* l, struct child_proc* head_childs){
 		case 0:
       // spawnpid is 0. This means the child will execute the code in this branch
 			intVal = intVal + 1;
-			// fprintf(stdout, "I am the child! intVal = %d\n", intVal);
+			fprintf(stdout, "I am the child! intVal = %d\n", intVal);
 			if (_redir_out(l) == true){
 				// fprintf(stdout,"redirected out\n");
 				cmd_line_strip(l, ">");
 				cmd_line_strip(l, l->out);		
-			}//else fprintf(stdout,"out not redirected\n");
+			}
+			if(_redir_in(l) == true){
+				// fprintf(stdout,"redirected in\n");
+				cmd_line_strip(l, "<");
+				cmd_line_strip(l, l->in);
+			}
+			// fprintf(stdout, "exec %s\n", l->args[0]);
+			// fprintf(stdout, "exec %s\n", l->args[1]);
 			if(execvp(l->args[0], l->args) == -1) exit(1);
 			break;
 		default:
