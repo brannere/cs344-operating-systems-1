@@ -41,7 +41,7 @@ int _redir_in(struct cmd_line* l){
   	    exit(1); 
   	}
   	// Written to terminal
-  	printf("sourceFD == %d\n", sourceFD); 
+  	// printf("sourceFD == %d\n", sourceFD); 
 
   	// Redirect stdin to source file
   	int result = dup2(sourceFD, 0);
@@ -50,10 +50,10 @@ int _redir_in(struct cmd_line* l){
   	  exit(2); 
   	}
 		// cmd_line_proc_from_file(l);
-		fprintf(stdout, "RETURN T\n");
+		// fprintf(stdout, "RETURN T\n");
 		return true;
 	}
-		fprintf(stdout, "RETURN F\n");
+		// fprintf(stdout, "RETURN F\n");
 	return false;
 } 
 
@@ -77,7 +77,7 @@ int _redir_out(struct cmd_line* l){
   	  exit(1);
   	}
   	 // Currently printf writes to the terminal
-  	fprintf(stdout, "The file descriptor for targetFD is %d\n", targetFD);
+  	// fprintf(stdout, "The file descriptor for targetFD is %d\n", targetFD);
 
   	// Use dup2 to point FD 1, i.e., standard output to targetFD
   	int result = dup2(targetFD, 1);
@@ -114,7 +114,7 @@ int fork_t(struct cmd_line* l, struct child_proc* head_childs){
 		case 0:
       // spawnpid is 0. This means the child will execute the code in this branch
 			intVal = intVal + 1;
-			fprintf(stdout, "I am the child! intVal = %d\n", intVal);
+			// fprintf(stdout, "I am the child! intVal = %d\n", intVal);
 			if (_redir_out(l) == true){
 				// fprintf(stdout,"redirected out\n");
 				cmd_line_strip(l, ">");

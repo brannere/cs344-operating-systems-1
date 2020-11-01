@@ -6,14 +6,11 @@
 
 struct cmd_line{
 	char* args[MAX_ARGS];
-	char* infile_args[MAX_ARGS];
-	// char* args_strip[MAX_ARGS];	
-	// char args[MAX_ARGS][BUFF_SIZE];	
 	int len;
-	int inf_len;
 	int status;
 	char* out;
 	char* in;
+	int bg;
 };
 
 struct cmd_line* cmd_line_process(char* line);

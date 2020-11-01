@@ -156,7 +156,6 @@ void _remove(struct cmd_line* l, char* word){
 struct cmd_line* cmd_line_process(char* line){
 	struct cmd_line* output = malloc(sizeof(struct cmd_line));
 	output->len = 0;
-	output->inf_len = 0;
 	char pid[256];
 	sprintf(pid, "%d", getpid());
 
@@ -197,6 +196,13 @@ struct cmd_line* cmd_line_process(char* line){
 		// fprintf(stdout, "in file: %s\n", output->in);
 		output->out = _outf(output);
 		// fprintf(stdout, "outf: %s\n", output->out);
+		if(strcmp(output->args[output->len-1], "&") == 0){
+			// fprintf(stdout, "bg mode\n");
+			output->bg = true;
+		}else{
+			// fprintf(stdout, "not bg mode\n");
+			output->bg = false;
+		}
 	}
 	return output;
 }
