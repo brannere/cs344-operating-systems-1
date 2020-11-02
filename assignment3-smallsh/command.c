@@ -93,15 +93,90 @@ int _redir_out(struct cmd_line* l){
 	return true;
 } 
 
+
+
+void clear_procs(struct child_proc* head){
+
+	int childStatus;
+	int childPid;
+	/*Ignore the first because of the bug*/
+	if(head->next == NULL){
+		return;
+	}else{
+		for(struct child_proc* tmp = head->next;
+				tmp!=NULL; tmp=tmp->next)
+		{
+			childPid = tmp->pid;
+			childPid = waitpid(childPid, &childStatus, WNOHANG);
+			// fprintf(stdout, "bacgrkoud pid: %d\n", tmp->pid);
+			if(WEXITSTATUS(childStatus)){
+      	printf("background pid %d is done with exit status: %d\n", 
+								tmp->pid, WEXITSTATUS(childStatus));
+    	} else{
+    	  printf("background pid %d is done with exit status: %d\n",
+								tmp->pid, WTERMSIG(childStatus));
+    	}
+			// fprintf(stdout, "killing: %d\n", tmp->pid);
+			// kill(tmp->pid, SIGTERM);
+		}
+	}
+	return;
+}
+
 /* THEN RESET */
+
+/* This could have been MUCH more modular... */
+
+
+void _io_handling(struct cmd_line* l){
+	if (_redir_out(l) == true){
+		// fprintf(stdout,"redirected out\n");
+		cmd_line_strip(l, ">");
+		cmd_line_strip(l, l->out);		
+	}
+	if(_redir_in(l) == true){
+		// fprintf(stdout,"redirected in\n");
+		cmd_line_strip(l, "<");
+		cmd_line_strip(l, l->in);
+	}
+	return;
+}
+
+void _io_handling_bg(struct cmd_line* l){
+
+	if(l->bg == true){
+		if (_redir_out(l) == true){
+			// fprintf(stdout,"redirected out\n");
+			cmd_line_strip(l, ">");
+			cmd_line_strip(l, l->out);		
+		}
+		else{
+			l->out = FGBG_OUT;
+			_redir_out(l);
+		}
+
+		if(_redir_in(l) == true){
+			// fprintf(stdout,"redirected in\n");
+			cmd_line_strip(l, "<");
+			cmd_line_strip(l, l->in);
+		}
+		else{
+			l->in = FGBG_OUT;
+			_redir_in(l);
+		}
+	}
+	else{
+		_io_handling(l);
+	}
+
+	return;
+}
 
 int fork_t(struct cmd_line* l, struct child_proc* head_childs){
 	pid_t spawnpid = -5;
 	int intVal = 10;
 	int childStatus;
   pid_t childPid;
-	// int out = _redir_out(l);
-	/* INPUT AND OUTPUT REDIRECTION HERE*/
 
 	// If fork is successful, the value of spawnpid will be 0 in the child, the child's pid in the parent
 	spawnpid = fork();
@@ -115,19 +190,11 @@ int fork_t(struct cmd_line* l, struct child_proc* head_childs){
       // spawnpid is 0. This means the child will execute the code in this branch
 			intVal = intVal + 1;
 			// fprintf(stdout, "I am the child! intVal = %d\n", intVal);
-			if (_redir_out(l) == true){
-				// fprintf(stdout,"redirected out\n");
-				cmd_line_strip(l, ">");
-				cmd_line_strip(l, l->out);		
-			}
-			if(_redir_in(l) == true){
-				// fprintf(stdout,"redirected in\n");
-				cmd_line_strip(l, "<");
-				cmd_line_strip(l, l->in);
-			}
-			// fprintf(stdout, "exec %s\n", l->args[0]);
-			// fprintf(stdout, "exec %s\n", l->args[1]);
-			if(execvp(l->args[0], l->args) == -1) exit(1);
+			_io_handling_bg(l);
+			if(execvp(l->args[0], l->args) == -1){
+				fprintf(stdout, "smallsh: %s: command not found\n", l->args[0]);
+				exit(1);
+			} 
 			break;
 		default:
       // spawnpid is the pid of the child. This means the parent will execute the code in this branch
@@ -135,17 +202,21 @@ int fork_t(struct cmd_line* l, struct child_proc* head_childs){
 			// fprintf(stdout, "I am the parent! ten = %d\n", intVal);
 			childPid = spawnpid;
 			head_childs = child_proc_insert(head_childs, childPid);
-			// fprintf(stdout, "childPid: %d\n", childPid);
-			childPid = wait(&childStatus);
-			kill(childPid, SIGTERM);
-			// _to_stdin();
-			/* false is 0 */
-			// if(WIFEXITED(childStatus)){
-      // 	printf("Child %d exited normally with status %d\n", childPid, WEXITSTATUS(childStatus));
-    	// } else{
-    	//   printf("Child %d exited abnormally due to signal %d\n", childPid, WTERMSIG(childStatus));
-    	// }
-			// printf("Parent's waiting is done as the child with pid %d exited\n", childPid);
+			if(l->bg == true){
+				childPid = waitpid(childPid, &childStatus, WNOHANG);
+				fprintf(stdout, "bacgrkoud pid: %d\n", spawnpid);
+				if(WEXITSTATUS(childStatus)){
+      		printf("background pid %d is done with exit status: %d\n", 
+									spawnpid, WEXITSTATUS(childStatus));
+    		} else{
+    		  printf("background pid %d is done with exit status: %d\n",
+									spawnpid, WTERMSIG(childStatus));
+    		}
+    		// printf("In the parent process waitpid returned value %d\n", childPid);
+			}else{
+				childPid = wait(&childStatus);
+				kill(childPid, SIGTERM);
+			}
 			break;
 	}
 	// printf("This will be executed by both of us!\n");

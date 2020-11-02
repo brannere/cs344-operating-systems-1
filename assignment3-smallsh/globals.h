@@ -6,6 +6,8 @@
 #define true 1
 #define false 0
 // int STATUS_I = 0; 
+#define FGBG_OUT "/dev/null"
+
 
 
 #endif

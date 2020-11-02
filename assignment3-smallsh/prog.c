@@ -26,6 +26,7 @@ void main_proc(){
 	children = child_proc_create();
 
 	while(ex != true){
+		// clear_procs(children);
 		memset(buff, '\0', BUFF_SIZE);
 		fprintf(stdout, PS1);
 		getline(&buff, &buffsize, stdin);

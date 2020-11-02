@@ -198,6 +198,7 @@ struct cmd_line* cmd_line_process(char* line){
 		// fprintf(stdout, "outf: %s\n", output->out);
 		if(strcmp(output->args[output->len-1], "&") == 0){
 			// fprintf(stdout, "bg mode\n");
+			_remove(output, "&");
 			output->bg = true;
 		}else{
 			// fprintf(stdout, "not bg mode\n");
