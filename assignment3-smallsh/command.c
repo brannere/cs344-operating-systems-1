@@ -98,7 +98,8 @@ int _redir_out(struct cmd_line* l){
 void clear_procs(struct child_proc* head){
 
 	int childStatus;
-	int childPid;
+	// int childPid;
+
 	/*Ignore the first because of the bug*/
 	if(head->next == NULL){
 		return;
@@ -106,16 +107,40 @@ void clear_procs(struct child_proc* head){
 		for(struct child_proc* tmp = head->next;
 				tmp!=NULL; tmp=tmp->next)
 		{
-			childPid = tmp->pid;
-			childPid = waitpid(childPid, &childStatus, WNOHANG);
+			// childPid = tmp->pid;
+			// childPid = waitpid(childPid, &childStatus, WNOHANG);
+			// fprintf(stdout, "tmp->pid: %d\n", childPid);
+			// fprintf(stdout, "checking curr pid: %d\n", tmp->pid);
+		switch(waitpid(tmp->pid, &childStatus, WNOHANG)){
 			// fprintf(stdout, "bacgrkoud pid: %d\n", tmp->pid);
-			if(WEXITSTATUS(childStatus)){
-      	printf("background pid %d is done with exit status: %d\n", 
-								tmp->pid, WEXITSTATUS(childStatus));
-    	} else{
-    	  printf("background pid %d is done with exit status: %d\n",
-								tmp->pid, WTERMSIG(childStatus));
-    	}
+				case -1:
+					// perror("caught error\n");
+					// fprintf(stdout, "case -1\n");
+					break;
+				case 0: 
+					// fprintf(stdout, "case 0\n");
+					break;
+				default:	 
+				// fprintf(stdout, "DEAFULT\n");
+					if(WIFEXITED(childStatus)){
+						// if(WEXITSTATUS(childStatus)){
+							printf("background pid %d is done with exit status: %d\n", 
+											tmp->pid, WEXITSTATUS(childStatus));
+						// } 
+						// else{
+						//   printf("background pid %d is done with exit status: %d\n",
+						// 					tmp->pid, WTERMSIG(childStatus));
+						// }
+					}
+					/* Has it terminated abnormally yet? */
+					else if(WIFSIGNALED(childStatus)){
+							printf("background pid %d terminated with signal: %d\n",
+							tmp->pid, WTERMSIG(childStatus));
+					}
+					break;
+			}
+			
+			/* Has the child terminated normally yet? */
 			// fprintf(stdout, "killing: %d\n", tmp->pid);
 			// kill(tmp->pid, SIGTERM);
 		}
@@ -201,20 +226,23 @@ int fork_t(struct cmd_line* l, struct child_proc* head_childs){
 			intVal = intVal - 1;
 			// fprintf(stdout, "I am the parent! ten = %d\n", intVal);
 			childPid = spawnpid;
-			head_childs = child_proc_insert(head_childs, childPid);
+
+			/* If the current command is to be in background mode */
 			if(l->bg == true){
+				/* Storing children in a linked list to check their status later*/
+				head_childs = child_proc_insert(head_childs, childPid);
 				childPid = waitpid(childPid, &childStatus, WNOHANG);
 				fprintf(stdout, "bacgrkoud pid: %d\n", spawnpid);
-				if(WEXITSTATUS(childStatus)){
-      		printf("background pid %d is done with exit status: %d\n", 
-									spawnpid, WEXITSTATUS(childStatus));
-    		} else{
-    		  printf("background pid %d is done with exit status: %d\n",
-									spawnpid, WTERMSIG(childStatus));
-    		}
+				// if(WEXITSTATUS(childStatus)){
+      	// 	printf("background pid %d is done with exit status: %d\n", 
+				// 					spawnpid, WEXITSTATUS(childStatus));
+    		// } else{
+    		//   printf("background pid %d is done with exit status: %d\n",
+				// 					spawnpid, WTERMSIG(childStatus));
+    		// }
     		// printf("In the parent process waitpid returned value %d\n", childPid);
 			}else{
-				childPid = wait(&childStatus);
+				childPid = waitpid(childPid, &childStatus, 0);
 				kill(childPid, SIGTERM);
 			}
 			break;

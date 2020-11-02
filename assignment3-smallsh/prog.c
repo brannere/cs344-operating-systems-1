@@ -26,9 +26,10 @@ void main_proc(){
 	children = child_proc_create();
 
 	while(ex != true){
-		// clear_procs(children);
+		clear_procs(children);
 		memset(buff, '\0', BUFF_SIZE);
 		fprintf(stdout, PS1);
+		fflush(stdout);
 		getline(&buff, &buffsize, stdin);
 		foo = cmd_line_process(buff);
 		// foo = cmd_line_expand(cmd_line_process(buff));
