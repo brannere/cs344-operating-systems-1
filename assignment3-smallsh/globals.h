@@ -9,5 +9,4 @@
 #define FGBG_OUT "/dev/null"
 
 
-
 #endif

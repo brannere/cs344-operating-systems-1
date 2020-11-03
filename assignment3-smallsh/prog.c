@@ -16,6 +16,18 @@
 // #define BUFF_SIZE 2048
 // #define MAX_ARGS 513 /* +1 from max to add null*/
 
+/* SIGNAL HANDLERS */
+
+void handle_SIGINT(int signo){
+	char* message = "smallsh caught SIGINT; ignoring\n";
+  // We are using write rather than printf
+	write(STDOUT_FILENO, message, strlen(message));
+	fflush(stdout);
+	// sleep(10);
+}
+
+
+
 void main_proc(){
 	char PS1[] = ": ";
 	char* buff = malloc(sizeof(char)*BUFF_SIZE);
@@ -26,6 +38,19 @@ void main_proc(){
 	struct child_proc* children = NULL;
 	children = child_proc_create();
 	int catch = -1;
+
+	/* Install signal handlers */
+
+	/* SIGINT */
+	struct sigaction SIGINT_action = {{0}};
+	SIGINT_action.sa_handler = handle_SIGINT;
+	sigfillset(&SIGINT_action.sa_mask);
+	SIGINT_action.sa_flags = 0;
+	sigaction(SIGINT, &SIGINT_action, NULL);
+
+
+
+	/****************************/
 	/* so if getline returns -1, you want to check if 
 	errno is EINTR, if it is re-print the prompt and try again*/
 	while(ex != true){
