@@ -205,8 +205,13 @@ int fork_t(	struct cmd_line* l, struct child_proc* head_childs,
 	int childStatus;
   pid_t childPid;
 
+	struct sigaction default_action = {{0}};
+	default_action.sa_handler = SIG_DFL;
+
 	// If fork is successful, the value of spawnpid will be 0 in the child, the child's pid in the parent
+	// fprintf(stdout, "about to fork\n");
 	spawnpid = fork();
+	// fprintf(stdout, "forked\n");
 	switch (spawnpid){
 		case -1:
       // Code in this branch will be exected by the parent when fork() fails and the creation of child process fails as well
@@ -218,6 +223,7 @@ int fork_t(	struct cmd_line* l, struct child_proc* head_childs,
 			intVal = intVal + 1;
 			// fprintf(stdout, "I am the child! intVal = %d\n", intVal);
 			sigaction(SIGTSTP, ignore, NULL);
+			sigaction(SIGINT, &default_action, NULL);
 			_io_handling_bg(l);
 			if(l->bg == true){
 				sigaction(SIGINT, ignore, NULL);
@@ -250,7 +256,7 @@ int fork_t(	struct cmd_line* l, struct child_proc* head_childs,
 			}else{
 
 				childPid = waitpid(childPid, &childStatus, 0);
-				kill(childPid, SIGTERM);
+				// kill(childPid, SIGTERM);
 			}
 			break;
 	}

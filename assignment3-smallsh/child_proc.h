@@ -1,6 +1,18 @@
+/**
+ * Prgram Filename: child_proc.h 
+ * Author: Erick Branner
+ * Date: 3 November 2020
+ * Description: interface file for child_proc list
+ * Input:
+ * Output:
+ *
+*/
+
 #ifndef CHILD_PROC_H
 #define CHILD_PROC_H
 
+/* 	This exists to store all background child processes 
+		to terminate them later */
 struct child_proc{
   pid_t pid;
 	int status;

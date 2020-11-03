@@ -1,3 +1,13 @@
+/**
+ * Prgram Filename: cmd_line.c
+ * Author: Erick Branner
+ * Date: 3 November 2020
+ * Description: main functionality of smallsh
+ * Input:
+ * Output:
+ *
+*/
+
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -60,6 +70,7 @@ char* _inf(struct cmd_line* l){
 	return file;
 }
 
+/* Returns inputfile name, null if none exists */
 char* _outf(struct cmd_line* l){
 	char* file = NULL;
 	for(int i = 0; i < l->len; i++){
@@ -97,59 +108,6 @@ void _remove(struct cmd_line* l, char* word){
 	return; 
 }
 
-
-/* Assume dup2 has been called and workd for changing stdout */
-// void cmd_line_proc_from_file(struct cmd_line* l){
-// 	char* buff = malloc(sizeof(char)*BUFF_SIZE);
-// 	size_t buffsize = BUFF_SIZE;
-// 	getline(&buff, &buffsize, stdin);
-// 	fprintf(stdout, "we got: %s\n", buff);
-
-// 	/* Copy data of first argument */
-// 	l->infile_args[0] = calloc(strlen(l->args[0])+1, sizeof(char));
-// 	strcpy(l->infile_args[0],l->args[0]);
-// 	l->inf_len++;
-
-// 	/* Read from file */
-//   char* curr_line = NULL;
-//   size_t len = 0;
-//   ssize_t nread; 
-//   char* token;
-//   unsigned int counter = 0;
-
-// 	char* saveptr = NULL;
-// 	char* flagptr = NULL; 
-// 	// char* token;
-// 	char* result = NULL; // for use with _str_replace
-// 	int i; 
-	
-  
-// 	/* For each line, make a movie */
-//   while((getline(&curr_line, &len, stdin)) != -1){
-// 		/* For each line and for each word in that line */
-// 	  for(	i = 1, flagptr = curr_line;
-// 					token != NULL; flagptr = NULL, i++)
-// 		{
-// 			token = strtok_r(flagptr, " \n", &saveptr);
-// 			if(token != NULL){
-// 				l->infile_args[i] = calloc(strlen(token)+1, sizeof(char));
-// 				// l->args[i] = calloc(strlen(result)+1, sizeof(char));
-// 				// strcpy(output->args[i], token);
-// 				strcpy(l->infile_args[i], result);
-// 				l->len++;
-// 				// output->args[i+1] = NULL;
-// 				fprintf(stdout, "args[%d]: %s\n", i, l->infile_args[i]);
-// 				// free(result);
-// 				// output->in = NULL;
-// 			}
-// 			l->infile_args[l->inf_len] = NULL;
-// 		}
-// 		counter++;
-// 	}
-//   free(curr_line);
-
-// 	return;
-// }
 /* Create and return a cmd line struct */
 /* Null terminated string */
 // might need one more command line arg space (for null)
