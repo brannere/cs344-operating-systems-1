@@ -153,7 +153,7 @@ void _remove(struct cmd_line* l, char* word){
 /* Create and return a cmd line struct */
 /* Null terminated string */
 // might need one more command line arg space (for null)
-struct cmd_line* cmd_line_process(char* line){
+struct cmd_line* cmd_line_process(char* line, int* fg_mode){
 	struct cmd_line* output = malloc(sizeof(struct cmd_line));
 	output->len = 0;
 	char pid[256];
@@ -196,16 +196,24 @@ struct cmd_line* cmd_line_process(char* line){
 		// fprintf(stdout, "in file: %s\n", output->in);
 		output->out = _outf(output);
 		// fprintf(stdout, "outf: %s\n", output->out);
-		if(output->len != 0){
-			// fprintf(stdout, "len: %d\n", output->len);
-			if(strcmp(output->args[output->len-1], "&") == 0){
-				// fprintf(stdout, "bg mode\n");
-				_remove(output, "&");
-				output->bg = true;
-			}else{
-				// fprintf(stdout, "not bg mode\n");
-				output->bg = false;
+
+		/* If not foreground only mode */
+		if(*fg_mode == false){
+			if(output->len != 0){
+				// fprintf(stdout, "len: %d\n", output->len);
+				if(strcmp(output->args[output->len-1], "&") == 0){
+					// fprintf(stdout, "bg mode\n");
+					_remove(output, "&");
+					output->bg = true;
+				}else{
+					// fprintf(stdout, "not bg mode\n");
+					output->bg = false;
+				}
 			}
+		}
+		else{ /* remove '&' (ignore it)*/
+			_remove(output, "&");
+			output->bg = false; 
 		}
 	}
 	return output;

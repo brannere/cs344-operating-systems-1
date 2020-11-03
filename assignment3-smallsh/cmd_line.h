@@ -13,7 +13,7 @@ struct cmd_line{
 	int bg;
 };
 
-struct cmd_line* cmd_line_process(char* line);
+struct cmd_line* cmd_line_process(char* line, int* fg);
 void cmd_line_free(struct cmd_line* c);
 struct cmd_line* cmd_line_expand(struct cmd_line* l);
 void cmd_line_strip(struct cmd_line* l, char* word);

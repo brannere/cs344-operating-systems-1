@@ -55,6 +55,7 @@ void main_proc(){
 	struct child_proc* children = NULL;
 	children = child_proc_create();
 	int catch = -1;
+	int fg_mode = fg_only; 
 	/* Install signal handlers */
 
 	/* SIGINT */
@@ -88,7 +89,7 @@ void main_proc(){
 			fflush(stdout);
 		}
 		catch = -1;
-		foo = cmd_line_process(buff);
+		foo = cmd_line_process(buff, &fg_mode);
 		// foo = cmd_line_expand(cmd_line_process(buff));
 		// if(strcmp(foo->args[0], "exit") == 0) ex = 1;
 
