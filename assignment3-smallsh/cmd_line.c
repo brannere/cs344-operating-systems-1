@@ -196,13 +196,16 @@ struct cmd_line* cmd_line_process(char* line){
 		// fprintf(stdout, "in file: %s\n", output->in);
 		output->out = _outf(output);
 		// fprintf(stdout, "outf: %s\n", output->out);
-		if(strcmp(output->args[output->len-1], "&") == 0){
-			// fprintf(stdout, "bg mode\n");
-			_remove(output, "&");
-			output->bg = true;
-		}else{
-			// fprintf(stdout, "not bg mode\n");
-			output->bg = false;
+		if(output->len != 0){
+			// fprintf(stdout, "len: %d\n", output->len);
+			if(strcmp(output->args[output->len-1], "&") == 0){
+				// fprintf(stdout, "bg mode\n");
+				_remove(output, "&");
+				output->bg = true;
+			}else{
+				// fprintf(stdout, "not bg mode\n");
+				output->bg = false;
+			}
 		}
 	}
 	return output;
