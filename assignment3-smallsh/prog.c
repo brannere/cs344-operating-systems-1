@@ -60,6 +60,10 @@ void main_proc(){
 
 	/* SIGINT */
 	struct sigaction SIGINT_action = {{0}};
+	struct sigaction ignore_action = {{0}};
+	ignore_action.sa_handler = SIG_IGN;
+
+
 	SIGINT_action.sa_handler = handle_SIGINT;
 	sigfillset(&SIGINT_action.sa_mask);
 	SIGINT_action.sa_flags = 0;
@@ -78,6 +82,7 @@ void main_proc(){
 	errno is EINTR, if it is re-print the prompt and try again*/
 	while(ex != true){
 		while(catch == -1){
+			fg_mode = fg_only;
 			clear_procs(children);
 			memset(buff, '\0', BUFF_SIZE);
 			fflush(stdout);
@@ -92,14 +97,18 @@ void main_proc(){
 		foo = cmd_line_process(buff, &fg_mode);
 		// foo = cmd_line_expand(cmd_line_process(buff));
 		// if(strcmp(foo->args[0], "exit") == 0) ex = 1;
-
+		sigaction(SIGTSTP, &ignore_action, NULL);
+		if(foo->bg == true){
+			sigaction(SIGINT, &ignore_action, NULL);
+		}
 		ex = handle_input(foo, &prev_stat, children);
 		cmd_line_free(foo);
 	}
 	//free the children IF are still alive in some exit function
 	free(buff);
 	// child_proc_print_all(children);
-	exit_ka(children);
+	// exit_ka(children);
+	clear_procs(children);
 	child_proc_free_all(children);
 	return;
 }

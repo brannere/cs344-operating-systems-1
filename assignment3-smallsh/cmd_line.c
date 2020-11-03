@@ -212,7 +212,9 @@ struct cmd_line* cmd_line_process(char* line, int* fg_mode){
 			}
 		}
 		else{ /* remove '&' (ignore it)*/
-			_remove(output, "&");
+			if(strcmp(output->args[output->len-1], "&") == 0){
+				_remove(output, "&");
+			}
 			output->bg = false; 
 		}
 	}
