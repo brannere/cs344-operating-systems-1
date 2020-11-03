@@ -24,7 +24,7 @@ int fg_only = false;
 void handle_SIGINT(int signo){
 	char* message = "smallsh: caught SIGINT; ignoring\n";
   // We are using write rather than printf
-	write(STDOUT_FILENO, message, strlen(message));
+	write(STDOUT_FILENO, message, 33);
 	fflush(stdout);
 	// sleep(10);
 }
@@ -35,10 +35,10 @@ void handle_SIGTSTP(int signo){
 		message = "smallsh: DISABLED: foreground only mode \n";
 	}else{
 		fg_only = true;
-		message = "smallsh: ENABLED: foreground only mode \n";
+		message = "smallsh: ENABLED: foreground only mode  \n";
 	} 
   // We are using write rather than printf
-	write(STDOUT_FILENO, message, strlen(message));
+	write(STDOUT_FILENO, message, 41);
 	fflush(stdout);
 	// sleep(10);
 }
@@ -55,7 +55,7 @@ void main_proc(){
 	struct child_proc* children = NULL;
 	children = child_proc_create();
 	int catch = -1;
-	int fg_mode = fg_only; 
+	// int fg_mode = fg_only; 
 	/* Install signal handlers */
 
 	/* SIGINT */
@@ -82,7 +82,7 @@ void main_proc(){
 	errno is EINTR, if it is re-print the prompt and try again*/
 	while(ex != true){
 		while(catch == -1){
-			fg_mode = fg_only;
+			// fg_mode = fg_only;
 			clear_procs(children);
 			memset(buff, '\0', BUFF_SIZE);
 			fflush(stdout);
@@ -92,16 +92,18 @@ void main_proc(){
 				clearerr(stdin);
 			}
 			fflush(stdout);
+			// fg_mode = fg_only;
 		}
 		catch = -1;
-		foo = cmd_line_process(buff, &fg_mode);
-		// foo = cmd_line_expand(cmd_line_process(buff));
-		// if(strcmp(foo->args[0], "exit") == 0) ex = 1;
-		sigaction(SIGTSTP, &ignore_action, NULL);
-		if(foo->bg == true){
-			sigaction(SIGINT, &ignore_action, NULL);
-		}
-		ex = handle_input(foo, &prev_stat, children);
+		// foo = cmd_line_process(buff, &fg_mode);
+		foo = cmd_line_process(buff, &fg_only);
+
+		// sigaction(SIGTSTP, &ignore_action, NULL);
+		// if(foo->bg == true){
+		// 	sigaction(SIGINT, &ignore_action, NULL);
+		// }
+		ex = handle_input(foo, &prev_stat, children,&ignore_action,
+											&SIGTSTP_action, &SIGINT_action);
 		cmd_line_free(foo);
 	}
 	//free the children IF are still alive in some exit function

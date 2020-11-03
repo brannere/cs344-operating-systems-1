@@ -197,7 +197,9 @@ void _io_handling_bg(struct cmd_line* l){
 	return;
 }
 
-int fork_t(struct cmd_line* l, struct child_proc* head_childs){
+int fork_t(	struct cmd_line* l, struct child_proc* head_childs,
+						struct sigaction* ignore, struct sigaction* sigtstp,
+						struct sigaction* sigint){
 	pid_t spawnpid = -5;
 	int intVal = 10;
 	int childStatus;
@@ -215,7 +217,11 @@ int fork_t(struct cmd_line* l, struct child_proc* head_childs){
       // spawnpid is 0. This means the child will execute the code in this branch
 			intVal = intVal + 1;
 			// fprintf(stdout, "I am the child! intVal = %d\n", intVal);
+			sigaction(SIGTSTP, ignore, NULL);
 			_io_handling_bg(l);
+			if(l->bg == true){
+				sigaction(SIGINT, ignore, NULL);
+			}
 			if(execvp(l->args[0], l->args) == -1){
 				fprintf(stdout, "smallsh: %s: command not found\n", l->args[0]);
 				exit(1);
@@ -242,6 +248,7 @@ int fork_t(struct cmd_line* l, struct child_proc* head_childs){
     		// }
     		// printf("In the parent process waitpid returned value %d\n", childPid);
 			}else{
+
 				childPid = waitpid(childPid, &childStatus, 0);
 				kill(childPid, SIGTERM);
 			}
@@ -336,7 +343,9 @@ int is_comment(struct cmd_line* l){
 
 /* Returns true (1) if exit */
 int handle_input(	struct cmd_line* line, 
-									int* prev_stat, struct child_proc* head_childs)
+									int* prev_stat, struct child_proc* head_childs,
+									struct sigaction* ignore, struct sigaction* sigtstp,
+									struct sigaction* sigint)
 {
 	int status = -2; 
 	char* tmp = NULL;
@@ -370,7 +379,7 @@ int handle_input(	struct cmd_line* line,
 		}
 		else{
 			// fprintf(stdout, "not built in\n");
-			status = fork_t(line, head_childs);
+			status = fork_t(line, head_childs, ignore, sigtstp, sigint);
 			*prev_stat = status; 
 		}
 		if(tmp!=NULL){ 
