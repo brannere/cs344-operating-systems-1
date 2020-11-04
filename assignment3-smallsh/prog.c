@@ -1,4 +1,12 @@
-
+/**
+ * Prgram Filename: prog.c
+ * Author: Erick Branner
+ * Date: 3 November 2020
+ * Description: Main functionality of smallsh
+ * Input:
+ * Output:
+ *
+*/
 
 #include <signal.h>
 #include <fcntl.h>
@@ -12,15 +20,12 @@
 #include "./globals.h"
 #include "./child_proc.h"
 
+/* Toggle for foreground only mode */
 int fg_only = false; 
-
-// #include "./signal.h"
-
-// #define BUFF_SIZE 2048
-// #define MAX_ARGS 513 /* +1 from max to add null*/
 
 /* SIGNAL HANDLERS */
 
+/* SIGINT signal handler ignores signal */
 void handle_SIGINT(int signo){
 	char* message = "smallsh: caught SIGINT; ignoring\n";
   // We are using write rather than printf
@@ -28,6 +33,8 @@ void handle_SIGINT(int signo){
 	fflush(stdout);
 	// sleep(10);
 }
+
+/* Toggle fg_mode on SIGTSTP */
 void handle_SIGTSTP(int signo){
 	char* message = NULL; 
 	if(fg_only == true){
@@ -44,18 +51,25 @@ void handle_SIGTSTP(int signo){
 }
 
 
+/**
+ * Function: main_proc()
+ * Description: runs everything needed to process the shell
+ * Parameters:
+ * Pre-Conditions:
+ * Post-Conditions: 
+ */
 
 void main_proc(){
 	char PS1[] = ": ";
 	char* buff = malloc(sizeof(char)*BUFF_SIZE);
 	size_t buffsize = BUFF_SIZE;
-	struct cmd_line* foo; 
+	struct cmd_line* line; 
 	int ex = 0;
 	int prev_stat = 0;
 	struct child_proc* children = NULL;
 	children = child_proc_create();
 	int catch = -1;
-	// int fg_mode = fg_only; 
+
 	/* Install signal handlers */
 
 	/* SIGINT */
@@ -80,8 +94,7 @@ void main_proc(){
 
 
 	/****************************/
-	/* so if getline returns -1, you want to check if 
-	errno is EINTR, if it is re-print the prompt and try again*/
+
 	while(ex != true){
 		while(catch == -1){
 			// fg_mode = fg_only;
@@ -89,29 +102,23 @@ void main_proc(){
 			memset(buff, '\0', BUFF_SIZE);
 			fflush(stdout);
 			fprintf(stdout, PS1);
+			/* Catch error if SIGTSTP or SIGINT are sent and reprompt */
 			catch = getline(&buff, &buffsize, stdin);
 			if (catch == -1){
 				clearerr(stdin);
 			}
 			fflush(stdout);
-			// fg_mode = fg_only;
 		}
 		catch = -1;
-		// foo = cmd_line_process(buff, &fg_mode);
-		foo = cmd_line_process(buff, &fg_only);
-
-		// sigaction(SIGTSTP, &ignore_action, NULL);
-		// if(foo->bg == true){
-		// 	sigaction(SIGINT, &ignore_action, NULL);
-		// }
-		ex = handle_input(foo, &prev_stat, children,&ignore_action,
+		/* Process command line and handle the arguments */
+		line = cmd_line_process(buff, &fg_only);
+		ex = handle_input(line, &prev_stat, children,&ignore_action,
 											&SIGTSTP_action, &SIGINT_action);
-		cmd_line_free(foo);
+		cmd_line_free(line);
 	}
-	//free the children IF are still alive in some exit function
+	/* Memory cleanup, kill ended */
 	free(buff);
-	// child_proc_print_all(children);
-	// exit_ka(children);
+	exit_ka(children);
 	clear_procs(children);
 	child_proc_free_all(children);
 	return;

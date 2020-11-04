@@ -6,10 +6,7 @@ README.txt for assignment3-smallsh
 
 COMPILE with `make`
 EXECUTE with ./smallsh
-
-
-**Other useful information**
-
+Works with testing script. 
 
 **Documentation templates**
 

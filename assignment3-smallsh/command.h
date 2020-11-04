@@ -1,3 +1,13 @@
+/**
+ * Prgram Filename: command.h
+ * Author: Erick Branner
+ * Date: 3 November 2020
+ * Description: interface file for command.c
+ * Input:
+ * Output:
+ *
+*/
+
 #ifndef COMMAND_H
 #define COMMAND_H
 #include <fcntl.h>

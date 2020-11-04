@@ -1,3 +1,13 @@
+/**
+ * Prgram Filename: command.c
+ * Author: Erick Branner
+ * Date: 3 November 2020
+ * Description: main fufunctionality of smallsh command processing
+ * Input: 
+ * Output:
+ *
+*/
+
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,23 +24,22 @@
 Parse line(done) -> replace $$ with pid(done) -> handle comments(done) -> 
 handle exit(done?), status(possible done?) -> handle cd(done) -> 
 executing programs(done) -> 
-redirection(done!) -> fg/bg -> signals
+redirection(done!) -> fg/bg(done) -> signals(done)
 */
 
 /* For testing */
 #include <limits.h>
 
-/****************/
-/* 
-	S1: https://stackoverflow.com/questions/298510/how-to-get-the-current-directory-in-a-c-program
-*/
 
-
-
-
-
-/* Retruns true if file could be opened (same as null case), false otherwise  */
-
+/**
+ * Function: _redir_in()
+ * Description: redirects stdin the specificed file name
+ * Parameters: pointer to command line sturct 
+ * Pre-Conditions:
+ * Post-Conditions: stdin changed
+ */
+/* Retruns true if file could be opened (same as null case), 
+false otherwise  */
 int _redir_in(struct cmd_line* l){
 	
 	if(l->in != NULL){
@@ -57,15 +66,15 @@ int _redir_in(struct cmd_line* l){
 	return false;
 } 
 
-// void _to_stdin(){
-//   int result = dup2(1, 1);
-// 	if (result == -1) {
-//   	perror("dup2");
-// 		// return false;  
-//   	exit(2); 
-//   }
-// }
 
+
+/**
+ * Function: _redir_out()
+ * Description: redirects stdout the specificed file name
+ * Parameters: pointer to command line sturct 
+ * Pre-Conditions:
+ * Post-Conditions: stdout changed
+ */
 /* Retruns true if file could be opened, false otherwise and null case */
 int _redir_out(struct cmd_line* l){
 
@@ -94,6 +103,13 @@ int _redir_out(struct cmd_line* l){
 } 
 
 
+/**
+ * Function: clear_proces()
+ * Description: Clears any finished child proceses
+ * Parameters: head of child process list
+ * Pre-Conditions:
+ * Post-Conditions:chi
+ */
 
 void clear_procs(struct child_proc* head){
 
@@ -107,10 +123,6 @@ void clear_procs(struct child_proc* head){
 		for(struct child_proc* tmp = head->next;
 				tmp!=NULL; tmp=tmp->next)
 		{
-			// childPid = tmp->pid;
-			// childPid = waitpid(childPid, &childStatus, WNOHANG);
-			// fprintf(stdout, "tmp->pid: %d\n", childPid);
-			// fprintf(stdout, "checking curr pid: %d\n", tmp->pid);
 		switch(waitpid(tmp->pid, &childStatus, WNOHANG)){
 			// fprintf(stdout, "bacgrkoud pid: %d\n", tmp->pid);
 				case -1:
@@ -138,37 +150,49 @@ void clear_procs(struct child_proc* head){
 							tmp->pid, WTERMSIG(childStatus));
 					}
 					break;
-			}
-			
-			/* Has the child terminated normally yet? */
-			// fprintf(stdout, "killing: %d\n", tmp->pid);
-			// kill(tmp->pid, SIGTERM);
+			}			
 		}
 	}
 	return;
 }
 
-/* THEN RESET */
-
-/* This could have been MUCH more modular... */
-
+/**
+ * Function: _io_handling()
+ * Description: Changes and handles input and output redirection
+ * Parameters: pointer to command line struct 
+ * Pre-Conditions:
+ * Post-Conditions: file input or output redirected
+ */
 
 void _io_handling(struct cmd_line* l){
 	if (_redir_out(l) == true){
 		// fprintf(stdout,"redirected out\n");
+		/* remove > and file name from command line */
 		cmd_line_strip(l, ">");
 		cmd_line_strip(l, l->out);		
 	}
 	if(_redir_in(l) == true){
 		// fprintf(stdout,"redirected in\n");
+		/* remove < and file name from command line */
 		cmd_line_strip(l, "<");
 		cmd_line_strip(l, l->in);
 	}
 	return;
 }
 
-void _io_handling_bg(struct cmd_line* l){
+/**
+ * Function: _io_handling_bg()
+ * Description: handles all i/o redirection, including background processes
+ * Parameters: pointer to command line struct
+ * Pre-Conditions:
+ * Post-Conditions: output or input redirected
+ */
 
+void _io_handling_bg(struct cmd_line* l){
+	
+	/* 	If background or forground haven't been redirected 
+			and the command is to be a background process,
+			redirect the input and output to FGBG_OUT (/dev/null)*/
 	if(l->bg == true){
 		if (_redir_out(l) == true){
 			// fprintf(stdout,"redirected out\n");
@@ -197,6 +221,16 @@ void _io_handling_bg(struct cmd_line* l){
 	return;
 }
 
+/**
+ * Function: fork_t
+ * Description: Handles all forking of processes
+ * Parameters: command line pointer, list of child processes, 
+								pointers to sigaction structs (ignore, sigtstp, sigint)
+ * Pre-Conditions:
+ * Post-Conditions: New processes created; exactly one created and terminated or
+										running in background
+ */
+
 int fork_t(	struct cmd_line* l, struct child_proc* head_childs,
 						struct sigaction* ignore, struct sigaction* sigtstp,
 						struct sigaction* sigint){
@@ -209,12 +243,9 @@ int fork_t(	struct cmd_line* l, struct child_proc* head_childs,
 	default_action.sa_handler = SIG_DFL;
 
 	// If fork is successful, the value of spawnpid will be 0 in the child, the child's pid in the parent
-	// fprintf(stdout, "about to fork\n");
 	spawnpid = fork();
-	// fprintf(stdout, "forked\n");
 	switch (spawnpid){
 		case -1:
-      // Code in this branch will be exected by the parent when fork() fails and the creation of child process fails as well
 			perror("fork() failed!");
 			exit(1);
 			break;
@@ -222,10 +253,13 @@ int fork_t(	struct cmd_line* l, struct child_proc* head_childs,
       // spawnpid is 0. This means the child will execute the code in this branch
 			intVal = intVal + 1;
 			// fprintf(stdout, "I am the child! intVal = %d\n", intVal);
+
+			/* The child should ignore SIGTSTP, and terminate with SIGINT*/
 			sigaction(SIGTSTP, ignore, NULL);
 			sigaction(SIGINT, &default_action, NULL);
 			_io_handling_bg(l);
 			if(l->bg == true){
+				/* If the child is to be run in the background, ignore SIGINT */
 				sigaction(SIGINT, ignore, NULL);
 			}
 			if(execvp(l->args[0], l->args) == -1){
@@ -245,26 +279,16 @@ int fork_t(	struct cmd_line* l, struct child_proc* head_childs,
 				head_childs = child_proc_insert(head_childs, childPid);
 				childPid = waitpid(childPid, &childStatus, WNOHANG);
 				fprintf(stdout, "bacgrkoud pid: %d\n", spawnpid);
-				// if(WEXITSTATUS(childStatus)){
-      	// 	printf("background pid %d is done with exit status: %d\n", 
-				// 					spawnpid, WEXITSTATUS(childStatus));
-    		// } else{
-    		//   printf("background pid %d is done with exit status: %d\n",
-				// 					spawnpid, WTERMSIG(childStatus));
-    		// }
-    		// printf("In the parent process waitpid returned value %d\n", childPid);
 			}else{
-
 				childPid = waitpid(childPid, &childStatus, 0);
-				// kill(childPid, SIGTERM);
 			}
 			break;
 	}
-	// printf("This will be executed by both of us!\n");
 	return WEXITSTATUS(childStatus);
 }
 
-/* USE THIS FOR CHANGING DIRECTORIES */
+
+/* Used for testing */
 /* Caller is responsible for freeding memory */
 char* curr_dir(){
 	/* Make Dynamic */
@@ -286,6 +310,8 @@ char* curr_dir(){
 	return output;
 }
 
+
+/* Not used */
 /* Assumes cmd_line length is more than 1*/
 char* _change_dir_rel(struct cmd_line* l){
 	char* curr = curr_dir();
@@ -296,6 +322,14 @@ char* _change_dir_rel(struct cmd_line* l){
 	strcat(output, "\0");
 	return output; 
 }
+
+/**
+ * Function: change_dir()
+ * Description: cahnges current working directory to specifed path
+ * Parameters: pointer to command line struct
+ * Pre-Conditions:
+ * Post-Conditions: working directory changed
+ */
 /* Ignores following arguments */
 int change_dir(struct cmd_line* l){
 	// char* relative = NULL;
@@ -330,6 +364,13 @@ int change_dir(struct cmd_line* l){
 	return -1;
 }
 
+/**
+ * Function: is_comment()
+ * Description: Checks if current line is a comment or empty
+ * Parameters: pointer to command line struct
+ * Pre-Conditions: none
+ * Post-Conditions: returns true if empty or comment, returns false otherwise
+ */
 /* also checks if is empty */
 int is_comment(struct cmd_line* l){
 	// fprintf(stdout, "args[0][0]: %s\n",l->args[0] );
@@ -347,6 +388,16 @@ int is_comment(struct cmd_line* l){
 	return false;
 }
 
+
+/**
+ * Function: handle_input()
+ * Description: Main constrol structure after commmand line has processed
+ * Parameters: pointer to command line, child processes, pointer to status, 
+	pointers to sigactions (ignore, sigitn, and sigtstp)
+ * Pre-Conditions:
+ * Post-Conditions: Returns exit status
+ */
+
 /* Returns true (1) if exit */
 int handle_input(	struct cmd_line* line, 
 									int* prev_stat, struct child_proc* head_childs,
@@ -359,11 +410,10 @@ int handle_input(	struct cmd_line* line,
 		/* This is a comment, do nothing */
 	} else {
 		/* Is not a comment */
-		// if(strcmp(foo->args[0], "exit") == 0) ex = 1;
 		if(strcmp(line->args[0], "exit") == 0){
 			return true; /* return true or 1 to indicate we want to exit
 											and call repsective exit functions */
-		}
+		}//built in cd
 		else if(strcmp(line->args[0], "cd") == 0){
 			// fprintf(stdout, "change dirs\n");
 			status = change_dir(line);
@@ -374,38 +424,57 @@ int handle_input(	struct cmd_line* line,
 			tmp = curr_dir();
 			// fprintf(stdout, "curr dir: %s\n", tmp);
 
-		}
+		} // built in  status
 		else if(strcmp(line->args[0], "status") == 0){
 			if(*prev_stat){
       	printf("%d\n", *prev_stat);
     	} else{
     	  printf("%d\n", WTERMSIG(*prev_stat));
     	}
-			// fprintf(stdout, "%d\n",prev_stat);
 		}
-		else{
+		else{ // non built in functions
 			// fprintf(stdout, "not built in\n");
 			status = fork_t(line, head_childs, ignore, sigtstp, sigint);
 			*prev_stat = status; 
 		}
+		/* clean up memory used */
 		if(tmp!=NULL){ 
 			free(tmp);
 			tmp = NULL;
 		}
 	}
-	return -1; 
+	return -1; // indicates to calling loop that user has not reuqested to exit
 }
 
+/**
+ * Function: exit_ka()
+ * Description: Kills all created processes if not terminated yet
+ * Parameters: head of child process list
+ * Pre-Conditions:
+ * Post-Conditions: Child processes killed
+ */
 void exit_ka(struct child_proc* head){
 	/*Ignore the first because of the bug*/
+	int childStatus; 
 	if(head->next == NULL){
 		return;
 	}else{
 		for(struct child_proc* tmp = head->next;
 				tmp!=NULL; tmp=tmp->next)
 		{
-			fprintf(stdout, "killing: %d\n", tmp->pid);
-			kill(tmp->pid, SIGTERM);
+			switch(waitpid(tmp->pid, &childStatus, WNOHANG)){
+			// fprintf(stdout, "bacgrkoud pid: %d\n", tmp->pid);
+				case -1:
+					// perror("caught error\n");
+					// fprintf(stdout, "case -1\n");
+					break;
+				case 0: 
+					/* Kill them if they haven't ended yet*/
+					fprintf(stdout, "smallsh: killing process: %d\n", tmp->pid);
+					kill(tmp->pid, SIGTERM);
+					break;
+					/* Otherwise, Process has ended */
+			}
 		}
 	}
 	return;

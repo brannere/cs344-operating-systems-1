@@ -88,7 +88,7 @@ char* _outf(struct cmd_line* l){
 
 void _remove(struct cmd_line* l, char* word){
 	int removed = 0;
-	/* For each letter in each word, change > or < to " "  */	
+	/* For each letter in each word, remove the word  */	
 	for(int i = 0; i < l->len; i++){
 		if(strcmp(l->args[i], word) == 0){
 			removed++;
@@ -179,11 +179,27 @@ struct cmd_line* cmd_line_process(char* line, int* fg_mode){
 	return output;
 }
 
+
+/**
+ * Function: cmd_line_strip()
+ * Description: Interface function that calls helper function to 
+		remove a specified word from the cmd line
+ * Parameters: a command line, word to remove 
+ * Pre-Conditions: 
+ * Post-Conditions: updates length, args string
+ */
 void cmd_line_strip(struct cmd_line* l, char* word){
 	_remove(l, word);
 	return;
 }
 
+/**
+ * Function: cmd_line_free() 
+ * Description: Frees all memory associated with a command line struct
+ * Parameters:
+ * Pre-Conditions:
+ * Post-Conditions: Memory freed
+ */
 
 void cmd_line_free(struct cmd_line* c){
 

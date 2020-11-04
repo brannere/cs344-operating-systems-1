@@ -1,16 +1,29 @@
+/**
+ * Prgram Filename: cmd_line.h
+ * Author: Erick Branner
+ * Date: 3 November 2020
+ * Description: Interface file for cmd_line.c
+ * Input:
+ * Output:
+ *
+*/
+
 #ifndef CMD_LINE_H
 #define CMD_LINE_H
 // #define MAX_ARGS 513 /* +1 from max to add null*/
 #include "./globals.h"
 
-
+/* 
+	A struct that represents all components of a command comand entered 
+	into the shell
+*/
 struct cmd_line{
-	char* args[MAX_ARGS];
-	int len;
-	int status;
-	char* out;
-	char* in;
-	int bg;
+	char* args[MAX_ARGS]; // number of arguments
+	int len; // length of inner char* arr
+	int status; // last status 
+	char* out; // outputfile
+	char* in; // input file 
+	int bg; // bg process (used with predfeined true and false)
 };
 
 struct cmd_line* cmd_line_process(char* line, int* fg);

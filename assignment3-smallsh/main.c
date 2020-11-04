@@ -18,12 +18,6 @@
 #include "./prog.h"
 #include "./globals.h"
 
-
-
-
-
-
-
 /**
  * Function: main()
  * Description: main process for program
