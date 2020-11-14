@@ -2,7 +2,7 @@
 #define GLOBALS_H
 
 
-#define LINE_SEP '@'
+#define LINE_SEP '\n'
 #define STOP_SEQ "STOP\n"
 #define ALLOW_CHAR_LO 32
 #define ALLOW_CHAR_HI 126

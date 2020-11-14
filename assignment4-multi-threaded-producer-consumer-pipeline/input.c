@@ -39,7 +39,9 @@ int _search_stop(struct input* in){
 
 void input_append_history(struct input* in){
 
-	strcat(in->history, in->processed);
+	if(in->stop_reading == false){
+		strcat(in->history, in->processed);
+	}
 	fprintf(stdout, "history: %s\n", in->history);
 
 	return;
