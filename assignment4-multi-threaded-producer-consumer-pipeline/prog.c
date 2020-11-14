@@ -43,8 +43,9 @@ void threading_prog(){
 		input_store_line(ipt_ctx, buff);
 		char_replace(ipt_ctx->line, '\n', ' ');
 		ipt_ctx->processed = _str_replace(ipt_ctx->line, "^");
-
 		fprintf(stdout, "line: %s\n", ipt_ctx->processed);
+		input_append_history(ipt_ctx);
+
 	}
 
 	

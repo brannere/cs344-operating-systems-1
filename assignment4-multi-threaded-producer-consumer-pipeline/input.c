@@ -14,6 +14,7 @@ struct input* input_init(){
 	struct input* n = malloc(sizeof(struct input));
 	n->len = 0;
 	n->line = NULL;
+	//memset history to null..?
 	n->stop_reading = false; 
 	// n->overflow = NULL;
 	// memset(n->line, '\0', strlen(n->line));
@@ -30,10 +31,18 @@ int _search_stop(struct input* in){
 		return true;
 	}
 	else{
-		fprintf(stdout, "stop not found");
+		fprintf(stdout, "stop not found\n");
 		return false;
 	}
 	return false;
+}
+
+void input_append_history(struct input* in){
+
+	strcat(in->history, in->processed);
+	fprintf(stdout, "history: %s\n", in->history);
+
+	return;
 }
 
 void input_store_line(struct input* in, char* line){
