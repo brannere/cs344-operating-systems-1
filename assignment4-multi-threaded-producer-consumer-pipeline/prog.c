@@ -17,6 +17,7 @@
 #include "./input.h"
 #include "./line_sep.h"
 #include "./plus_sign_thread.h"
+#include "./output.h"
 // char* get_input(){
 // 	char* buff;
 // 	size_t buffsize = MAX_IPT_LINE_LEN;
@@ -45,6 +46,7 @@ void threading_prog(){
 		ipt_ctx->processed = _str_replace(ipt_ctx->line, "^");
 		fprintf(stdout, "line: %s\n", ipt_ctx->processed);
 		input_append_history(ipt_ctx);
+		write_line(ipt_ctx);
 
 	}
 
