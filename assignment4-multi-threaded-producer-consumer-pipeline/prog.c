@@ -35,12 +35,17 @@ void threading_prog(){
 	struct input* ipt_ctx = NULL;
 
 	// curr_line = get_input();
-	getline(&buff, &buffsize, stdin); 
+
 	ipt_ctx = input_init();
-	input_store_line(ipt_ctx, buff);
-	char_replace(ipt_ctx->line, '\n', ' ');
-	ipt_ctx->line = _str_replace(ipt_ctx->line, "^");
-	fprintf(stdout, "line: %s\n", ipt_ctx->line);
+	
+	while(ipt_ctx->stop_reading == false){
+		getline(&buff, &buffsize, stdin); 
+		input_store_line(ipt_ctx, buff);
+		char_replace(ipt_ctx->line, '\n', ' ');
+		ipt_ctx->processed = _str_replace(ipt_ctx->line, "^");
+
+		fprintf(stdout, "line: %s\n", ipt_ctx->processed);
+	}
 
 	
 	// free(buff);

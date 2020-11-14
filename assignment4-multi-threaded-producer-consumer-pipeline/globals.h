@@ -9,5 +9,7 @@
 #define OUTPUT_LEN 80 /* +1 for line sep */
 #define MAX_IPT_LINE_LEN 1000
 #define MAX_IPT_LINE_NUM 49
+#define true 1
+#define false 0
 
 #endif

@@ -6,6 +6,7 @@ struct input{
 	int len;
 	char* line;
 	char* processed;
+	int stop_reading;
 };
 
 
