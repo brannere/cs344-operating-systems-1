@@ -3,6 +3,6 @@
 
 
 
-
+char* _str_replace(char* dest, char* word);
 
 #endif
