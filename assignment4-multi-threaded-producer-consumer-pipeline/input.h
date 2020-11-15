@@ -8,6 +8,7 @@ struct input{
 	char* processed;
 	char history[MAX_IPT_LINE_LEN*MAX_IPT_LINE_NUM]; // ordered history of lines
 	int stop_reading;
+	int start_flag;
 };
 
 

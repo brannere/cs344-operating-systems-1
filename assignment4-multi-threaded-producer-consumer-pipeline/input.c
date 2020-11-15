@@ -14,6 +14,7 @@ struct input* input_init(){
 	struct input* n = malloc(sizeof(struct input));
 	n->len = 0;
 	n->line = NULL;
+	n->start_flag = false;
 	//memset history to null..?
 	n->stop_reading = false; 
 	// n->overflow = NULL;
@@ -23,10 +24,10 @@ struct input* input_init(){
 
 int _search_stop(struct input* in){
 
-	char* ret = NULL;
+	// char* ret = NULL;
 
-	ret = strstr(in->line, STOP_SEQ);
-	if(ret != NULL){
+	// ret = strstr(in->line, STOP_SEQ);
+	if(strcmp(in->line, STOP_SEQ) == 0){
 		// fprintf(stdout, "stop found\n");
 		return true;
 	}
