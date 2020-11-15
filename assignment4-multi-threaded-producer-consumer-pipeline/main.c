@@ -46,6 +46,7 @@
 
 /* Same code from assignment documentation */
 char buffer_1[MAX_IPT_LINE_NUM][MAX_IPT_LINE_LEN];
+// char* buffer_1[MAX_IPT_LINE_NUM];
 // Number of items in the buffer
 int count_1 = 0;
 // Index where the square-root thread will put the next item
@@ -59,6 +60,7 @@ pthread_cond_t full_1 = PTHREAD_COND_INITIALIZER;
 
 
 char buffer_2[MAX_IPT_LINE_NUM][MAX_IPT_LINE_LEN];
+// char* buffer_2[MAX_IPT_LINE_NUM];
 int count_2 = 0;
 int prod_idx_2 = 0;
 int con_idx_2 = 0;
@@ -69,6 +71,8 @@ pthread_cond_t full_2 = PTHREAD_COND_INITIALIZER;
 
 
 char buffer_3[MAX_IPT_LINE_NUM][MAX_IPT_LINE_LEN];
+// char* buffer_3[MAX_IPT_LINE_NUM];
+
 int count_3 = 0;
 int prod_idx_3 = 0;
 int con_idx_3 = 0;
@@ -101,7 +105,7 @@ void put_buff_1(char* item){
 void put_buff_2(char* item){
 	pthread_mutex_lock(&mutex_2);
   // Put the item in the buffer
-  // buffer_1[prod_idx_1] = item;
+  // buffer_2[prod_idx_2] = item;
 	strcpy(buffer_2[prod_idx_2], item);
   // Increment the index where the next item will be put.
   prod_idx_2 = prod_idx_2 + 1;
@@ -115,7 +119,7 @@ void put_buff_2(char* item){
 void put_buff_3(char* item){
 	pthread_mutex_lock(&mutex_3);
   // Put the item in the buffer
-  // buffer_1[prod_idx_1] = item;
+  // buffer_3[prod_idx_3] = item;
 	strcpy(buffer_3[prod_idx_3], item);
   // Increment the index where the next item will be put.
   prod_idx_3 = prod_idx_3 + 1;
@@ -132,6 +136,7 @@ char* get_buff_1(){
 	while(count_1 == 0){
 		// Buffer is empty. Wait for the producer to signal that the buffer has data
   	pthread_cond_wait(&full_1, &mutex_1);
+	}
   	char* item = buffer_1[con_idx_1];
   	// Increment the index from which the item will be picked up
   	con_idx_1 = con_idx_1 + 1;
@@ -140,8 +145,7 @@ char* get_buff_1(){
   	pthread_mutex_unlock(&mutex_1);
   	// Return the item
   	return item;
-	}
-	return NULL;
+	// return NULL;
 }
 
 char* get_buff_2(){
@@ -150,6 +154,7 @@ char* get_buff_2(){
 	while(count_2 == 0){
 		// Buffer is empty. Wait for the producer to signal that the buffer has data
   	pthread_cond_wait(&full_2, &mutex_2);
+	}
   	char* item = buffer_2[con_idx_2];
   	// Increment the index from which the item will be picked up
   	con_idx_2 = con_idx_2 + 1;
@@ -158,8 +163,7 @@ char* get_buff_2(){
   	pthread_mutex_unlock(&mutex_2);
   	// Return the item
   	return item;
-	}
-	return NULL;
+	// return NULL;
 }
 
 char* get_buff_3(){
@@ -168,6 +172,7 @@ char* get_buff_3(){
 	while(count_3 == 0){
 		// Buffer is empty. Wait for the producer to signal that the buffer has data
   	pthread_cond_wait(&full_3, &mutex_3);
+	}
   	char* item = buffer_3[con_idx_3];
   	// Increment the index from which the item will be picked up
   	con_idx_3 = con_idx_3 + 1;
@@ -176,8 +181,7 @@ char* get_buff_3(){
   	pthread_mutex_unlock(&mutex_3);
   	// Return the item
   	return item;
-	}
-	return NULL;
+	// return NULL;
 }
 
 /*
@@ -189,21 +193,24 @@ void *get_input(void *args)
 {
 		fprintf(stdout, "get_input thread!\n");
 		fflush(stdout);
-		struct input* ipt_ctx = NULL;
-		ipt_ctx = input_init();
-
-		char* buff = NULL;
+		// struct input* ipt_ctx = NULL;
+		// ipt_ctx = input_init();
+		
+		char* buff = calloc(MAX_IPT_LINE_NUM+1, sizeof(char));
 		size_t buffsize = MAX_IPT_LINE_LEN;
     // for (int i = 0; i < NUM_ITEMS; i++)
-    for (;;)
-    {
+    for (;;){
       // Get the user input
       // int item = get_user_input();
       // put_buff_1(item);
 			getline(&buff, &buffsize, stdin);
-			input_store_line(ipt_ctx, buff);
-			if(ipt_ctx->stop_reading == true) break;
+			// input_store_line(ipt_ctx, buff);
 			put_buff_1(buff);
+			if(strcmp(buff, STOP_SEQ) == 0){
+				fprintf(stdout, "BREAKING FROM INPUT\n\n\n");
+				fflush(stdout);
+				break;
+			}
 			// free(buff);
 
     }
@@ -214,34 +221,62 @@ void *get_input(void *args)
 void* line_sep(void* args){
 	fprintf(stdout, "line_sep thread\n");
 	fflush(stdout);
-
-	char* tmp = get_buff_1();
-	fprintf(stdout, "got: %s\n", tmp);
-	fflush(stdout);
-	if(tmp != NULL){
-		char_replace(tmp, LINE_SEP, ' ');
-		fprintf(stdout, "changed to: %s\n", tmp);
-		// tmp  = _str_replace(tmp, "^");
-		fflush(stdout);
-		put_buff_2(tmp);
+	
+	for(;;){
+		char* tmp = get_buff_1();
+		// fprintf(stdout, "got: %s\n", tmp);
+		// fflush(stdout);
+		// if(tmp != NULL){
+			if(strcmp(STOP_SEQ, tmp) != 0){
+				char_replace(tmp, LINE_SEP, ' ');
+			}
+			put_buff_2(tmp);
+			if(strcmp(STOP_SEQ, tmp) == 0) break;
+			// fprintf(stdout, "changed to: %s\n", tmp);
+			// tmp  = _str_replace(tmp, "^");
+			// fflush(stdout);
+		// }
 	}
-
 	return NULL;
 }
 
 void* plus_sign(void* args){
 	fprintf(stdout, "plus sign thread\n");
 	fflush(stdout);
-
-	char* tmp = get_buff_2();
-	fprintf(stdout, "got: %s\n", tmp);
-	fflush(stdout);
-	if(tmp != NULL){
-		// char_replace(tmp, LINE_SEP, ' ');
+	for(;;){
+		char* tmp = get_buff_2();
 		tmp  = _str_replace(tmp, "^");
-		fprintf(stdout, "changed to: %s\n", tmp);
-		fflush(stdout);
 		put_buff_3(tmp);
+		if(strcmp(STOP_SEQ, tmp) == 0) break;
+		// fprintf(stdout, "got: %s\n", tmp);
+		// fflush(stdout);
+		// if(tmp != NULL){
+			// char_replace(tmp, LINE_SEP, ' ');
+			// fprintf(stdout, "changed to: %s\n", tmp);
+			// fflush(stdout);
+		// }
+	}
+	return NULL;
+}
+
+void* output(void* args){
+	fprintf(stdout, "output thread\n");
+	fflush(stdout);
+	char history[MAX_IPT_LINE_LEN*MAX_IPT_LINE_NUM];
+	char* tmp_b;
+	for(;;){
+		tmp_b = get_buff_3();
+		// fprintf(stdout, "got: %s\n", tmp_b);
+		// fflush(stdout);
+		// fprintf(stdout, "history: %s\n", history);
+		// fflush(stdout);
+		if(strcmp(STOP_SEQ, tmp_b) == 0){
+			fprintf(stdout, "BREAKING FROM OUTPUT\n\n\n");
+			fflush(stdout);
+			break;
+		} 
+		strcat(history,tmp_b);
+		// output stuff
 	}
 
 	return NULL;
@@ -250,15 +285,15 @@ void* plus_sign(void* args){
 int main(){
 
 	// threading_prog();	
-	pthread_t input_t, line_sep_t, plus_sign_t;
+	pthread_t input_t, line_sep_t, plus_sign_t, output_t;
 	pthread_create(&input_t, NULL, get_input, NULL);
 	pthread_create(&line_sep_t, NULL, line_sep, NULL);
 	pthread_create(&plus_sign_t, NULL, plus_sign, NULL);
-	// pthread_create(&output_t, NULL, write_output, NULL);
+	pthread_create(&output_t, NULL, output, NULL);
 	// Wait for the threads to terminate
 	pthread_join(input_t, NULL);
 	pthread_join(line_sep_t, NULL);
 	pthread_join(plus_sign_t, NULL);
-	// pthread_join(output_t, NULL);	
+	pthread_join(output_t, NULL);	
 	return EXIT_SUCCESS;                   
 }
