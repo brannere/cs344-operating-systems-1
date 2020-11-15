@@ -98,6 +98,34 @@ void put_buff_1(char* item){
   pthread_mutex_unlock(&mutex_1);
 }
 
+void put_buff_2(char* item){
+	pthread_mutex_lock(&mutex_2);
+  // Put the item in the buffer
+  // buffer_1[prod_idx_1] = item;
+	strcpy(buffer_2[prod_idx_2], item);
+  // Increment the index where the next item will be put.
+  prod_idx_2 = prod_idx_2 + 1;
+  count_2++;
+  // Signal to the consumer that the buffer is no longer empty
+  pthread_cond_signal(&full_2);
+  // Unlock the mutex
+  pthread_mutex_unlock(&mutex_2);
+}
+
+void put_buff_3(char* item){
+	pthread_mutex_lock(&mutex_3);
+  // Put the item in the buffer
+  // buffer_1[prod_idx_1] = item;
+	strcpy(buffer_3[prod_idx_3], item);
+  // Increment the index where the next item will be put.
+  prod_idx_3 = prod_idx_3 + 1;
+  count_3++;
+  // Signal to the consumer that the buffer is no longer empty
+  pthread_cond_signal(&full_3);
+  // Unlock the mutex
+  pthread_mutex_unlock(&mutex_3);
+}
+
 char* get_buff_1(){
 
 	pthread_mutex_lock(&mutex_1);
@@ -110,6 +138,42 @@ char* get_buff_1(){
   	count_1--;
   	// Unlock the mutex
   	pthread_mutex_unlock(&mutex_1);
+  	// Return the item
+  	return item;
+	}
+	return NULL;
+}
+
+char* get_buff_2(){
+
+	pthread_mutex_lock(&mutex_2);
+	while(count_2 == 0){
+		// Buffer is empty. Wait for the producer to signal that the buffer has data
+  	pthread_cond_wait(&full_2, &mutex_2);
+  	char* item = buffer_2[con_idx_2];
+  	// Increment the index from which the item will be picked up
+  	con_idx_2 = con_idx_2 + 1;
+  	count_2--;
+  	// Unlock the mutex
+  	pthread_mutex_unlock(&mutex_2);
+  	// Return the item
+  	return item;
+	}
+	return NULL;
+}
+
+char* get_buff_3(){
+
+	pthread_mutex_lock(&mutex_3);
+	while(count_3 == 0){
+		// Buffer is empty. Wait for the producer to signal that the buffer has data
+  	pthread_cond_wait(&full_3, &mutex_3);
+  	char* item = buffer_3[con_idx_3];
+  	// Increment the index from which the item will be picked up
+  	con_idx_3 = con_idx_3 + 1;
+  	count_3--;
+  	// Unlock the mutex
+  	pthread_mutex_unlock(&mutex_3);
   	// Return the item
   	return item;
 	}
@@ -156,9 +220,28 @@ void* line_sep(void* args){
 	fflush(stdout);
 	if(tmp != NULL){
 		char_replace(tmp, LINE_SEP, ' ');
+		fprintf(stdout, "changed to: %s\n", tmp);
+		// tmp  = _str_replace(tmp, "^");
+		fflush(stdout);
+		put_buff_2(tmp);
+	}
+
+	return NULL;
+}
+
+void* plus_sign(void* args){
+	fprintf(stdout, "plus sign thread\n");
+	fflush(stdout);
+
+	char* tmp = get_buff_2();
+	fprintf(stdout, "got: %s\n", tmp);
+	fflush(stdout);
+	if(tmp != NULL){
+		// char_replace(tmp, LINE_SEP, ' ');
 		tmp  = _str_replace(tmp, "^");
 		fprintf(stdout, "changed to: %s\n", tmp);
 		fflush(stdout);
+		put_buff_3(tmp);
 	}
 
 	return NULL;
@@ -167,15 +250,15 @@ void* line_sep(void* args){
 int main(){
 
 	// threading_prog();	
-	pthread_t input_t, line_sep_t;
+	pthread_t input_t, line_sep_t, plus_sign_t;
 	pthread_create(&input_t, NULL, get_input, NULL);
 	pthread_create(&line_sep_t, NULL, line_sep, NULL);
-	// pthread_create(&plus_sign_t, NULL, plus_sign, NULL);
+	pthread_create(&plus_sign_t, NULL, plus_sign, NULL);
 	// pthread_create(&output_t, NULL, write_output, NULL);
 	// Wait for the threads to terminate
 	pthread_join(input_t, NULL);
 	pthread_join(line_sep_t, NULL);
-	// pthread_join(plus_sign_t, NULL);
+	pthread_join(plus_sign_t, NULL);
 	// pthread_join(output_t, NULL);	
 	return EXIT_SUCCESS;                   
 }
