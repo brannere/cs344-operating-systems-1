@@ -1,4 +1,4 @@
-CC = gcc -g -Wall --std=gnu99
+CC = gcc -pthread -g -Wall --std=gnu99
 exe_file = line_processor
 
 $(exe_file): line.o input.o line_sep.o plus_sign_thread.o output.o prog.o main.o
