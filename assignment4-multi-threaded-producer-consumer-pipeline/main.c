@@ -98,6 +98,24 @@ void put_buff_1(char* item){
   pthread_mutex_unlock(&mutex_1);
 }
 
+char* get_buff_1(){
+
+	pthread_mutex_lock(&mutex_1);
+	while(count_1 == 0){
+		// Buffer is empty. Wait for the producer to signal that the buffer has data
+  	pthread_cond_wait(&full_1, &mutex_1);
+  	char* item = buffer_1[con_idx_1];
+  	// Increment the index from which the item will be picked up
+  	con_idx_1 = con_idx_1 + 1;
+  	count_1--;
+  	// Unlock the mutex
+  	pthread_mutex_unlock(&mutex_1);
+  	// Return the item
+  	return item;
+	}
+	return NULL;
+}
+
 /*
  Function that the input thread will run.
  Get input from the user.
@@ -128,17 +146,35 @@ void *get_input(void *args)
     return NULL;
 }
 
+
+void* line_sep(void* args){
+	fprintf(stdout, "line_sep thread\n");
+	fflush(stdout);
+
+	char* tmp = get_buff_1();
+	fprintf(stdout, "got: %s\n", tmp);
+	fflush(stdout);
+	if(tmp != NULL){
+		char_replace(tmp, LINE_SEP, ' ');
+		tmp  = _str_replace(tmp, "^");
+		fprintf(stdout, "changed to: %s\n", tmp);
+		fflush(stdout);
+	}
+
+	return NULL;
+}
+
 int main(){
 
 	// threading_prog();	
-	pthread_t input_t; 
+	pthread_t input_t, line_sep_t;
 	pthread_create(&input_t, NULL, get_input, NULL);
-	// pthread_create(&line_sep_t, NULL, line_separation, NULL);
+	pthread_create(&line_sep_t, NULL, line_sep, NULL);
 	// pthread_create(&plus_sign_t, NULL, plus_sign, NULL);
 	// pthread_create(&output_t, NULL, write_output, NULL);
 	// Wait for the threads to terminate
 	pthread_join(input_t, NULL);
-	// pthread_join(line_sep_t, NULL);
+	pthread_join(line_sep_t, NULL);
 	// pthread_join(plus_sign_t, NULL);
 	// pthread_join(output_t, NULL);	
 	return EXIT_SUCCESS;                   
