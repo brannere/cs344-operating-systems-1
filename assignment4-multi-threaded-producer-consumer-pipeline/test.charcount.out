@@ -1,0 +1,38 @@
+stop not found
+hit
+line: Rust is an iron oxide, a usually reddish brown oxide formed by the ^reaction^ of iron ^^and oxygen in the presence of water or air moisture. Several forms of rust are distinguishable both visually and by spectroscopy, and form under different circumstances. 
+history: Rust is an iron oxide, a usually reddish brown oxide formed by the ^reaction^ of iron ^^and oxygen in the presence of water or air moisture. Several forms of rust are distinguishable both visually and by spectroscopy, and form under different circumstances. 
+
+OUTPUT
+
+Rust is an iron oxide, a usually reddish brown oxide formed by the ^reaction^ of
+ iron ^^and oxygen in the presence of water or air moisture. Several forms of ru
+st are distinguishable both visually and by spectroscopy, and form under differe
+i ended with: 240
+last char seen: t
+stop not found
+hit
+line: Given sufficient time, any iron mass, in the presence of water and oxygen, could ^^eventually convert entirely to rust. 
+history: Rust is an iron oxide, a usually reddish brown oxide formed by the ^reaction^ of iron ^^and oxygen in the presence of water or air moisture. Several forms of rust are distinguishable both visually and by spectroscopy, and form under different circumstances. Given sufficient time, any iron mass, in the presence of water and oxygen, could ^^eventually convert entirely to rust. 
+
+OUTPUT
+
+Rust is an iron oxide, a usually reddish brown oxide formed by the ^reaction^ of
+ iron ^^and oxygen in the presence of water or air moisture. Several forms of ru
+st are distinguishable both visually and by spectroscopy, and form under differe
+nt circumstances. Given sufficient time, any iron mass, in the presence of water
+i ended with: 320
+last char seen: a
+stop found
+hit
+line: STOP 
+history: Rust is an iron oxide, a usually reddish brown oxide formed by the ^reaction^ of iron ^^and oxygen in the presence of water or air moisture. Several forms of rust are distinguishable both visually and by spectroscopy, and form under different circumstances. Given sufficient time, any iron mass, in the presence of water and oxygen, could ^^eventually convert entirely to rust. 
+
+OUTPUT
+
+Rust is an iron oxide, a usually reddish brown oxide formed by the ^reaction^ of
+ iron ^^and oxygen in the presence of water or air moisture. Several forms of ru
+st are distinguishable both visually and by spectroscopy, and form under differe
+nt circumstances. Given sufficient time, any iron mass, in the presence of water
+i ended with: 320
+last char seen: a

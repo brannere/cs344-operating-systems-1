@@ -42,10 +42,12 @@ void threading_prog(){
 	while(ipt_ctx->stop_reading == false){
 		getline(&buff, &buffsize, stdin); 
 		input_store_line(ipt_ctx, buff);
+		/* processing */
 		char_replace(ipt_ctx->line, LINE_SEP, ' ');
 		ipt_ctx->processed = _str_replace(ipt_ctx->line, "^");
-		fprintf(stdout, "line: %s\n", ipt_ctx->processed);
+		// fprintf(stdout, "line: %s\n", ipt_ctx->processed);
 		input_append_history(ipt_ctx);
+		/* output */
 		write_line(ipt_ctx);
 
 	}

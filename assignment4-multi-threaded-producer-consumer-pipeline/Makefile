@@ -18,4 +18,4 @@ prog.o: prog.c
 main.o: main.c
 	$(CC) -c main.c
 clean:
-	rm -f *.out *.o $(exe_file)
+	rm -f *.o $(exe_file)

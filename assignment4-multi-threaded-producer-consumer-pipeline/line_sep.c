@@ -9,7 +9,7 @@
 void char_replace(char* source, const int c, const int t){
 	for(int i = 0; i < strlen(source); i++){
 		if(source[i] == c){
-			fprintf(stdout, "hit\n");
+			// fprintf(stdout, "hit\n");
 			source[i] = t;
 		}
 	}

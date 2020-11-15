@@ -27,11 +27,11 @@ int _search_stop(struct input* in){
 
 	ret = strstr(in->line, STOP_SEQ);
 	if(ret != NULL){
-		fprintf(stdout, "stop found\n");
+		// fprintf(stdout, "stop found\n");
 		return true;
 	}
 	else{
-		fprintf(stdout, "stop not found\n");
+		// fprintf(stdout, "stop not found\n");
 		return false;
 	}
 	return false;
@@ -42,7 +42,7 @@ void input_append_history(struct input* in){
 	if(in->stop_reading == false){
 		strcat(in->history, in->processed);
 	}
-	fprintf(stdout, "history: %s\n", in->history);
+	// fprintf(stdout, "history: %s\n", in->history);
 
 	return;
 }
