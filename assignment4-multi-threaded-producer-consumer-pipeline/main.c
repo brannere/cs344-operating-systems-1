@@ -17,7 +17,6 @@
 // #include <sys/types.h>
 // #include "./prog.h"
 
-// #include "./globals.h"
 
 /**
  * Function: main()
@@ -33,11 +32,12 @@
 #include <unistd.h>
 #include <string.h>
 #include <pthread.h>
-#include "./prog.h"
+#include "./globals.h"
+// #include "./prog.h"
 #include "./input.h"
 #include "./line_sep.h"
 #include "./plus_sign_thread.h"
-#include "./output.h"
+// #include "./output.h"
 
 
 
@@ -83,6 +83,74 @@ pthread_cond_t full_3 = PTHREAD_COND_INITIALIZER;
 
 
 /* functions */
+
+
+
+void write_line(char* history){
+	int i = 0;
+	char* tmp = NULL;
+	// if(in->stop_reading == true){
+	// 	fprintf(stdout, "\n");
+	// }
+	// else{
+
+		if(strlen(history) % OUTPUT_LEN == 0 && strlen(history) != 0){
+			// fprintf(stdout, "printing multiple of %d\n", OUTPUT_LEN);
+			/* Multiple of OUTPUT_LEN (80), write everything */
+			// fprintf(stdout, "%s\n", in->history);
+			for(i = 0; i < strlen(history); i++){
+				// if(in->start_flag == false){
+				// 	in->start_flag = true;
+				// }else{
+					if(i % OUTPUT_LEN == 0) fprintf(stdout, "\n");
+				// }
+				fprintf(stdout, "%c", history[i]);
+				fprintf(stdout, "\n");
+				fflush(stdout);
+			} 
+			/* Clean history */
+			memset(history, '\0', strlen(history));
+		}
+		else if(strlen(history) < OUTPUT_LEN){
+			// fprintf(stdout, "less OUTPUT_LEN; do nothing\n");
+		}
+		else{
+			// fprintf(stdout, "\nOUTPUT\n");
+			for
+			(
+				i = 0;
+				i < (strlen(history) - ((strlen(history))%OUTPUT_LEN));
+				i++
+			)
+			{
+				// if(in->start_flag == false){
+				// 	in->start_flag = true;
+				// }else{
+				// }
+				if(i != 0 && i % OUTPUT_LEN == 0) fprintf(stdout, "\n");
+				fprintf(stdout, "%c", history[i]);
+				fflush(stdout);
+				// if(i % OUTPUT_LEN == 0) fprintf(stdout, "\n");
+				// called = true; /* this is really hacky but it works for my purposes */
+				// fprintf(stdout, "%c", in->history[i]);
+			} 
+			// fprintf(stdout, "\n");
+			// fprintf(stdout, "i ended with: %d\n", i);
+			// fprintf(stdout, "last char seen: %c\n", in->history[i]);
+
+			tmp = calloc(strlen(&history[i]), sizeof(char));
+			strcpy(tmp, &history[i]);
+			// fprintf(stdout, "remaining string: %s\n", tmp);
+			memset(history, '\0', strlen(history));
+			strcpy(history, tmp);
+			// free(tmp);
+		// }
+		fprintf(stdout, "\n");
+		fflush(stdout);
+	}
+	return; 
+}
+
 
 /*
  Put an item in buff_1
@@ -191,8 +259,8 @@ char* get_buff_3(){
 */
 void *get_input(void *args)
 {
-		fprintf(stdout, "get_input thread!\n");
-		fflush(stdout);
+		// fprintf(stdout, "get_input thread!\n");
+		// fflush(stdout);
 		// struct input* ipt_ctx = NULL;
 		// ipt_ctx = input_init();
 		
@@ -207,8 +275,10 @@ void *get_input(void *args)
 			// input_store_line(ipt_ctx, buff);
 			put_buff_1(buff);
 			if(strcmp(buff, STOP_SEQ) == 0){
-				fprintf(stdout, "BREAKING FROM INPUT\n\n\n");
-				fflush(stdout);
+				// fprintf(stdout, "BREAKING FROM INPUT\n\n\n");
+				// fflush(stdout);
+				// fprintf(stdout, "\n");
+				// fflush(stdout);
 				break;
 			}
 			// free(buff);
@@ -219,8 +289,8 @@ void *get_input(void *args)
 
 
 void* line_sep(void* args){
-	fprintf(stdout, "line_sep thread\n");
-	fflush(stdout);
+	// fprintf(stdout, "line_sep thread\n");
+	// fflush(stdout);
 	
 	for(;;){
 		char* tmp = get_buff_1();
@@ -241,8 +311,8 @@ void* line_sep(void* args){
 }
 
 void* plus_sign(void* args){
-	fprintf(stdout, "plus sign thread\n");
-	fflush(stdout);
+	// fprintf(stdout, "plus sign thread\n");
+	// fflush(stdout);
 	for(;;){
 		char* tmp = get_buff_2();
 		tmp  = _str_replace(tmp, "^");
@@ -260,8 +330,8 @@ void* plus_sign(void* args){
 }
 
 void* output(void* args){
-	fprintf(stdout, "output thread\n");
-	fflush(stdout);
+	// fprintf(stdout, "output thread\n");
+	// fflush(stdout);
 	char history[MAX_IPT_LINE_LEN*MAX_IPT_LINE_NUM];
 	char* tmp_b;
 	for(;;){
@@ -271,12 +341,16 @@ void* output(void* args){
 		// fprintf(stdout, "history: %s\n", history);
 		// fflush(stdout);
 		if(strcmp(STOP_SEQ, tmp_b) == 0){
-			fprintf(stdout, "BREAKING FROM OUTPUT\n\n\n");
-			fflush(stdout);
+			// fprintf(stdout, "BREAKING FROM OUTPUT\n\n\n");
+			// fflush(stdout);
+			// fprintf(stdout, "\n");
+			// fflush(stdout);
 			break;
 		} 
 		strcat(history,tmp_b);
 		// output stuff
+		write_line(history);
+
 	}
 
 	return NULL;
