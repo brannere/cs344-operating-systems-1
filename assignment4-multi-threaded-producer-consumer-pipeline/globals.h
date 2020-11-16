@@ -1,3 +1,13 @@
+/**
+ * Prgram Filename: globals.h
+ * Author: Erick Branner
+ * Date: 16 November 2020
+ * Description: macros for program to use 
+ * Input:
+ * Output:
+ *
+*/
+
 #ifndef GLOBALS_H
 #define GLOBALS_H
 

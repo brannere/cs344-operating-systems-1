@@ -1,11 +1,11 @@
 Erick Branner
 README.txt for assignment4-multi-threaded-producer-consumer-pipeline
-3 November 2020
+16 November 2020
 
 **Compilation and execution**
 
-COMPILE with
-EXECUTE with
+COMPILE with `make`
+EXECUTE with `./line_processor`
 
 
 **Documentation templates**

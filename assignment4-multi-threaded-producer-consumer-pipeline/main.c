@@ -3,28 +3,10 @@
  * Author: Erick Branner
  * Date: 16 November 2020
  * Description: Contains main function/process for assginment
- * Input: Strings of text relating to file names
- * Output: Files, directoires
+ * Input:
+ * Output: 
  * 
 */
-
-// #include <fcntl.h>
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <unistd.h>
-// #include <signal.h>
-// #include <string.h>
-// #include <sys/types.h>
-// #include "./prog.h"
-
-
-/**
- * Function: main()
- * Description: main process for program
- * Parameters: argument count and argument number
- * Pre-Conditions: csv file passed from command line exists
- * Post-Conditions: None
- */
 
 #include <fcntl.h>
 #include <stdio.h>
@@ -33,18 +15,18 @@
 #include <string.h>
 #include <pthread.h>
 #include "./globals.h"
-// #include "./prog.h"
-#include "./input.h"
 #include "./line_sep.h"
 #include "./plus_sign_thread.h"
-// #include "./output.h"
 
 
 
 
+/* The following variables and buffers are from the example program
+linked on the assignment documentation  */
 
 
-/* Same code from assignment documentation */
+
+/* Buffer 1 */
 char buffer_1[MAX_IPT_LINE_NUM][MAX_IPT_LINE_LEN];
 // char* buffer_1[MAX_IPT_LINE_NUM];
 // Number of items in the buffer
@@ -58,7 +40,7 @@ pthread_mutex_t mutex_1 = PTHREAD_MUTEX_INITIALIZER;
 // Initialize the condition variable for buffer 1
 pthread_cond_t full_1 = PTHREAD_COND_INITIALIZER;
 
-
+/* Buffer 2 */
 char buffer_2[MAX_IPT_LINE_NUM][MAX_IPT_LINE_LEN];
 // char* buffer_2[MAX_IPT_LINE_NUM];
 int count_2 = 0;
@@ -69,7 +51,7 @@ pthread_mutex_t mutex_2 = PTHREAD_MUTEX_INITIALIZER;
 // Initialize the condition variable for buffer 1
 pthread_cond_t full_2 = PTHREAD_COND_INITIALIZER;
 
-
+/* Buffer 2 */
 char buffer_3[MAX_IPT_LINE_NUM][MAX_IPT_LINE_LEN];
 // char* buffer_3[MAX_IPT_LINE_NUM];
 
@@ -82,71 +64,50 @@ pthread_mutex_t mutex_3 = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t full_3 = PTHREAD_COND_INITIALIZER;
 
 
-/* functions */
+/* End of threading useage code */
 
 
+/* Functions */
 
+/**
+ * Function: write_line()
+ * Description: Writes a line of exactly OUTPUT_LEN (80) chars 
+ * from an input string
+ * Parameters: C string of source string to be printed
+ * Pre-Conditions:
+ * Post-Conditions: writes to stdout
+ */
 void write_line(char* history){
 	int i = 0;
 	char* tmp = NULL;
-	// if(in->stop_reading == true){
-	// 	fprintf(stdout, "\n");
-	// }
-	// else{
-
-		if(strlen(history) % OUTPUT_LEN == 0 && strlen(history) != 0){
-			// fprintf(stdout, "printing multiple of %d\n", OUTPUT_LEN);
-			/* Multiple of OUTPUT_LEN (80), write everything */
-			// fprintf(stdout, "%s\n", in->history);
-			for(i = 0; i < strlen(history); i++){
-				// if(in->start_flag == false){
-				// 	in->start_flag = true;
-				// }else{
-					if(i % OUTPUT_LEN == 0) fprintf(stdout, "\n");
-				// }
-				fprintf(stdout, "%c", history[i]);
-				fprintf(stdout, "\n");
-				fflush(stdout);
-			} 
-			/* Clean history */
-			memset(history, '\0', strlen(history));
-		}
-		else if(strlen(history) < OUTPUT_LEN){
-			// fprintf(stdout, "less OUTPUT_LEN; do nothing\n");
-		}
-		else{
-			// fprintf(stdout, "\nOUTPUT\n");
-			for
-			(
-				i = 0;
-				i < (strlen(history) - ((strlen(history))%OUTPUT_LEN));
-				i++
-			)
-			{
-				// if(in->start_flag == false){
-				// 	in->start_flag = true;
-				// }else{
-				// }
-				if(i != 0 && i % OUTPUT_LEN == 0) fprintf(stdout, "\n");
-				fprintf(stdout, "%c", history[i]);
-				fflush(stdout);
-				// if(i % OUTPUT_LEN == 0) fprintf(stdout, "\n");
-				// called = true; /* this is really hacky but it works for my purposes */
-				// fprintf(stdout, "%c", in->history[i]);
-			} 
-			// fprintf(stdout, "\n");
-			// fprintf(stdout, "i ended with: %d\n", i);
-			// fprintf(stdout, "last char seen: %c\n", in->history[i]);
-
-			tmp = calloc(strlen(&history[i]), sizeof(char));
-			strcpy(tmp, &history[i]);
-			// fprintf(stdout, "remaining string: %s\n", tmp);
-			memset(history, '\0', strlen(history));
-			strcpy(history, tmp);
-			// free(tmp);
-		// }
-		fprintf(stdout, "\n");
-		fflush(stdout);
+		/* Less than output length, do nothing*/
+	if(strlen(history) < OUTPUT_LEN){
+		/* Do nothing */
+	}
+	else{
+		/* Print each char in history */
+		for
+		(
+			i = 0;
+			i < (strlen(history) - ((strlen(history))%OUTPUT_LEN));
+			i++
+		)
+		{
+			/* Print a new line on the OUTPUT_LENth char written */
+			if(i != 0 && i % OUTPUT_LEN == 0) fprintf(stdout, "\n");
+			fprintf(stdout, "%c", history[i]);
+			fflush(stdout);
+		} 
+		/* Copy the remaning string */
+		tmp = calloc(strlen(&history[i]), sizeof(char));
+		strcpy(tmp, &history[i]);
+		/* Clear history and add remaining string to new start of history */
+		memset(history, '\0', strlen(history));
+		strcpy(history, tmp);
+		// free(tmp);
+	/* Print a new line after printing multiple of OUTPUT_LEN */
+	fprintf(stdout, "\n");
+	fflush(stdout);
 	}
 	return; 
 }
@@ -170,6 +131,9 @@ void put_buff_1(char* item){
   pthread_mutex_unlock(&mutex_1);
 }
 
+/* 
+	Put an item in buff_2
+*/
 void put_buff_2(char* item){
 	pthread_mutex_lock(&mutex_2);
   // Put the item in the buffer
@@ -184,6 +148,9 @@ void put_buff_2(char* item){
   pthread_mutex_unlock(&mutex_2);
 }
 
+/* 
+	Put an item in buff_3
+*/
 void put_buff_3(char* item){
 	pthread_mutex_lock(&mutex_3);
   // Put the item in the buffer
@@ -198,6 +165,10 @@ void put_buff_3(char* item){
   pthread_mutex_unlock(&mutex_3);
 }
 
+
+/* 
+	get contents of buff_1
+*/
 char* get_buff_1(){
 
 	pthread_mutex_lock(&mutex_1);
@@ -213,9 +184,12 @@ char* get_buff_1(){
   	pthread_mutex_unlock(&mutex_1);
   	// Return the item
   	return item;
-	// return NULL;
 }
 
+
+/* 
+	get contents of buff_2
+*/
 char* get_buff_2(){
 
 	pthread_mutex_lock(&mutex_2);
@@ -231,9 +205,11 @@ char* get_buff_2(){
   	pthread_mutex_unlock(&mutex_2);
   	// Return the item
   	return item;
-	// return NULL;
 }
 
+/* 
+	get contents of buff_3
+*/
 char* get_buff_3(){
 
 	pthread_mutex_lock(&mutex_3);
@@ -249,116 +225,99 @@ char* get_buff_3(){
   	pthread_mutex_unlock(&mutex_3);
   	// Return the item
   	return item;
-	// return NULL;
 }
 
-/*
- Function that the input thread will run.
- Get input from the user.
- Put the item in the buffer shared with the square_root thread.
-*/
-void *get_input(void *args)
-{
-		// fprintf(stdout, "get_input thread!\n");
-		// fflush(stdout);
-		// struct input* ipt_ctx = NULL;
-		// ipt_ctx = input_init();
-		
+/**
+ * Function: get_input
+ * Description: ran by input thread; gets input from stdin; 
+ * expects to be termineted by `\n`
+ * Parameters: arguments
+ * Pre-Conditions: 
+ * Post-Conditions: writes intput read from stdin to buff 1
+ */
+void *get_input(void *args){	
 		char* buff = calloc(MAX_IPT_LINE_NUM+1, sizeof(char));
 		size_t buffsize = MAX_IPT_LINE_LEN;
-    // for (int i = 0; i < NUM_ITEMS; i++)
     for (;;){
       // Get the user input
-      // int item = get_user_input();
-      // put_buff_1(item);
 			getline(&buff, &buffsize, stdin);
-			// input_store_line(ipt_ctx, buff);
 			put_buff_1(buff);
 			if(strcmp(buff, STOP_SEQ) == 0){
-				// fprintf(stdout, "BREAKING FROM INPUT\n\n\n");
-				// fflush(stdout);
-				// fprintf(stdout, "\n");
-				// fflush(stdout);
 				break;
 			}
-			// free(buff);
-
     }
     return NULL;
 }
 
-
+/**
+ * Function: line_sep
+ * Description: ran by line separator thread; replaces occurences
+ * of LINE_SEP (\n) with a space (ASCII 32)
+ * Parameters: arguments
+ * Pre-Conditions: 
+ * Post-Conditions: writes changed string to buff 2
+ */
 void* line_sep(void* args){
-	// fprintf(stdout, "line_sep thread\n");
-	// fflush(stdout);
-	
 	for(;;){
 		char* tmp = get_buff_1();
-		// fprintf(stdout, "got: %s\n", tmp);
-		// fflush(stdout);
-		// if(tmp != NULL){
 			if(strcmp(STOP_SEQ, tmp) != 0){
 				char_replace(tmp, LINE_SEP, ' ');
 			}
 			put_buff_2(tmp);
 			if(strcmp(STOP_SEQ, tmp) == 0) break;
-			// fprintf(stdout, "changed to: %s\n", tmp);
-			// tmp  = _str_replace(tmp, "^");
-			// fflush(stdout);
-		// }
 	}
 	return NULL;
 }
 
+/**
+ * Function: plus_sign()
+ * Description: Ran by plus sign thread; replaces occurences 
+ * of "++" with "^" 
+ * Parameters: arguments
+ * Pre-Conditions:
+ * Post-Conditions: Writes changed string to buff 3 
+ */
 void* plus_sign(void* args){
-	// fprintf(stdout, "plus sign thread\n");
-	// fflush(stdout);
 	for(;;){
 		char* tmp = get_buff_2();
 		tmp  = _str_replace(tmp, "^");
 		put_buff_3(tmp);
 		if(strcmp(STOP_SEQ, tmp) == 0) break;
-		// fprintf(stdout, "got: %s\n", tmp);
-		// fflush(stdout);
-		// if(tmp != NULL){
-			// char_replace(tmp, LINE_SEP, ' ');
-			// fprintf(stdout, "changed to: %s\n", tmp);
-			// fflush(stdout);
-		// }
 	}
 	return NULL;
 }
 
+/**
+ * Function: output()
+ * Description: ran by output thread; handles program output 
+ * writes chars to stdout in lines of 80
+ * Parameters: arguemnts
+ * Pre-Conditions:
+ * Post-Conditions: writes to stdout
+ */
 void* output(void* args){
-	// fprintf(stdout, "output thread\n");
-	// fflush(stdout);
 	char history[MAX_IPT_LINE_LEN*MAX_IPT_LINE_NUM];
 	char* tmp_b;
 	for(;;){
 		tmp_b = get_buff_3();
-		// fprintf(stdout, "got: %s\n", tmp_b);
-		// fflush(stdout);
-		// fprintf(stdout, "history: %s\n", history);
-		// fflush(stdout);
-		if(strcmp(STOP_SEQ, tmp_b) == 0){
-			// fprintf(stdout, "BREAKING FROM OUTPUT\n\n\n");
-			// fflush(stdout);
-			// fprintf(stdout, "\n");
-			// fflush(stdout);
-			break;
-		} 
+		if(strcmp(STOP_SEQ, tmp_b) == 0) break;
 		strcat(history,tmp_b);
-		// output stuff
 		write_line(history);
-
 	}
-
 	return NULL;
 }
 
+/**
+ * Function: main()
+ * Description: main process for program
+ * Parameters: argument count and argument number
+ * Pre-Conditions: csv file passed from command line exists
+ * Post-Conditions: None
+ */
 int main(){
 
 	// threading_prog();	
+	/* create the threads */
 	pthread_t input_t, line_sep_t, plus_sign_t, output_t;
 	pthread_create(&input_t, NULL, get_input, NULL);
 	pthread_create(&line_sep_t, NULL, line_sep, NULL);

@@ -1,3 +1,13 @@
+/**
+ * Prgram Filename: plus_sign_thread.c
+ * Author: Erick Branner
+ * Date: 16 November 2020
+ * Description: implementation of functions used by plus sign thread
+ * Input:
+ * Output:
+ *
+*/
+
 #include <string.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -21,7 +31,7 @@ char* _str_replace(char* dest, char* word){
 		if(dest[i] == 43 && dest[i-1] == 43){ // plus sign
 			// fprintf(stdout, "Found ++ pair\n");
 			new_d = calloc((strlen(dest) + w_len)+1, sizeof(char));
-			/* copy to idx(s) where $$ was found */
+			/* copy to idx(s) where ++ was found */
 			for(int j = 0; j < i-1; j++){
 				// fprintf(stdout,"jloop\n");
 				new_d[j] = dest[j];

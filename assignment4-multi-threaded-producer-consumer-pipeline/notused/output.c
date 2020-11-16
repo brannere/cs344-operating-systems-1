@@ -1,3 +1,5 @@
+/* NOT USED */
+
 #include "./output.h"
 #include "./input.h"
 #include <string.h>
