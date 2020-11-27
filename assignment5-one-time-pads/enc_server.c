@@ -38,7 +38,7 @@ void setupAddressStruct(struct sockaddr_in* address,
 
 int main(int argc, char *argv[]){
     
-    const char valid_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ "; 
+  const char valid_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ "; 
   int connectionSocket, charsRead;
   char buffer[256];
   struct sockaddr_in serverAddress, clientAddress;
