@@ -2,18 +2,21 @@ CC = gcc -g -Wall --std=gnu99
 
 all: enc_server enc_client dec_server dec_client keygen
 
-# enc_server: enc_server.c enc_server.o
-# 	$(CC) enc_server.c -o enc_server
-# enc_client: enc_client.c enc_client.o
-# 	$(CC) enc_client.c -o enc_client
-# dec_server: dec_server.c dec_server.o
-# 	$(CC) dec_server.c -o dec_server
-# dec_client: dec_client.c dec_client.o
-# 	$(CC) dec_client.c -o dec_client
-# keygen: keygen.c keygen.o
-# 	$(CC) keygen.c -o keygen
+enc_server: enc_server.o otp.o
+	$(CC) otp.o enc_server.o -o enc_server
+enc_client: enc_client.o
+	$(CC) enc_client.o -o enc_client
+dec_server: dec_server.o
+	$(CC) dec_server.o -o dec_server
+dec_client: dec_client.o
+	$(CC) dec_client.o -o dec_client
+keygen: keygen.o
+	$(CC) keygen.o -o keygen
 
-enc_server.o: enc_server.c
+
+otp.o: otp.c otp.h
+	$(CC) -c otp.c
+enc_server.o: otp.h enc_server.c
 	$(CC) -c enc_server.c
 enc_client.o: enc_client.c
 	$(CC) -c enc_client.c

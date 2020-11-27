@@ -5,30 +5,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-
-
-
-
-
-
-
-
-
-
-
-
-char* encipher(const char* m, const char* k){
-
-    //for each char 
-
-    return NULL;
-}
-
-
-
-
-
-
+#include "./otp.h"
 
 
 /* Network stuff */
@@ -60,6 +37,8 @@ void setupAddressStruct(struct sockaddr_in* address,
 
 
 int main(int argc, char *argv[]){
+    
+    const char valid_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ "; 
   int connectionSocket, charsRead;
   char buffer[256];
   struct sockaddr_in serverAddress, clientAddress;
@@ -114,9 +93,10 @@ int main(int argc, char *argv[]){
 		/* HERE WE GET THE KEY AND PLAIN TEXT*/
     printf("SERVER: I received this from the client: \"%s\"\n", buffer);
 
-
-		/* ENCIPHER WITH THE KEY AND PLAIN TEXT */
-		/* SEND CIPHER TEXT BACK*/
+    
+	 /* ENCIPHER WITH THE KEY AND PLAIN TEXT */
+    char* cipher_text = encipher("HELLO", "XMCKL", valid_chars); 
+    /* SEND CIPHER TEXT BACK*/
 		
     // Send a Success message back to the client
     charsRead = send(connectionSocket, 
@@ -129,8 +109,6 @@ int main(int argc, char *argv[]){
   }
   // Close the listening socket
   close(listenSocket); 
-
-
 
 
   return 0;
