@@ -39,31 +39,50 @@ int char_idx(const char* str, const char c){
 char* read_file(const char* file){
 
 	  FILE* f = fopen(file, "r");
+		if(f == NULL){
+			fprintf(stderr, "enc_client: error opening file\n");
+			exit(1);
+		}
     char* curr_line = NULL;
     size_t len = 0;
     ssize_t nread; 
-    char* token;
-    unsigned int counter = 0;
     
 		/* For each line, make a movie */
-    while((nread = getline(&curr_line, &len, f)) != -1){
-			fprintf(stdout, "curr line: %s\n", curr_line);
-			counter++;
-		}
-    free(curr_line);
+    nread = getline(&curr_line, &len, f);
+		if(nread == -1) curr_line = NULL;
     fclose(f);
+		return curr_line; 
     // printf("Processed file %s and parsed data for %d movies\n", f, counter);
-    return NULL;
+    // return NULL;
 }
 
-void verify_args(const char* ad, const char* allowed){
+char* verify_args(char* argv[], const char* allowed){
 	//argv[1] plaintext
 	//argv[2] key
-	
-	return;
+	char* file_conts = read_file(argv[1]);
+	// printf("file conts: %s\n", file_conts);
+	// key > message?
+	if(strlen(argv[2]) < strlen(file_conts) -1){
+		fprintf(stderr, "enc_cleint: message is shorter than key\n");
+		exit(1);
+	}
+	for(int i = 0; i < strlen(file_conts)-1; i++){
+		if(char_idx(allowed, file_conts[i]) == -1){
+			fprintf(stderr, "enc_client: invalid char in file contents\n");
+			exit(1);
+		}
+	}
+	for(int i = 0; i < strlen(argv[2])-1; i++){
+		if(char_idx(allowed, argv[2][i]) == -1){
+			fprintf(stderr, "enc_client: invalid char in key\n");
+			exit(1);
+		}
+	}
+
+	return file_conts;
 }
 
-void enough_args(const int argc, const char* argv[], char* allowed){
+void enough_args(const int argc, char** argv, char* allowed){
 	if(argc < 4){
     fprintf(stderr,"USAGE: %s plaintext key port\n", argv[0]);
 		exit(0);
@@ -115,10 +134,9 @@ void setupAddressStruct(struct sockaddr_in* address,
 
 int main(int argc, char *argv[]) {
 
-  char valid_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
+  char valid_chars[27] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
 	enough_args(argc, argv, valid_chars);
-	read_file(argv[1]);
-
+	verify_args(argv, valid_chars);
   int socketFD, portNumber, charsWritten, charsRead;
   struct sockaddr_in serverAddress;
   char buffer[256];
