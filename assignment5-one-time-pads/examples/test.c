@@ -1,9 +1,10 @@
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #define MODULO 27 // for encipher
 
 
-
+// MUST BE A UNIQUE SET OF CHARS
 // finds idx of c in str
 // returns -1 if not found or len is 0
 int char_idx(const char* str, const char c){
@@ -19,11 +20,15 @@ int char_idx(const char* str, const char c){
 
 // no lowercase ??
 // enciphers message m from key k; returns cipher text; null if key is too short
+// returns null on calling function errors (-1)
 char* encipher(const char* m, const char* k, const char* allowed){
     
     int tmpk = -1;
     int tmpm = -1;
-
+    int sum = 0;
+    char* cat_str = calloc(1+1, sizeof(char)); // to concat 1 char in strcat
+    char* ct = calloc(strlen(allowed)+1, sizeof(char));
+     
     if(strlen(m) < strlen(k)){
         fprintf(stdout, "Key is shorter than message; returning\n");
         return NULL;
@@ -31,16 +36,26 @@ char* encipher(const char* m, const char* k, const char* allowed){
     // scrap the extra chars
     for(int i = 0; i < strlen(m); i++){
         tmpk = char_idx(allowed, k[i]);
-        printf("tmpk: %d\n", tmpk);
+        tmpm = char_idx(allowed, m[i]);
+        sum = tmpk + tmpm;
+    
+        //error check 
+        if(tmpk == -1 || tmpm == -1) return NULL;
+        if(sum > (strlen(allowed)-1)){
+            sum -= strlen(allowed);
+            //printf("sum > len\n");
+        }
+        cat_str[0] = allowed[sum];
+        strcat(ct, cat_str);
     }
-    return NULL;
+    free(cat_str);
+    return ct;
 }
 
 int main(){
-    const char valid_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ "; 
-    printf("%d\n", strlen(valid_chars));
+    const char valid_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; 
     fprintf(stdout, "ciphertext: %s\n",
-            encipher("HELLO", "ABCDE", valid_chars));
+            encipher("HELLO", "XMCKL", valid_chars));
 
 
     return 0;
