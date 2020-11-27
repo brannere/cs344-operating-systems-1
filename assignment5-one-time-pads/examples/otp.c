@@ -52,11 +52,47 @@ char* encipher(const char* m, const char* k, const char* allowed){
     return ct;
 }
 
+// Assumes key is at least the same length of the ct and pt
+char* decipher(const char* ct, const char* k, const char* allowed){ 
+    int tmpk = -1;
+    int tmpct = -1;
+    int diff = 0;
+    char* cat_str = calloc(1+1, sizeof(char)); // to concat 1 char in strcat
+    char* pt = calloc(strlen(allowed)+1, sizeof(char));
+     
+    if(strlen(ct) < strlen(k)){
+        fprintf(stdout, "Cipher text is shorter than message; returning\n");
+        return NULL;
+    }
+    // scrap the extra chars
+    for(int i = 0; i < strlen(ct); i++){
+        tmpk = char_idx(allowed, k[i]);
+        tmpct = char_idx(allowed, ct[i]);
+        diff = tmpct - tmpk;
+    
+        //error check 
+        if(tmpk == -1 || tmpct == -1) return NULL;
+        if(diff < 0){
+            diff += strlen(allowed);
+            //printf("diff < 0\n");
+        }
+        cat_str[0] = allowed[diff];
+        strcat(pt, cat_str);
+    }
+    free(cat_str);
+    return pt;
+}
+
 int main(){
-    const char valid_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; 
-    fprintf(stdout, "ciphertext: %s\n",
-            encipher("HELLO", "XMCKL", valid_chars));
-
-
+    const char valid_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ "; 
+    char* cipher = encipher("HELLO", "XMCKL", valid_chars);
+    fprintf(stdout, "ciphertext: %s\n", cipher);
+    
+    char* plain = decipher(cipher, "XMCKL", valid_chars);
+    fprintf(stdout, "de-cipherd ciphertext: %s\n", plain);
+    
+    free(plain);
+    free(cipher);
+        
     return 0;
 }
