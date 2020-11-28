@@ -56,13 +56,14 @@ char* read_file(const char* file){
     // return NULL;
 }
 
-char* verify_args(char* argv[], const char* allowed){
+void verify_args(char* argv[], char* file_conts, char* key_conts, const char* allowed){
 	//argv[1] plaintext
 	//argv[2] key
-	char* file_conts = read_file(argv[1]);
+	file_conts = read_file(argv[1]);
+  key_conts = read_file(argv[2]);
 	// printf("file conts: %s\n", file_conts);
 	// key > message?
-	if(strlen(argv[2]) < strlen(file_conts) -1){
+	if(strlen(key_conts)-1 < strlen(file_conts)-1){
 		fprintf(stderr, "enc_cleint: message is shorter than key\n");
 		exit(1);
 	}
@@ -72,14 +73,14 @@ char* verify_args(char* argv[], const char* allowed){
 			exit(1);
 		}
 	}
-	for(int i = 0; i < strlen(argv[2])-1; i++){
-		if(char_idx(allowed, argv[2][i]) == -1){
+	for(int i = 0; i < strlen(key_conts)-1; i++){
+		if(char_idx(allowed, key_conts[i]) == -1){
 			fprintf(stderr, "enc_client: invalid char in key\n");
 			exit(1);
 		}
 	}
 
-	return file_conts;
+	return;
 }
 
 void enough_args(const int argc, char** argv, char* allowed){
@@ -134,9 +135,11 @@ void setupAddressStruct(struct sockaddr_in* address,
 
 int main(int argc, char *argv[]) {
 
+  char* file_conts = NULL;
+  char* key_conts = NULL;
   char valid_chars[27] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
 	enough_args(argc, argv, valid_chars);
-	verify_args(argv, valid_chars);
+	verify_args(argv, file_conts, key_conts, valid_chars);
   int socketFD, portNumber, charsWritten, charsRead;
   struct sockaddr_in serverAddress;
   char buffer[256];
@@ -150,7 +153,7 @@ int main(int argc, char *argv[]) {
   }
 
    // Set up the server address struct
-  setupAddressStruct(&serverAddress, atoi(argv[2]), argv[1]);
+  setupAddressStruct(&serverAddress, atoi(argv[3]), "localhost");
 
   // Connect to server
   if (connect(socketFD, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0){
