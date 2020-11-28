@@ -12,7 +12,7 @@
 #include <sys/socket.h> // send(),recv()
 #include <netdb.h>      // gethostbyname()
 
-
+#define BUFF_SIZE 80000
 
 
 
@@ -44,6 +44,7 @@ char* read_file(const char* file){
 			exit(1);
 		}
     char* curr_line = NULL;
+    char* ret = NULL;
     size_t len = 0;
     ssize_t nread; 
     
@@ -51,16 +52,18 @@ char* read_file(const char* file){
     nread = getline(&curr_line, &len, f);
 		if(nread == -1) curr_line = NULL;
     fclose(f);
-		return curr_line; 
+    ret = calloc(strlen(curr_line)+1, sizeof(char));
+    strcpy(ret, curr_line);
+		return ret; 
     // printf("Processed file %s and parsed data for %d movies\n", f, counter);
     // return NULL;
 }
 
-void verify_args(char* argv[], char* file_conts, char* key_conts, const char* allowed){
+void verify_args(char* file_conts, char* key_conts, const char* allowed){
 	//argv[1] plaintext
 	//argv[2] key
-	file_conts = read_file(argv[1]);
-  key_conts = read_file(argv[2]);
+	// file_conts = read_file(argv[1]);
+  // key_conts = read_file(argv[2]);
 	// printf("file conts: %s\n", file_conts);
 	// key > message?
 	if(strlen(key_conts)-1 < strlen(file_conts)-1){
@@ -135,14 +138,20 @@ void setupAddressStruct(struct sockaddr_in* address,
 
 int main(int argc, char *argv[]) {
 
-  char* file_conts = NULL;
-  char* key_conts = NULL;
   char valid_chars[27] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
 	enough_args(argc, argv, valid_chars);
-	verify_args(argv, file_conts, key_conts, valid_chars);
+  
+	char* file_conts = read_file(argv[1]);
+  char* key_conts = read_file(argv[2]);
+  
+  if(file_conts == NULL || key_conts == NULL){
+    fprintf(stderr, "enc_client: file contents or key contents are null\n");
+  }
+  verify_args(file_conts, key_conts, valid_chars);
+
   int socketFD, portNumber, charsWritten, charsRead;
   struct sockaddr_in serverAddress;
-  char buffer[256];
+  char buffer[BUFF_SIZE];
   // Check usage & args
 	// verify the key and plaintext has good chars
 
@@ -163,13 +172,16 @@ int main(int argc, char *argv[]) {
 	
 
 	// Get input message from user
-  printf("CLIENT: Enter text to send to the server, and then hit enter: ");
+  // printf("CLIENT: Enter text to send to the server, and then hit enter: ");
   // Clear out the buffer array
   memset(buffer, '\0', sizeof(buffer));
   // Get input from the user, trunc to buffer - 1 chars, leaving \0
-  fgets(buffer, sizeof(buffer) - 1, stdin);
+  // fgets(buffer, sizeof(buffer) - 1, stdin);
+  strcpy(buffer, file_conts);
+  // buffer[strcspn(buffer, "\n")] = '\0'; 
+  strcat(buffer, key_conts);
   // Remove the trailing \n that fgets adds
-  buffer[strcspn(buffer, "\n")] = '\0'; 
+  // buffer[strcspn(buffer, "\n")] = '\0'; 
 
 
   // Send message to server
