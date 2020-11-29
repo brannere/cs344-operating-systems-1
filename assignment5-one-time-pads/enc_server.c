@@ -6,7 +6,33 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include "./otp.h"
+#include "./globals.h"
 
+
+char* get_pt(char* m){
+  char* cat_str = calloc(1+1, sizeof(char)); // to concat 1 char in strcat
+  char* ret = NULL;//calloc(1+1, sizeof(char));
+  /* The first end of pt message will start with a **/
+  for(int i = 0; m[i] != '*'; i++){
+    cat_str[0] = m[i];
+    ret = realloc(ret,(i+1)*sizeof(char*));
+    strcat(ret, cat_str);
+  }
+  return ret;
+}
+
+char* get_k(char* m){
+  char* start = strstr(m, END_OF_PT);
+  char* cat_str = calloc(1+1, sizeof(char)); // to concat 1 char in strcat
+  char* ret = NULL; //calloc(1+1, sizeof(char));
+  /* The second end of end of key sequence will start with a **/
+  for(int i = 0; m[i+*start] != '*'; i++){
+    cat_str[0] = m[i+*start];
+    ret = realloc(ret,(i+1)*sizeof(char*));
+    strcat(ret, cat_str);
+  }
+  return ret;
+}
 
 /* Network stuff */
 
@@ -92,8 +118,10 @@ int main(int argc, char *argv[]){
     }
 		/* HERE WE GET THE KEY AND PLAIN TEXT*/
     printf("SERVER: I received this from the client: \"%s\"\n", buffer);
-    
-    
+    char* foo = get_pt(buffer);
+    printf("foo: %s\n",foo);
+    char* bar = get_k(buffer);
+    printf("bar: %s\n",bar);
 	 /* ENCIPHER WITH THE KEY AND PLAIN TEXT */
     // char* cipher_text = encipher("HELLO", "XMCKL", valid_chars); 
     /* SEND CIPHER TEXT BACK*/
