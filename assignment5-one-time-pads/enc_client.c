@@ -157,7 +157,8 @@ int main(int argc, char *argv[]) {
   }
   verify_args(m_conts, key_conts, valid_chars);
 
-  int socketFD, portNumber, charsWritten, charsRead;
+  int socketFD, charsWritten, charsRead;
+  //int portNumber;
   struct sockaddr_in serverAddress;
   char buffer[BUFF_SIZE];
   // Check usage & args

@@ -10,10 +10,16 @@
 
 
 char* get_pt(char* m){
+  char* start = strstr(m, END_OF_PT);
+  if(start == NULL){
+    fprintf(stderr, "enc_server: could not find END_OF_PT\n");
+    return NULL;
+  }
   char* cat_str = calloc(1+1, sizeof(char)); // to concat 1 char in strcat
   char* ret = NULL;//calloc(1+1, sizeof(char));
   /* The first end of pt message will start with a **/
-  for(int i = 0; m[i] != '*'; i++){
+  int i = 0;
+  for(i = 0; m[i] != '*'; i++){
     cat_str[0] = m[i];
     ret = realloc(ret,(i+1)*sizeof(char*));
     strcat(ret, cat_str);
@@ -24,14 +30,24 @@ char* get_pt(char* m){
 
 char* get_k(char* m){
   char* start = strstr(m, END_OF_PT);
+  if(start == NULL){
+    fprintf(stderr, "enc_server: could not find END_OF_PT\n");
+    return NULL;
+  }
   char* cat_str = calloc(1+1, sizeof(char)); // to concat 1 char in strcat
   char* ret = NULL; //calloc(1+1, sizeof(char));
   /* The second end of end of key sequence will start with a **/
-  for(int i = 0; m[i+*start] != '*'; i++){
+  int i = 0;
+  for(i = 0; m[i+*start] != '*'; i++){
     cat_str[0] = m[i+*start];
     ret = realloc(ret,(i+1)*sizeof(char*));
     strcat(ret, cat_str);
   }
+  // if(i > strlen(m)){
+  //   fprintf(stderr, "enc_server: could not find '*' in message\n");
+  //   free(cat_str);
+  //   return NULL;
+  // }
   free(cat_str);
   return ret;
 }
@@ -123,13 +139,21 @@ int main(int argc, char *argv[]){
     char* plain = get_pt(buffer);
     char* key = get_k(buffer);
 	 /* ENCIPHER WITH THE KEY AND PLAIN TEXT */
-    char* cipher_text = encipher(plain, key, valid_chars); 
-    /* SEND CIPHER TEXT BACK*/
-		
-    // Send a Success message back to the client
-    charsRead = send(connectionSocket, cipher_text, strlen(cipher_text), 0); 
-    if (charsRead < 0){
-      error("ERROR writing to socket");
+    if(plain == NULL || key == NULL){
+      fprintf(stderr, "enc_server: plain text or key is null\n");
+    }
+    else{
+        char* cipher_text = encipher(plain, key, valid_chars); 
+        /* SEND CIPHER TEXT BACK*/
+        if(cipher_text == NULL){
+          fprintf(stderr, "enc_server: error getting cipher text\n");
+        }else{  
+        // Send a Success message back to the client
+        charsRead = send(connectionSocket, cipher_text, strlen(cipher_text), 0); 
+        if (charsRead < 0){
+          error("ERROR writing to socket");
+        }
+      }
     }
     // Close the connection socket for this client
     close(connectionSocket); 

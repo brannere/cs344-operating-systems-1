@@ -30,7 +30,7 @@ char* encipher(const char* m, const char* k, const char* allowed){
     char* ct = calloc(strlen(allowed)+1, sizeof(char));
      
     if(strlen(m) > strlen(k)){
-        fprintf(stdout, "Key is shorter than message; returning\n");
+        fprintf(stderr, "otp: key is shorter than message; returning\n");
         return NULL;
     }
     // scrap the extra chars
@@ -60,8 +60,8 @@ char* decipher(const char* ct, const char* k, const char* allowed){
     char* cat_str = calloc(1+1, sizeof(char)); // to concat 1 char in strcat
     char* pt = calloc(strlen(allowed)+1, sizeof(char));
      
-    if(strlen(ct) < strlen(k)){
-        fprintf(stdout, "Cipher text is shorter than message; returning\n");
+    if(strlen(ct) > strlen(k)){
+        fprintf(stderr, "otp: key is shorter than message; returning\n");
         return NULL;
     }
     // scrap the extra chars
@@ -71,7 +71,10 @@ char* decipher(const char* ct, const char* k, const char* allowed){
         diff = tmpct - tmpk;
     
         //error check 
-        if(tmpk == -1 || tmpct == -1) return NULL;
+        if(tmpk == -1 || tmpct == -1){
+            fprintf(stderr, "otp: invalid char found; returning\n");
+            return NULL;
+        } 
         if(diff < 0){
             diff += strlen(allowed);
             //printf("diff < 0\n");
