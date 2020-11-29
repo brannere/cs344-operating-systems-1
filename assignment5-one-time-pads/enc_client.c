@@ -214,7 +214,7 @@ int main(int argc, char *argv[]) {
     error("CLIENT: ERROR writing to socket");
   }
   if (charsWritten < strlen(buffer)){
-    printf("CLIENT: WARNING: Not all data written to socket!\n");
+    fprintf(stderr, "CLIENT: WARNING: Not all data written to socket!\n");
   }
 
   // Get return message from server
@@ -225,7 +225,8 @@ int main(int argc, char *argv[]) {
   if (charsRead < 0){
     error("CLIENT: ERROR reading from socket");
   }
-  printf("CLIENT: I received this from the server: \"%s\"\n", buffer);
+  // printf("CLIENT: I received this from the server: \"%s\"\n", buffer);
+  fprintf(stdout, "%s\n", buffer);
 
   // Close the socket
   close(socketFD); 

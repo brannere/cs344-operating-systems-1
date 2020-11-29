@@ -107,9 +107,9 @@ int main(int argc, char *argv[]){
       error("ERROR on accept");
     }
 
-    printf("SERVER: Connected to client running at host %d port %d\n", 
-                          ntohs(clientAddress.sin_addr.s_addr),
-                          ntohs(clientAddress.sin_port));
+    // printf("SERVER: Connected to client running at host %d port %d\n", 
+    //                       ntohs(clientAddress.sin_addr.s_addr),
+    //                       ntohs(clientAddress.sin_port));
 
     // Get the message from the client and display it
     memset(buffer, '\0', 256);
@@ -119,7 +119,7 @@ int main(int argc, char *argv[]){
       error("ERROR reading from socket");
     }
 		/* HERE WE GET THE KEY AND PLAIN TEXT*/
-    printf("SERVER: I received this from the client: \"%s\"\n", buffer);
+    // printf("SERVER: I received this from the client: \"%s\"\n", buffer);
     char* plain = get_pt(buffer);
     char* key = get_k(buffer);
 	 /* ENCIPHER WITH THE KEY AND PLAIN TEXT */
