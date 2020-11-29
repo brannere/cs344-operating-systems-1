@@ -9,6 +9,14 @@
 #include "./globals.h"
 
 
+/* Return false if indicating dec client sequence is not recieved */
+int is_dec_client(const char* m){
+  if(strstr(m, END_OF_CIPH) == NULL){
+    return false; 
+  }
+  return true;
+}
+
 char* get_ct(char* m){
   char* start = strstr(m, END_OF_CIPH);
 	if(start == NULL){
@@ -134,26 +142,35 @@ int main(int argc, char *argv[]){
     if (charsRead < 0){
       error("ERROR reading from socket");
     }
-		/* HERE WE GET THE KEY AND PLAIN TEXT*/
-    // printf("SERVER: I received this from the client: \"%s\"\n", buffer);
-    char* cipher_t = get_ct(buffer);
-    char* key = get_k(buffer);
-	 /* ENCIPHER WITH THE KEY AND PLAIN TEXT */
-    if(cipher_t == NULL || key == NULL){
-      fprintf(stderr, "enc_server: plain text or key is null\n");
+
+    if(is_dec_client(buffer) == false){
+      charsRead = send(connectionSocket, "bad", 3, 0); 
+      if (charsRead < 0){
+        error("ERROR writing to socket");
+      }  
     }
     else{
-      char* plain_text = decipher(cipher_t, key, valid_chars); 
-      /* SEND CIPHER TEXT BACK*/
-      if(plain_text == NULL){
-				fprintf(stderr, "dec_server: error getting plain text\n");
-			}else{
-      	// Send a Success message back to the client
-      	charsRead = send(connectionSocket, plain_text, strlen(plain_text), 0); 
-      	if (charsRead < 0){
-      	  error("ERROR writing to socket");
-      	}
-			}
+		  /* HERE WE GET THE KEY AND PLAIN TEXT*/
+      // printf("SERVER: I received this from the client: \"%s\"\n", buffer);
+      char* cipher_t = get_ct(buffer);
+      char* key = get_k(buffer);
+	    /* ENCIPHER WITH THE KEY AND PLAIN TEXT */
+      if(cipher_t == NULL || key == NULL){
+        fprintf(stderr, "enc_server: plain text or key is null\n");
+      }
+      else{
+        char* plain_text = decipher(cipher_t, key, valid_chars); 
+        /* SEND CIPHER TEXT BACK*/
+        if(plain_text == NULL){
+		  		fprintf(stderr, "dec_server: error getting plain text\n");
+		  	}else{
+        	// Send a Success message back to the client
+        	charsRead = send(connectionSocket, plain_text, strlen(plain_text), 0); 
+        	if (charsRead < 0){
+        	  error("ERROR writing to socket");
+        	}
+		  	}
+      }
     }
     // Close the connection socket for this client
     close(connectionSocket); 

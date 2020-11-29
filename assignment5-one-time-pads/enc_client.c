@@ -227,6 +227,11 @@ int main(int argc, char *argv[]) {
     error("CLIENT: ERROR reading from socket");
   }
   // printf("CLIENT: I received this from the server: \"%s\"\n", buffer);
+  if(strcmp(buffer, "bad") == 0){
+    fprintf(stderr, "enc_client: server rejected connection on port %s\n",
+            argv[3]);
+    exit(2);
+  }
   fprintf(stdout, "%s\n", buffer);
 
   // Close the socket

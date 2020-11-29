@@ -96,7 +96,7 @@ void verify_args(char* file_conts, char* key_conts, const char* allowed){
 
 void enough_args(const int argc, char** argv, char* allowed){
 	if(argc < 4){
-    fprintf(stderr,"USAGE: %s plaintext key port\n", argv[0]);
+    fprintf(stderr,"USAGE: %s ciphertext key port\n", argv[0]);
 		exit(0);
 	}
 	// there's enough args.. 
@@ -227,6 +227,11 @@ int main(int argc, char *argv[]) {
     error("CLIENT: ERROR reading from socket");
   }
   // printf("CLIENT: I received this from the server: \"%s\"\n", buffer);
+  if(strcmp(buffer, "bad") == 0){
+    fprintf(stderr, "dec_client: server rejected connection on port %s\n",
+            argv[3]);
+    exit(2);
+  }
   fprintf(stdout, "%s\n", buffer);
 
   // Close the socket

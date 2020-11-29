@@ -8,6 +8,13 @@
 #include "./otp.h"
 #include "./globals.h"
 
+/* Return false if indicating enc client sequence is not recieved */
+int is_enc_client(const char* m){
+  if(strstr(m, END_OF_PT) == NULL){
+    return false; 
+  }
+  return true;
+}
 
 char* get_pt(char* m){
   char* start = strstr(m, END_OF_PT);
@@ -122,7 +129,6 @@ int main(int argc, char *argv[]){
     if (connectionSocket < 0){
       error("ERROR on accept");
     }
-
     // printf("SERVER: Connected to client running at host %d port %d\n", 
     //                       ntohs(clientAddress.sin_addr.s_addr),
     //                       ntohs(clientAddress.sin_port));
@@ -134,24 +140,33 @@ int main(int argc, char *argv[]){
     if (charsRead < 0){
       error("ERROR reading from socket");
     }
-		/* HERE WE GET THE KEY AND PLAIN TEXT*/
-    // printf("SERVER: I received this from the client: \"%s\"\n", buffer);
-    char* plain = get_pt(buffer);
-    char* key = get_k(buffer);
-	 /* ENCIPHER WITH THE KEY AND PLAIN TEXT */
-    if(plain == NULL || key == NULL){
-      fprintf(stderr, "enc_server: plain text or key is null\n");
+
+    if(is_enc_client(buffer) == false){
+      charsRead = send(connectionSocket, "bad", 3, 0); 
+      if (charsRead < 0){
+        error("ERROR writing to socket");
+      }  
     }
     else{
-        char* cipher_text = encipher(plain, key, valid_chars); 
-        /* SEND CIPHER TEXT BACK*/
-        if(cipher_text == NULL){
-          fprintf(stderr, "enc_server: error getting cipher text\n");
-        }else{  
-        // Send a Success message back to the client
-        charsRead = send(connectionSocket, cipher_text, strlen(cipher_text), 0); 
-        if (charsRead < 0){
-          error("ERROR writing to socket");
+		  /* HERE WE GET THE KEY AND PLAIN TEXT*/
+      // printf("SERVER: I received this from the client: \"%s\"\n", buffer);
+      char* plain = get_pt(buffer);
+      char* key = get_k(buffer);
+	    /* ENCIPHER WITH THE KEY AND PLAIN TEXT */
+      if(plain == NULL || key == NULL){
+        fprintf(stderr, "enc_server: plain text or key is null\n");
+      }
+      else{
+          char* cipher_text = encipher(plain, key, valid_chars); 
+          /* SEND CIPHER TEXT BACK*/
+          if(cipher_text == NULL){
+            fprintf(stderr, "enc_server: error getting cipher text\n");
+          }else{  
+          // Send a Success message back to the client
+          charsRead = send(connectionSocket, cipher_text, strlen(cipher_text), 0); 
+          if (charsRead < 0){
+            error("ERROR writing to socket");
+          }
         }
       }
     }
