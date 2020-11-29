@@ -17,10 +17,16 @@
 
 
 
-
-
-
-
+void char_replace(char* source, const int c, const int t){
+	/* 	If the current index is the char to change, 
+			change its value */
+	for(int i = 0; i < strlen(source); i++){
+		if(source[i] == c){
+			source[i] = t;
+		}
+	}
+	return;
+}
 
 // MUST BE A UNIQUE SET OF CHARS
 // finds idx of c in str
@@ -66,17 +72,19 @@ void verify_args(char* file_conts, char* key_conts, const char* allowed){
   // key_conts = read_file(argv[2]);
 	// printf("file conts: %s\n", file_conts);
 	// key > message?
-	if(strlen(key_conts)-1 < strlen(file_conts)-1){
+  char_replace(file_conts, '\n', '\0');
+  char_replace(key_conts, '\n', '\0');
+	if(strlen(key_conts) < strlen(file_conts)){
 		fprintf(stderr, "enc_cleint: message is shorter than key\n");
 		exit(1);
 	}
-	for(int i = 0; i < strlen(file_conts)-1; i++){
+	for(int i = 0; i < strlen(file_conts); i++){
 		if(char_idx(allowed, file_conts[i]) == -1){
 			fprintf(stderr, "enc_client: invalid char in file contents\n");
 			exit(1);
 		}
 	}
-	for(int i = 0; i < strlen(key_conts)-1; i++){
+	for(int i = 0; i < strlen(key_conts); i++){
 		if(char_idx(allowed, key_conts[i]) == -1){
 			fprintf(stderr, "enc_client: invalid char in key\n");
 			exit(1);
@@ -183,6 +191,8 @@ int main(int argc, char *argv[]) {
   // Remove the trailing \n that fgets adds
   // buffer[strcspn(buffer, "\n")] = '\0'; 
 
+
+  /* SEND TO SERVER */
 
   // Send message to server
   // Write to the server
