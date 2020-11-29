@@ -9,6 +9,27 @@
 #include "./globals.h"
 
 
+void error(const char *msg) {
+  perror(msg);
+  exit(1);
+} 
+/*****/
+
+void
+send_to_client(const int socket, const char* msg, const int msg_len, const int port){
+  int sent = 0;
+  int chars_read = 0;
+  for(;;){
+    chars_read = send(socket, msg, msg_len, port);
+    if(chars_read < 0){
+      error("ERROR writing to socket");
+    }
+    sent += chars_read;
+    if(sent == msg_len) break;
+  }
+  return;
+}
+
 /* Return false if indicating dec client sequence is not recieved */
 int is_dec_client(const char* m){
   if(strstr(m, END_OF_CIPH) == NULL){
@@ -62,11 +83,11 @@ char* get_k(const char* m){
 
 /* Network stuff */
 
-// Error function used for reporting issues
-void error(const char *msg) {
-  perror(msg);
-  exit(1);
-} 
+// // Error function used for reporting issues
+// void error(const char *msg) {
+//   perror(msg);
+//   exit(1);
+// } 
 
 // Set up the address struct for the server socket
 void setupAddressStruct(struct sockaddr_in* address, 
@@ -144,10 +165,7 @@ int main(int argc, char *argv[]){
     }
 
     if(is_dec_client(buffer) == false){
-      charsRead = send(connectionSocket, "bad", 3, 0); 
-      if (charsRead < 0){
-        error("ERROR writing to socket");
-      }  
+      send_to_client(connectionSocket, "bad", 3, 0);
     }
     else{
 		  /* HERE WE GET THE KEY AND PLAIN TEXT*/
@@ -165,10 +183,7 @@ int main(int argc, char *argv[]){
 		  		fprintf(stderr, "dec_server: error getting plain text\n");
 		  	}else{
         	// Send a Success message back to the client
-        	charsRead = send(connectionSocket, plain_text, strlen(plain_text), 0); 
-        	if (charsRead < 0){
-        	  error("ERROR writing to socket");
-        	}
+          send_to_client(connectionSocket, plain_text, strlen(plain_text), 0);
 		  	}
       }
     }

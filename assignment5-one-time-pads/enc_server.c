@@ -9,9 +9,6 @@
 #include "./globals.h"
 
 
-
-
-/* Network stuff */
 /* PROVIDED */
 // Error function used for reporting issues
 void error(const char *msg) {
@@ -193,15 +190,6 @@ int main(int argc, char *argv[]){
         }else{  
           // Send a Success message back to the client
           send_to_client(connectionSocket, cipher_text, strlen(cipher_text), 0);
-          // int sent = 0;
-          // for(;;){
-          //   charsRead = send(connectionSocket, cipher_text, strlen(cipher_text), 0); 
-          //   if (charsRead < 0){
-          //       error("ERROR writing to socket");
-          //   }
-          //   sent += charsRead;
-          //   if(sent == strlen(cipher_text)) break;
-          // }
         }
 
       }
