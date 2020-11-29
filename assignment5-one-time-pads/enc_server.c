@@ -8,6 +8,34 @@
 #include "./otp.h"
 #include "./globals.h"
 
+
+
+
+/* Network stuff */
+/* PROVIDED */
+// Error function used for reporting issues
+void error(const char *msg) {
+  perror(msg);
+  exit(1);
+} 
+/*****/
+
+void
+send_to_client(const int socket, const char* msg, const int msg_len, const int port){
+  int sent = 0;
+  int chars_read = 0;
+  for(;;){
+    chars_read = send(socket, msg, msg_len, port);
+    if(chars_read < 0){
+      error("ERROR writing to socket");
+    }
+    sent += chars_read;
+    if(sent == msg_len) break;
+  }
+  return;
+}
+
+
 /* Return false if indicating enc client sequence is not recieved */
 int is_enc_client(const char* m){
   if(strstr(m, END_OF_PT) == NULL){
@@ -59,13 +87,13 @@ char* get_k(char* m){
   return ret;
 }
 
-/* Network stuff */
+// /* Network stuff */
 
-// Error function used for reporting issues
-void error(const char *msg) {
-  perror(msg);
-  exit(1);
-} 
+// // Error function used for reporting issues
+// void error(const char *msg) {
+//   perror(msg);
+//   exit(1);
+// } 
 
 // Set up the address struct for the server socket
 void setupAddressStruct(struct sockaddr_in* address, 
@@ -90,7 +118,7 @@ void setupAddressStruct(struct sockaddr_in* address,
 int main(int argc, char *argv[]){
     
   const char valid_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ "; 
-  int connectionSocket, charsRead;
+  int connectionSocket, charsRead = 0;
   char buffer[256];
   struct sockaddr_in serverAddress, clientAddress;
   socklen_t sizeOfClientInfo = sizeof(clientAddress);
@@ -142,10 +170,11 @@ int main(int argc, char *argv[]){
     }
 
     if(is_enc_client(buffer) == false){
-      charsRead = send(connectionSocket, "bad", 3, 0); 
-      if (charsRead < 0){
-        error("ERROR writing to socket");
-      }  
+      send_to_client(connectionSocket, "bad", 3, 0);
+      // charsRead = send(connectionSocket, "bad", 3, 0); 
+      // if (charsRead < 0){
+      //   error("ERROR writing to socket");
+      // }  
     }
     else{
 		  /* HERE WE GET THE KEY AND PLAIN TEXT*/
@@ -157,17 +186,24 @@ int main(int argc, char *argv[]){
         fprintf(stderr, "enc_server: plain text or key is null\n");
       }
       else{
-          char* cipher_text = encipher(plain, key, valid_chars); 
-          /* SEND CIPHER TEXT BACK*/
-          if(cipher_text == NULL){
-            fprintf(stderr, "enc_server: error getting cipher text\n");
-          }else{  
+        char* cipher_text = encipher(plain, key, valid_chars); 
+        /* SEND CIPHER TEXT BACK*/
+        if(cipher_text == NULL){
+          fprintf(stderr, "enc_server: error getting cipher text\n");
+        }else{  
           // Send a Success message back to the client
-          charsRead = send(connectionSocket, cipher_text, strlen(cipher_text), 0); 
-          if (charsRead < 0){
-            error("ERROR writing to socket");
-          }
+          send_to_client(connectionSocket, cipher_text, strlen(cipher_text), 0);
+          // int sent = 0;
+          // for(;;){
+          //   charsRead = send(connectionSocket, cipher_text, strlen(cipher_text), 0); 
+          //   if (charsRead < 0){
+          //       error("ERROR writing to socket");
+          //   }
+          //   sent += charsRead;
+          //   if(sent == strlen(cipher_text)) break;
+          // }
         }
+
       }
     }
     // Close the connection socket for this client
