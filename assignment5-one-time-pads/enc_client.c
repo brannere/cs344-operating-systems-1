@@ -11,7 +11,7 @@
 #include <sys/types.h>  // ssize_t
 #include <sys/socket.h> // send(),recv()
 #include <netdb.h>      // gethostbyname()
-
+#include "./globals.h"
 #define BUFF_SIZE 80000
 
 
@@ -149,13 +149,13 @@ int main(int argc, char *argv[]) {
   char valid_chars[27] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
 	enough_args(argc, argv, valid_chars);
   
-	char* file_conts = read_file(argv[1]);
+	char* m_conts = read_file(argv[1]);
   char* key_conts = read_file(argv[2]);
   
-  if(file_conts == NULL || key_conts == NULL){
+  if(m_conts == NULL || key_conts == NULL){
     fprintf(stderr, "enc_client: file contents or key contents are null\n");
   }
-  verify_args(file_conts, key_conts, valid_chars);
+  verify_args(m_conts, key_conts, valid_chars);
 
   int socketFD, portNumber, charsWritten, charsRead;
   struct sockaddr_in serverAddress;
@@ -185,11 +185,24 @@ int main(int argc, char *argv[]) {
   memset(buffer, '\0', sizeof(buffer));
   // Get input from the user, trunc to buffer - 1 chars, leaving \0
   // fgets(buffer, sizeof(buffer) - 1, stdin);
-  strcpy(buffer, file_conts);
+  // strcpy(buffer, file_conts);
   // buffer[strcspn(buffer, "\n")] = '\0'; 
-  strcat(buffer, key_conts);
+  // strcat(buffer, key_conts);
   // Remove the trailing \n that fgets adds
   // buffer[strcspn(buffer, "\n")] = '\0'; 
+  
+  /*  Put the plaintext in the buffer
+      and place end of pt sequence */
+  strcpy(buffer, m_conts);
+  strcat(buffer, END_OF_PT);
+
+  /*  Put the key in the buffer
+      and place end of key sequnce*/
+  strcat(buffer, key_conts);
+  strcat(buffer, END_OF_K);
+
+  /* Put end of message sequence*/
+  strcat(buffer, END_OF_M);
 
 
   /* SEND TO SERVER */

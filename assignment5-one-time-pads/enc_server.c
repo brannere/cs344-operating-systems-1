@@ -91,8 +91,8 @@ int main(int argc, char *argv[]){
       error("ERROR reading from socket");
     }
 		/* HERE WE GET THE KEY AND PLAIN TEXT*/
-    // printf("SERVER: I received this from the client: \"%s\"\n", buffer);
-
+    printf("SERVER: I received this from the client: \"%s\"\n", buffer);
+    
     
 	 /* ENCIPHER WITH THE KEY AND PLAIN TEXT */
     // char* cipher_text = encipher("HELLO", "XMCKL", valid_chars); 
