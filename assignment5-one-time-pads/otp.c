@@ -29,7 +29,7 @@ char* encipher(const char* m, const char* k, const char* allowed){
     char* cat_str = calloc(1+1, sizeof(char)); // to concat 1 char in strcat
     char* ct = calloc(strlen(allowed)+1, sizeof(char));
      
-    if(strlen(m) < strlen(k)){
+    if(strlen(m) > strlen(k)){
         fprintf(stdout, "Key is shorter than message; returning\n");
         return NULL;
     }

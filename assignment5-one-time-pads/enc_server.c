@@ -18,6 +18,7 @@ char* get_pt(char* m){
     ret = realloc(ret,(i+1)*sizeof(char*));
     strcat(ret, cat_str);
   }
+  free(cat_str);
   return ret;
 }
 
@@ -31,6 +32,7 @@ char* get_k(char* m){
     ret = realloc(ret,(i+1)*sizeof(char*));
     strcat(ret, cat_str);
   }
+  free(cat_str);
   return ret;
 }
 
@@ -118,17 +120,14 @@ int main(int argc, char *argv[]){
     }
 		/* HERE WE GET THE KEY AND PLAIN TEXT*/
     printf("SERVER: I received this from the client: \"%s\"\n", buffer);
-    char* foo = get_pt(buffer);
-    printf("foo: %s\n",foo);
-    char* bar = get_k(buffer);
-    printf("bar: %s\n",bar);
+    char* plain = get_pt(buffer);
+    char* key = get_k(buffer);
 	 /* ENCIPHER WITH THE KEY AND PLAIN TEXT */
-    // char* cipher_text = encipher("HELLO", "XMCKL", valid_chars); 
+    char* cipher_text = encipher(plain, key, valid_chars); 
     /* SEND CIPHER TEXT BACK*/
 		
     // Send a Success message back to the client
-    charsRead = send(connectionSocket, 
-                    "I am the server, and I got your message", 39, 0); 
+    charsRead = send(connectionSocket, cipher_text, strlen(cipher_text), 0); 
     if (charsRead < 0){
       error("ERROR writing to socket");
     }
