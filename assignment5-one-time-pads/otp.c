@@ -1,3 +1,14 @@
+/**
+ * Prgram Filename: otp.c
+ * Author: Erick Branner
+ * Date: 30 November 2020
+ * Description:
+ * Input:
+ * Output:
+ *
+*/
+
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>

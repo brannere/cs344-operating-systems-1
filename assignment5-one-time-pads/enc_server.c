@@ -1,3 +1,13 @@
+/**
+ * Prgram Filename: enc_server.c
+ * Author: Erick Branner
+ * Date: 30 November 2020
+ * Description:
+ * Input:
+ * Output:
+ *
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,6 +28,7 @@ void error(const char *msg) {
 } 
 /*****/
 
+// send message to socket until the entire message is sent
 void
 read_from_client(const int socket, char* buffer, const int buffersize, const int port,
                 const char* end_seq){
@@ -33,6 +44,7 @@ read_from_client(const int socket, char* buffer, const int buffersize, const int
   }
 }
 
+// send message to socket until the entire message is sent
 void
 send_to_client(const int socket, const char* msg, const int msg_len, const int port){
   int sent = 0;
@@ -59,6 +71,7 @@ int is_enc_client(const char* m){
   return true;
 }
 
+// get plain text from message
 char* get_pt(char* m){
   char* start = strstr(m, END_OF_PT);
   if(start == NULL){
@@ -81,6 +94,7 @@ char* get_pt(char* m){
   return ret;
 }
 
+// get key from message
 char* get_k(char* m){
   char* start = strstr(m, END_OF_PT);
   if(start == NULL){
@@ -134,11 +148,11 @@ void setupAddressStruct(struct sockaddr_in* address,
 
 
 
-
+// main thread
 int main(int argc, char *argv[]){
     
   const char valid_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ "; 
-  int connectionSocket, charsRead = 0;
+  int connectionSocket;
   char buffer[BUFF_SIZE];
   struct sockaddr_in serverAddress, clientAddress;
   socklen_t sizeOfClientInfo = sizeof(clientAddress);

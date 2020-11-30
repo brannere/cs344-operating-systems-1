@@ -1,3 +1,13 @@
+/**
+ * Prgram Filename: otp.h
+ * Author: Erick Branner
+ * Date: 30 November 2020
+ * Description:
+ * Input:
+ * Output:
+ *
+*/
+
 #ifndef OTP_H
 #define OTP_H
 

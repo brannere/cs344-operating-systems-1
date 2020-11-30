@@ -1,3 +1,12 @@
+/**
+ * Prgram Filename: dec_server.c
+ * Author: Erick Branner
+ * Date: 30 November 2020
+ * Description:
+ * Input:
+ * Output:
+ *
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,12 +20,14 @@
 // #define BUFF_SIZE 140000
 
 
+// Error function used for reporting issues
 void error(const char *msg) {
   perror(msg);
   exit(1);
 } 
 /*****/
 
+// read data from socket until end of message sequence is seen
 void
 read_from_client(const int socket, char* buffer, const int buffersize, const int port,
                 const char* end_seq){
@@ -33,6 +44,7 @@ read_from_client(const int socket, char* buffer, const int buffersize, const int
   }
 }
 
+// send message to socket until the entire message is sent
 void
 send_to_client(const int socket, const char* msg, const int msg_len, const int port){
   int sent = 0;
@@ -58,6 +70,7 @@ int is_dec_client(const char* m){
   return true;
 }
 
+// get cipher text from message
 char* get_ct(char* m){
   char* start = strstr(m, END_OF_CIPH);
 	if(start == NULL){
@@ -78,6 +91,7 @@ char* get_ct(char* m){
   return ret;
 }
 
+// get key from message
 char* get_k(const char* m){
   char* start = strstr(m, END_OF_CIPH);
   if(start == NULL){
@@ -131,11 +145,11 @@ void setupAddressStruct(struct sockaddr_in* address,
 
 
 
-
+// main thread
 int main(int argc, char *argv[]){
     
   const char valid_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ "; 
-  int connectionSocket, charsRead;
+  int connectionSocket;
   char buffer[BUFF_SIZE];
   struct sockaddr_in serverAddress, clientAddress;
   socklen_t sizeOfClientInfo = sizeof(clientAddress);

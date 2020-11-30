@@ -1,3 +1,13 @@
+/**
+ * Prgram Filename: enc_cleint.c
+ * Author: Erick Branner
+ * Date: 30 November 2020
+ * Description:
+ * Input:
+ * Output:
+ *
+*/
+
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,6 +31,7 @@ void error(const char *msg) {
   exit(0); 
 }
 
+// read data from socket until end of message sequence is seen
 void
 read_from_client(const int socket, char* buffer, const int buffersize, const int port,
                 const char* end_seq){
@@ -37,6 +48,7 @@ read_from_client(const int socket, char* buffer, const int buffersize, const int
   } 
 }
 
+// send message to socket until the entire message is sent
 void
 send_to_client(const int socket, const char* msg, const int msg_len, const int port){
   int sent = 0;
@@ -53,6 +65,8 @@ send_to_client(const int socket, const char* msg, const int msg_len, const int p
   }
   return;
 }
+
+// replace a char with another char in a string
 void char_replace(char* source, const int c, const int t){
 	/* 	If the current index is the char to change, 
 			change its value */
@@ -108,6 +122,7 @@ char* read_file(const char* file){
     // return NULL;
 }
 
+// verify if command line arguments are valud
 void verify_args(char* file_conts, char* key_conts, const char* allowed){
 	//argv[1] plaintext
 	//argv[2] key
@@ -115,6 +130,8 @@ void verify_args(char* file_conts, char* key_conts, const char* allowed){
   // key_conts = read_file(argv[2]);
 	// printf("file conts: %s\n", file_conts);
 	// key > message?
+
+  // remove newline
   char_replace(file_conts, '\n', '\0');
   char_replace(key_conts, '\n', '\0');
 	if(strlen(key_conts) < strlen(file_conts)){
@@ -182,12 +199,13 @@ void setupAddressStruct(struct sockaddr_in* address,
 }
 
 
-
+// main thread
 int main(int argc, char *argv[]) {
 
   char valid_chars[27] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
 	enough_args(argc, argv, valid_chars);
   
+  // get key and message
 	char* m_conts = read_file(argv[1]);
   char* key_conts = read_file(argv[2]);
   
@@ -196,7 +214,7 @@ int main(int argc, char *argv[]) {
   }
   verify_args(m_conts, key_conts, valid_chars);
 
-  int socketFD, charsWritten, charsRead;
+  int socketFD;
   //int portNumber;
   struct sockaddr_in serverAddress;
   char buffer[BUFF_SIZE];
