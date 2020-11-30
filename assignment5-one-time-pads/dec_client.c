@@ -12,7 +12,7 @@
 #include <sys/socket.h> // send(),recv()
 #include <netdb.h>      // gethostbyname()
 #include "./globals.h"
-#define BUFF_SIZE 80000
+#define BUFF_SIZE 140000
 
 
 
@@ -44,23 +44,30 @@ int char_idx(const char* str, const char c){
 //returns pointer to file contents in char array
 char* read_file(const char* file){
 
-	  FILE* f = fopen(file, "r");
+	  // char* cat_str = calloc(1+1, sizeof(char));
+    FILE* f = fopen(file, "r");
 		if(f == NULL){
 			fprintf(stderr, "enc_client: error opening file\n");
 			exit(1);
 		}
-    char* curr_line = NULL;
-    char* ret = NULL;
-    size_t len = 0;
-    ssize_t nread; 
     
-		/* For each line, make a movie */
-    nread = getline(&curr_line, &len, f);
-		if(nread == -1) curr_line = NULL;
+    fseek(f, 0, SEEK_END);
+    long num_chars = ftell(f); 
+    fseek(f, 0, SEEK_SET);
+    char* curr_line = calloc(num_chars+1, sizeof(char));
+    // char* ret = NULL;
+    // size_t len = 0;
+    // ssize_t nread; 
+    // int i = 0;
+
+
+    fgets(curr_line, num_chars, f);
+    // strcat(ret, cat_str);
+    
     fclose(f);
-    ret = calloc(strlen(curr_line)+1, sizeof(char));
-    strcpy(ret, curr_line);
-		return ret; 
+    // ret = calloc(strlen(curr_line)+1, sizeof(char));
+    // strcpy(ret, curr_line);
+		return curr_line; 
     // printf("Processed file %s and parsed data for %d movies\n", f, counter);
     // return NULL;
 }
@@ -210,14 +217,16 @@ int main(int argc, char *argv[]) {
 
   // Send message to server
   // Write to the server
-  charsWritten = send(socketFD, buffer, strlen(buffer), 0); 
-  if (charsWritten < 0){
-    error("CLIENT: ERROR writing to socket");
+  for(int sent = 0;;sent+=charsWritten){
+    charsWritten = send(socketFD, buffer, strlen(buffer), 0); 
+    if (charsWritten < 0){
+      error("CLIENT: ERROR writing to socket");
+    }
+    if (charsWritten < strlen(buffer)){
+      fprintf(stderr, "CLIENT: WARNING: Not all data written to socket!\n");
+    }
+    if(sent == strlen(buffer)) break;
   }
-  if (charsWritten < strlen(buffer)){
-    fprintf(stderr, "CLIENT: WARNING: Not all data written to socket!\n");
-  }
-
   // Get return message from server
   // Clear out the buffer again for reuse
   memset(buffer, '\0', sizeof(buffer));
@@ -228,8 +237,7 @@ int main(int argc, char *argv[]) {
   }
   // printf("CLIENT: I received this from the server: \"%s\"\n", buffer);
   if(strcmp(buffer, "bad") == 0){
-    fprintf(stderr, "dec_client: server rejected connection on port %s\n",
-            argv[3]);
+    fprintf(stderr,   "dec_client: server rejected connection on port %s; connection is not dec_server\n", argv[3]);
     exit(2);
   }
   fprintf(stdout, "%s\n", buffer);

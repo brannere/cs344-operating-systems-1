@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 #include "./otp.h"
 #include "./globals.h"
-
+#define BUFF_SIZE 140000
 
 /* PROVIDED */
 // Error function used for reporting issues
@@ -48,12 +48,15 @@ char* get_pt(char* m){
     return NULL;
   }
   char* cat_str = calloc(1+1, sizeof(char)); // to concat 1 char in strcat
-  char* ret = NULL;//calloc(1+1, sizeof(char));
+  // char* ret = NULL;//calloc(1+1, sizeof(char));
+  char* ret = calloc(BUFF_SIZE, sizeof(char));//calloc(1+1, sizeof(char));
+
+  // char* ret = calloc(BUFF_SIZE, sizeof(char));//calloc(1+1, sizeof(char));
   /* The first end of pt message will start with a **/
   int i = 0;
   for(i = 0; m[i] != '*'; i++){
     cat_str[0] = m[i];
-    ret = realloc(ret,(i+1)*sizeof(char*));
+    // ret = realloc(ret,(i+1)*sizeof(char*));
     strcat(ret, cat_str);
   }
   free(cat_str);
@@ -67,12 +70,14 @@ char* get_k(char* m){
     return NULL;
   }
   char* cat_str = calloc(1+1, sizeof(char)); // to concat 1 char in strcat
-  char* ret = NULL; //calloc(1+1, sizeof(char));
+  // char* ret = NULL; //calloc(1+1, sizeof(char));
+  char* ret = calloc(BUFF_SIZE, sizeof(char));//calloc(1+1, sizeof(char));
   /* The second end of end of key sequence will start with a **/
   int i = 0;
-  for(i = 0; m[i+*start] != '*'; i++){
-    cat_str[0] = m[i+*start];
-    ret = realloc(ret,(i+1)*sizeof(char*));
+  for(i = 0; start[i+strlen(END_OF_PT)] != '*'; i++){
+    cat_str[0] = start[i+strlen(END_OF_PT)];
+    // if(ret != NULL) fprintf(stdout, "strlen of ret: %d\n", strlen(ret));
+    // ret = realloc(ret,(i+1)*sizeof(char*));
     strcat(ret, cat_str);
   }
   // if(i > strlen(m)){
@@ -116,7 +121,7 @@ int main(int argc, char *argv[]){
     
   const char valid_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ "; 
   int connectionSocket, charsRead = 0;
-  char buffer[256];
+  char buffer[BUFF_SIZE];
   struct sockaddr_in serverAddress, clientAddress;
   socklen_t sizeOfClientInfo = sizeof(clientAddress);
 
@@ -159,19 +164,20 @@ int main(int argc, char *argv[]){
     //                       ntohs(clientAddress.sin_port));
 
     // Get the message from the client and display it
-    memset(buffer, '\0', 256);
+    memset(buffer, '\0', BUFF_SIZE);
     // Read the client's message from the socket
-    charsRead = recv(connectionSocket, buffer, 255, 0); 
-    if (charsRead < 0){
-      error("ERROR reading from socket");
+    for(int count = 0;;count+=charsRead){
+      charsRead = recv(connectionSocket, buffer, BUFF_SIZE-1, 0); 
+      if (charsRead < 0){
+        error("ERROR reading from socket");
+      }
+      if(strstr(buffer, END_OF_M)!= NULL) break;
     }
 
     if(is_enc_client(buffer) == false){
+      // fprintf(stdout,"buffer got: %s\n", buffer);
+
       send_to_client(connectionSocket, "bad", 3, 0);
-      // charsRead = send(connectionSocket, "bad", 3, 0); 
-      // if (charsRead < 0){
-      //   error("ERROR writing to socket");
-      // }  
     }
     else{
 		  /* HERE WE GET THE KEY AND PLAIN TEXT*/

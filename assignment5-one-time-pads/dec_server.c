@@ -58,8 +58,8 @@ char* get_ct(char* m){
 }
 
 char* get_k(const char* m){
-  char* s = strstr(m, END_OF_CIPH);
-  if(s == NULL){
+  char* start = strstr(m, END_OF_CIPH);
+  if(start == NULL){
     fprintf(stderr, "dec_server: could not find END_OF_CIPH\n");
     return NULL;
   }
@@ -67,8 +67,8 @@ char* get_k(const char* m){
   char* ret = NULL; //calloc(1+1, sizeof(char));
   /* The second end of end of key sequence will start with a **/
   int i = 0;
-	for(i = 0; m[i+*s] != '*'; i++){
-    cat_str[0] = m[i+*s];
+	for(i = 0; start[i+strlen(END_OF_CIPH)] != '*'; i++){
+    cat_str[0] = start[i+strlen(END_OF_CIPH)];
     ret = realloc(ret,(i+1)*sizeof(char*));
     strcat(ret, cat_str);
   }
@@ -159,12 +159,16 @@ int main(int argc, char *argv[]){
     // Get the message from the client and display it
     memset(buffer, '\0', 256);
     // Read the client's message from the socket
-    charsRead = recv(connectionSocket, buffer, 255, 0); 
-    if (charsRead < 0){
-      error("ERROR reading from socket");
-    }
+    // for(;;){
+      charsRead = recv(connectionSocket, buffer, 255, 0); 
+      if (charsRead < 0){
+        error("ERROR reading from socket");
+      }
+    //   if(strstr(buffer, END_OF_M) != NULL) break;
+    // }
 
     if(is_dec_client(buffer) == false){
+      // fprintf(stdout,"buffer got: %s\n", buffer);
       send_to_client(connectionSocket, "bad", 3, 0);
     }
     else{
