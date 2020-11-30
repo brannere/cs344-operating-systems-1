@@ -176,17 +176,8 @@ int main(int argc, char *argv[]){
     //                       ntohs(clientAddress.sin_addr.s_addr),
     //                       ntohs(clientAddress.sin_port));
 
-    // Get the message from the client and display it
-    memset(buffer, '\0', sizeof(buffer));
-    // Read the client's message from the socket
-    // for(;;){
-    read_from_client(connectionSocket, buffer, sizeof(buffer), 0, END_OF_M);      
-      // charsRead = recv(connectionSocket, buffer, BUFF_SIZE-1, 0);
-      // if (charsRead < 0){
-      //   error("ERROR reading from socket");
-      // }
-      // if(strstr(buffer, END_OF_M) != NULL) break;
-    // }
+    /* So server can take multiple requests on the same port */
+
     pid_t spawnpid = -5;
     pid_t child_pid;
     int child_status;
@@ -197,9 +188,15 @@ int main(int argc, char *argv[]){
         exit(1);
         break;     
       case 0:
+        // Get the message from the client and display it
+        memset(buffer, '\0', sizeof(buffer));
+        // Read the client's message from the socket
+        
+        read_from_client(connectionSocket, buffer, sizeof(buffer), 0, END_OF_M);      
+          // charsRead = recv(connectionSocket, buffer, BUFF_SIZE-1, 0);
         if(is_dec_client(buffer) == false){
           // fprintf(stdout,"buffer got: %s\n", buffer);
-          send_to_client(connectionSocket, "bad", 3, 0);
+          send_to_client(connectionSocket, "bad*eom", 3, 0);
         }
         else{
 		      /* HERE WE GET THE KEY AND PLAIN TEXT*/

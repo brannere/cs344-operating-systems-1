@@ -232,41 +232,26 @@ int main(int argc, char *argv[]) {
 
   /* SEND TO SERVER */
 
-  // Send message to server
-  // Write to the server
-  // for(int sent = 0;;sent+=charsWritten){
-    // charsWritten = send(socketFD, buffer+sent, strlen(buffer), 0); 
-    send_to_client(socketFD, buffer, strlen(buffer),0);
-    // if (charsWritten < 0){
-    //   error("CLIENT: ERROR writing to socket");
-    // }
-    // if (charsWritten < strlen(buffer)){
-    //   fprintf(stderr, "CLIENT: WARNING: Not all data written to socket!\n");
-    // }
-    // if(sent == strlen(buffer)) break;
-  // }
+  // charsWritten = send(socketFD, buffer+sent, strlen(buffer), 0); 
+  send_to_client(socketFD, buffer, strlen(buffer),0);
+
   // Get return message from server
   // Clear out the buffer again for reuse
   memset(buffer, '\0', sizeof(buffer));
   // Read data from the socket, leaving \0 at end
-  charsRead = recv(socketFD, buffer, sizeof(buffer) - 1, 0); 
-  // for(;;){
-  //   if (charsRead < 0){
-  //     error("CLIENT: ERROR reading from socket");
-  //   }
-  //   // printf("CLIENT: I received this from the server: \"%s\"\n", buffer);
-  //   if(strcmp(buffer, "bad") == 0){
-  //     fprintf(stderr,   "dec_client: server rejected connection on port %s; connection is not dec_server\n", argv[3]);
-  //     exit(2);
-  //   }
-  //   if(strstr(buffer, END_OF_M) != NULL) break;
-  // }
-  // read_from_client(socketFD, buffer, sizeof(buffer), 0, END_OF_M);
+  charsRead = recv(socketFD, buffer, sizeof(buffer), 0); 
+
+  /* Remove end of message sequence */
   for(int i = 0; i < strlen(buffer); i++){
     if(buffer[i] == '*'){
       buffer[i] = '\0';
       break;
     }
+  }
+  if(strcmp(buffer, "bad") == 0){
+    fprintf(stderr, "enc_client: server rejected connection on port %s; connection not dec_server\n",
+            argv[3]);
+    exit(2);
   }
   fprintf(stdout, "%s\n", buffer);
 

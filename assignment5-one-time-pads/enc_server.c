@@ -180,16 +180,6 @@ int main(int argc, char *argv[]){
     //                       ntohs(clientAddress.sin_port));
 
     // Get the message from the client and display it
-    memset(buffer, '\0', sizeof(buffer));
-    // Read the client's message from the socket
-    // for(int count = 0;;count+=charsRead){
-    //   charsRead = recv(connectionSocket, buffer, BUFF_SIZE-1, 0); 
-    //   if (charsRead < 0){
-    //     error("ERROR reading from socket");
-    //   }
-    //   if(strstr(buffer, END_OF_M)!= NULL) break;
-    // }
-    read_from_client(connectionSocket, buffer, sizeof(buffer), 0, END_OF_M);      
 
     pid_t spawnpid = -5;
     pid_t child_pid;
@@ -201,8 +191,11 @@ int main(int argc, char *argv[]){
         exit(1);
         break;
       case 0:
+        memset(buffer, '\0', sizeof(buffer));
+        // charsRead = recv(connectionSocket, buffer, BUFF_SIZE, 0); 
+        read_from_client(connectionSocket, buffer, sizeof(buffer), 0, END_OF_M);      
         if(is_enc_client(buffer) == false){
-          send_to_client(connectionSocket, "bad", 3, 0);
+          send_to_client(connectionSocket, "bad*eom", 3, 0);
         }
         else{
 		      /* HERE WE GET THE KEY AND PLAIN TEXT*/
