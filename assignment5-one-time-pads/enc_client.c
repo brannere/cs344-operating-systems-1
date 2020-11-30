@@ -25,13 +25,16 @@ void
 read_from_client(const int socket, char* buffer, const int buffersize, const int port,
                 const char* end_seq){
   int chars_read;
+  char acc[BUFF_SIZE]; 
+
   for(;;){
-    chars_read = recv(socket, buffer, buffersize, port);
+    chars_read = recv(socket, acc, buffersize, port);
     if(chars_read < 0){
       error("ERROR reading from socket");
     }
+    strcat(buffer, acc);
     if(strstr(buffer, end_seq) != NULL) break;
-  }
+  } 
 }
 
 void
@@ -39,12 +42,14 @@ send_to_client(const int socket, const char* msg, const int msg_len, const int p
   int sent = 0;
   int chars_read = 0;
   for(;;){
+    // fprintf(stderr, "msg+sent: %s\n", msg+sent);
+    // fprintf(stderr, "msg_len-chars_read: %d\n", msg_len-chars_read);
     chars_read = send(socket, msg+sent, msg_len-chars_read, port);
     if(chars_read < 0){
       error("ERROR writing to socket");
     }
     sent += chars_read;
-    if(sent == msg_len) break;
+    if(sent >= msg_len) break;
   }
   return;
 }
@@ -113,7 +118,7 @@ void verify_args(char* file_conts, char* key_conts, const char* allowed){
   char_replace(file_conts, '\n', '\0');
   char_replace(key_conts, '\n', '\0');
 	if(strlen(key_conts) < strlen(file_conts)){
-		fprintf(stderr, "enc_cleint: message is shorter than key\n");
+		fprintf(stderr, "enc_cleint: key is shorter than message\n");
 		exit(1);
 	}
 	for(int i = 0; i < strlen(file_conts); i++){
@@ -240,8 +245,8 @@ int main(int argc, char *argv[]) {
   memset(buffer, '\0', sizeof(buffer));
   // Read data from the socket, leaving \0 at end
 
-  charsRead = recv(socketFD, buffer, sizeof(buffer), 0); 
-  // read_from_client(socketFD, buffer, sizeof(buffer), 0, END_OF_M);
+  // charsRead = recv(socketFD, buffer, sizeof(buffer), 0); 
+  read_from_client(socketFD, buffer, sizeof(buffer), 0, END_OF_M);
   if(strcmp(buffer, "bad") == 0){
 
   }
@@ -252,7 +257,7 @@ int main(int argc, char *argv[]) {
       break;
     }
   }
-  if(strcmp(buffer, "bad") == 0){
+  if(strcmp(buffer, "*") == 0){
     fprintf(stderr, "enc_client: server rejected connection on port %s; connection not enc_server\n",
             argv[3]);
     exit(2);

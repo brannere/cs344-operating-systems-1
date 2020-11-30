@@ -24,12 +24,16 @@ void
 read_from_client(const int socket, char* buffer, const int buffersize, const int port,
                 const char* end_seq){
   int chars_read;
+  char acc[BUFF_SIZE]; 
+
   for(;;){
-    chars_read = recv(socket, buffer, buffersize, port);
+    chars_read = recv(socket, acc, buffersize, port);
     if(chars_read < 0){
       error("ERROR reading from socket");
     }
-    if(strstr(buffer, end_seq) != NULL) break;
+    strcat(buffer, acc);
+
+    if(strstr(buffer, end_seq) != NULL ||strstr(buffer, "bad") != NULL) break;
   }
 }
 
@@ -44,7 +48,7 @@ send_to_client(const int socket, const char* msg, const int msg_len, const int p
       error("ERROR writing to socket");
     }
     sent += chars_read;
-    if(sent == msg_len) break;
+    if(sent >= msg_len) break;
   }
   return;
 }
@@ -239,7 +243,8 @@ int main(int argc, char *argv[]) {
   // Clear out the buffer again for reuse
   memset(buffer, '\0', sizeof(buffer));
   // Read data from the socket, leaving \0 at end
-  charsRead = recv(socketFD, buffer, sizeof(buffer), 0); 
+  // charsRead = recv(socketFD, buffer, sizeof(buffer), 0); 
+  read_from_client(socketFD, buffer, sizeof(buffer), 0, END_OF_M);
 
   /* Remove end of message sequence */
   for(int i = 0; i < strlen(buffer); i++){
