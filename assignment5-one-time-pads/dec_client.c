@@ -12,9 +12,42 @@
 #include <sys/socket.h> // send(),recv()
 #include <netdb.h>      // gethostbyname()
 #include "./globals.h"
-#define BUFF_SIZE 140000
+// #define BUFF_SIZE 140000
 
 
+// Error function used for reporting issues
+void error(const char *msg) { 
+  perror(msg); 
+  exit(0); 
+} 
+void
+read_from_client(const int socket, char* buffer, const int buffersize, const int port,
+                const char* end_seq){
+  int chars_read;
+  for(;;){
+    chars_read = recv(socket, buffer, buffersize, port);
+    if(chars_read < 0){
+      error("ERROR reading from socket");
+    }
+    if(strstr(buffer, end_seq) != NULL) break;
+  }
+}
+
+void
+send_to_client(const int socket, const char* msg, const int msg_len, const int port){
+  int sent = 0;
+  int chars_read = 0;
+  for(;;){
+    chars_read = send(socket, msg+sent, msg_len-chars_read, port);
+    // chars_read = send(socket, msg, msg_len, port);
+    if(chars_read < 0){
+      error("ERROR writing to socket");
+    }
+    sent += chars_read;
+    if(sent == msg_len) break;
+  }
+  return;
+}
 
 
 void char_replace(char* source, const int c, const int t){
@@ -118,11 +151,7 @@ void enough_args(const int argc, char** argv, char* allowed){
 * 3. Print the message received from the server and exit the program.
 */
 
-// Error function used for reporting issues
-void error(const char *msg) { 
-  perror(msg); 
-  exit(0); 
-} 
+
 
 // Set up the address struct
 void setupAddressStruct(struct sockaddr_in* address, 
@@ -185,19 +214,7 @@ int main(int argc, char *argv[]) {
     error("CLIENT: ERROR connecting");
   }
   
-	
-
-	// Get input message from user
-  // printf("CLIENT: Enter text to send to the server, and then hit enter: ");
-  // Clear out the buffer array
   memset(buffer, '\0', sizeof(buffer));
-  // Get input from the user, trunc to buffer - 1 chars, leaving \0
-  // fgets(buffer, sizeof(buffer) - 1, stdin);
-  // strcpy(buffer, file_conts);
-  // buffer[strcspn(buffer, "\n")] = '\0'; 
-  // strcat(buffer, key_conts);
-  // Remove the trailing \n that fgets adds
-  // buffer[strcspn(buffer, "\n")] = '\0'; 
   
   /*  Put the plaintext in the buffer
       and place end of pt sequence */
@@ -217,28 +234,39 @@ int main(int argc, char *argv[]) {
 
   // Send message to server
   // Write to the server
-  for(int sent = 0;;sent+=charsWritten){
-    charsWritten = send(socketFD, buffer, strlen(buffer), 0); 
-    if (charsWritten < 0){
-      error("CLIENT: ERROR writing to socket");
-    }
-    if (charsWritten < strlen(buffer)){
-      fprintf(stderr, "CLIENT: WARNING: Not all data written to socket!\n");
-    }
-    if(sent == strlen(buffer)) break;
-  }
+  // for(int sent = 0;;sent+=charsWritten){
+    // charsWritten = send(socketFD, buffer+sent, strlen(buffer), 0); 
+    send_to_client(socketFD, buffer, strlen(buffer),0);
+    // if (charsWritten < 0){
+    //   error("CLIENT: ERROR writing to socket");
+    // }
+    // if (charsWritten < strlen(buffer)){
+    //   fprintf(stderr, "CLIENT: WARNING: Not all data written to socket!\n");
+    // }
+    // if(sent == strlen(buffer)) break;
+  // }
   // Get return message from server
   // Clear out the buffer again for reuse
   memset(buffer, '\0', sizeof(buffer));
   // Read data from the socket, leaving \0 at end
   charsRead = recv(socketFD, buffer, sizeof(buffer) - 1, 0); 
-  if (charsRead < 0){
-    error("CLIENT: ERROR reading from socket");
-  }
-  // printf("CLIENT: I received this from the server: \"%s\"\n", buffer);
-  if(strcmp(buffer, "bad") == 0){
-    fprintf(stderr,   "dec_client: server rejected connection on port %s; connection is not dec_server\n", argv[3]);
-    exit(2);
+  // for(;;){
+  //   if (charsRead < 0){
+  //     error("CLIENT: ERROR reading from socket");
+  //   }
+  //   // printf("CLIENT: I received this from the server: \"%s\"\n", buffer);
+  //   if(strcmp(buffer, "bad") == 0){
+  //     fprintf(stderr,   "dec_client: server rejected connection on port %s; connection is not dec_server\n", argv[3]);
+  //     exit(2);
+  //   }
+  //   if(strstr(buffer, END_OF_M) != NULL) break;
+  // }
+  // read_from_client(socketFD, buffer, sizeof(buffer), 0, END_OF_M);
+  for(int i = 0; i < strlen(buffer); i++){
+    if(buffer[i] == '*'){
+      buffer[i] = '\0';
+      break;
+    }
   }
   fprintf(stdout, "%s\n", buffer);
 

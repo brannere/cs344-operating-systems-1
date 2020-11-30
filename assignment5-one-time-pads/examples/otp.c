@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "./globals.h"
 #define MODULO 27 // for encipher
 
 
@@ -27,7 +28,7 @@ char* encipher(const char* m, const char* k, const char* allowed){
     int tmpm = -1;
     int sum = 0;
     char* cat_str = calloc(1+1, sizeof(char)); // to concat 1 char in strcat
-    char* ct = calloc(strlen(allowed)+1, sizeof(char));
+    char* ct = calloc(strlen(allowed)+1+strlen(END_OF_M), sizeof(char));
      
     if(strlen(m) < strlen(k)){
         fprintf(stdout, "Key is shorter than message; returning\n");
@@ -58,7 +59,7 @@ char* decipher(const char* ct, const char* k, const char* allowed){
     int tmpct = -1;
     int diff = 0;
     char* cat_str = calloc(1+1, sizeof(char)); // to concat 1 char in strcat
-    char* pt = calloc(strlen(allowed)+1, sizeof(char));
+    char* pt = calloc(strlen(allowed)+1+strlen(END_OF_M), sizeof(char));
      
     if(strlen(ct) < strlen(k)){
         fprintf(stdout, "Cipher text is shorter than message; returning\n");

@@ -8,7 +8,7 @@
 #include <sys/wait.h>
 #include "./otp.h"
 #include "./globals.h"
-#define BUFF_SIZE 140000
+// #define BUFF_SIZE 140000
 
 
 void error(const char *msg) {
@@ -18,11 +18,26 @@ void error(const char *msg) {
 /*****/
 
 void
+read_from_client(const int socket, char* buffer, const int buffersize, const int port,
+                const char* end_seq){
+  int chars_read;
+  for(;;){
+    chars_read = recv(socket, buffer, buffersize, port);
+    if(chars_read < 0){
+      error("ERROR reading from socket");
+    }
+    if(strstr(buffer, end_seq) != NULL) break;
+  }
+}
+
+void
 send_to_client(const int socket, const char* msg, const int msg_len, const int port){
   int sent = 0;
   int chars_read = 0;
   for(;;){
-    chars_read = send(socket, msg, msg_len, port);
+    // chars_read = send(socket, msg, msg_len, port);
+    chars_read = send(socket, msg+sent, msg_len-chars_read, port);
+
     if(chars_read < 0){
       error("ERROR writing to socket");
     }
@@ -162,14 +177,15 @@ int main(int argc, char *argv[]){
     //                       ntohs(clientAddress.sin_port));
 
     // Get the message from the client and display it
-    memset(buffer, '\0', BUFF_SIZE);
+    memset(buffer, '\0', sizeof(buffer));
     // Read the client's message from the socket
     // for(;;){
-      charsRead = recv(connectionSocket, buffer, BUFF_SIZE-1, 0); 
-      if (charsRead < 0){
-        error("ERROR reading from socket");
-      }
-    //   if(strstr(buffer, END_OF_M) != NULL) break;
+    read_from_client(connectionSocket, buffer, sizeof(buffer), 0, END_OF_M);      
+      // charsRead = recv(connectionSocket, buffer, BUFF_SIZE-1, 0);
+      // if (charsRead < 0){
+      //   error("ERROR reading from socket");
+      // }
+      // if(strstr(buffer, END_OF_M) != NULL) break;
     // }
     pid_t spawnpid = -5;
     pid_t child_pid;
@@ -201,6 +217,7 @@ int main(int argc, char *argv[]){
 		      		fprintf(stderr, "dec_server: error getting plain text\n");
 		      	}else{
             	// Send a Success message back to the client
+              strcat(plain_text, END_OF_M);
               send_to_client(connectionSocket, plain_text, strlen(plain_text), 0);
 		      	}
           }
