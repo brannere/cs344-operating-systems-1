@@ -5,8 +5,10 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <sys/wait.h>
 #include "./otp.h"
 #include "./globals.h"
+#define BUFF_SIZE 140000
 
 
 void error(const char *msg) {
@@ -45,12 +47,13 @@ char* get_ct(char* m){
 		return NULL;
 	}
   char* cat_str = calloc(1+1, sizeof(char)); // to concat 1 char in strcat
-  char* ret = NULL;//calloc(1+1, sizeof(char));
+  // char* ret = NULL;//calloc(1+1, sizeof(char));
+  char* ret = calloc(BUFF_SIZE, sizeof(char));//calloc(1+1, sizeof(char));
   /* The first end of pt message will start with a **/
   int i = 0;
 	for(i = 0; m[i] != '*'; i++){
     cat_str[0] = m[i];
-    ret = realloc(ret,(i+1)*sizeof(char*));
+    // ret = realloc(ret,(i+1)*sizeof(char*));
     strcat(ret, cat_str);
   }
   free(cat_str);
@@ -64,12 +67,14 @@ char* get_k(const char* m){
     return NULL;
   }
   char* cat_str = calloc(1+1, sizeof(char)); // to concat 1 char in strcat
-  char* ret = NULL; //calloc(1+1, sizeof(char));
+  // char* ret = NULL; //calloc(1+1, sizeof(char));
+  char* ret = calloc(BUFF_SIZE, sizeof(char));//calloc(1+1, sizeof(char));
+
   /* The second end of end of key sequence will start with a **/
   int i = 0;
 	for(i = 0; start[i+strlen(END_OF_CIPH)] != '*'; i++){
     cat_str[0] = start[i+strlen(END_OF_CIPH)];
-    ret = realloc(ret,(i+1)*sizeof(char*));
+    // ret = realloc(ret,(i+1)*sizeof(char*));
     strcat(ret, cat_str);
   }
   // if(i > strlen(m)){
@@ -113,7 +118,7 @@ int main(int argc, char *argv[]){
     
   const char valid_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ "; 
   int connectionSocket, charsRead;
-  char buffer[256];
+  char buffer[BUFF_SIZE];
   struct sockaddr_in serverAddress, clientAddress;
   socklen_t sizeOfClientInfo = sizeof(clientAddress);
 
@@ -157,42 +162,84 @@ int main(int argc, char *argv[]){
     //                       ntohs(clientAddress.sin_port));
 
     // Get the message from the client and display it
-    memset(buffer, '\0', 256);
+    memset(buffer, '\0', BUFF_SIZE);
     // Read the client's message from the socket
     // for(;;){
-      charsRead = recv(connectionSocket, buffer, 255, 0); 
+      charsRead = recv(connectionSocket, buffer, BUFF_SIZE-1, 0); 
       if (charsRead < 0){
         error("ERROR reading from socket");
       }
     //   if(strstr(buffer, END_OF_M) != NULL) break;
     // }
+    pid_t spawnpid = -5;
+    pid_t child_pid;
+    int child_status;
+    spawnpid = fork();
+    switch(spawnpid){
+      case -1:
+        perror("fork() failed!");
+        exit(1);
+        break;     
+      case 0:
+        if(is_dec_client(buffer) == false){
+          // fprintf(stdout,"buffer got: %s\n", buffer);
+          send_to_client(connectionSocket, "bad", 3, 0);
+        }
+        else{
+		      /* HERE WE GET THE KEY AND PLAIN TEXT*/
+          // printf("SERVER: I received this from the client: \"%s\"\n", buffer);
+          char* cipher_t = get_ct(buffer);
+          char* key = get_k(buffer);
+	        /* ENCIPHER WITH THE KEY AND PLAIN TEXT */
+          if(cipher_t == NULL || key == NULL){
+            fprintf(stderr, "enc_server: plain text or key is null\n");
+          }
+          else{
+            char* plain_text = decipher(cipher_t, key, valid_chars); 
+            /* SEND CIPHER TEXT BACK*/
+            if(plain_text == NULL){
+		      		fprintf(stderr, "dec_server: error getting plain text\n");
+		      	}else{
+            	// Send a Success message back to the client
+              send_to_client(connectionSocket, plain_text, strlen(plain_text), 0);
+		      	}
+          }
+        }
+        // Close the connection socket for this client
+        close(connectionSocket); 
+        break;
 
-    if(is_dec_client(buffer) == false){
-      // fprintf(stdout,"buffer got: %s\n", buffer);
-      send_to_client(connectionSocket, "bad", 3, 0);
+      default:
+        child_pid = spawnpid;
+        child_pid = waitpid(child_pid, &child_status, 0);
+        break;  
     }
-    else{
-		  /* HERE WE GET THE KEY AND PLAIN TEXT*/
-      // printf("SERVER: I received this from the client: \"%s\"\n", buffer);
-      char* cipher_t = get_ct(buffer);
-      char* key = get_k(buffer);
-	    /* ENCIPHER WITH THE KEY AND PLAIN TEXT */
-      if(cipher_t == NULL || key == NULL){
-        fprintf(stderr, "enc_server: plain text or key is null\n");
-      }
-      else{
-        char* plain_text = decipher(cipher_t, key, valid_chars); 
-        /* SEND CIPHER TEXT BACK*/
-        if(plain_text == NULL){
-		  		fprintf(stderr, "dec_server: error getting plain text\n");
-		  	}else{
-        	// Send a Success message back to the client
-          send_to_client(connectionSocket, plain_text, strlen(plain_text), 0);
-		  	}
-      }
-    }
-    // Close the connection socket for this client
-    close(connectionSocket); 
+    // if(is_dec_client(buffer) == false){
+    //   // fprintf(stdout,"buffer got: %s\n", buffer);
+    //   send_to_client(connectionSocket, "bad", 3, 0);
+    // }
+    // else{
+		//   /* HERE WE GET THE KEY AND PLAIN TEXT*/
+    //   // printf("SERVER: I received this from the client: \"%s\"\n", buffer);
+    //   char* cipher_t = get_ct(buffer);
+    //   char* key = get_k(buffer);
+	  //   /* ENCIPHER WITH THE KEY AND PLAIN TEXT */
+    //   if(cipher_t == NULL || key == NULL){
+    //     fprintf(stderr, "enc_server: plain text or key is null\n");
+    //   }
+    //   else{
+    //     char* plain_text = decipher(cipher_t, key, valid_chars); 
+    //     /* SEND CIPHER TEXT BACK*/
+    //     if(plain_text == NULL){
+		//   		fprintf(stderr, "dec_server: error getting plain text\n");
+		//   	}else{
+    //     	// Send a Success message back to the client
+    //       send_to_client(connectionSocket, plain_text, strlen(plain_text), 0);
+		//   	}
+    //   }
+    // }
+    // // Close the connection socket for this client
+    // close(connectionSocket); 
   }
   // Close the listening socket
   close(listenSocket); 

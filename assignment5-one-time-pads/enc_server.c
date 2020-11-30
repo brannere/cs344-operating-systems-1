@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <sys/wait.h>
 #include "./otp.h"
 #include "./globals.h"
 #define BUFF_SIZE 140000
@@ -173,35 +174,75 @@ int main(int argc, char *argv[]){
       }
       if(strstr(buffer, END_OF_M)!= NULL) break;
     }
-
-    if(is_enc_client(buffer) == false){
-      // fprintf(stdout,"buffer got: %s\n", buffer);
-
-      send_to_client(connectionSocket, "bad", 3, 0);
-    }
-    else{
-		  /* HERE WE GET THE KEY AND PLAIN TEXT*/
-      // printf("SERVER: I received this from the client: \"%s\"\n", buffer);
-      char* plain = get_pt(buffer);
-      char* key = get_k(buffer);
-	    /* ENCIPHER WITH THE KEY AND PLAIN TEXT */
-      if(plain == NULL || key == NULL){
-        fprintf(stderr, "enc_server: plain text or key is null\n");
-      }
-      else{
-        char* cipher_text = encipher(plain, key, valid_chars); 
-        /* SEND CIPHER TEXT BACK*/
-        if(cipher_text == NULL){
-          fprintf(stderr, "enc_server: error getting cipher text\n");
-        }else{  
-          // Send a Success message back to the client
-          send_to_client(connectionSocket, cipher_text, strlen(cipher_text), 0);
+    pid_t spawnpid = -5;
+    pid_t child_pid;
+    int child_status; 
+    spawnpid = fork();
+    switch(spawnpid){
+      case -1:
+        perror("fork() failed!");
+        exit(1);
+        break;
+      case 0:
+        if(is_enc_client(buffer) == false){
+          send_to_client(connectionSocket, "bad", 3, 0);
         }
+        else{
+		      /* HERE WE GET THE KEY AND PLAIN TEXT*/
+          // printf("SERVER: I received this from the client: \"%s\"\n", buffer);
+          char* plain = get_pt(buffer);
+          char* key = get_k(buffer);
+	        /* ENCIPHER WITH THE KEY AND PLAIN TEXT */
+          if(plain == NULL || key == NULL){
+            fprintf(stderr, "enc_server: plain text or key is null\n");
+          }
+          else{
+            char* cipher_text = encipher(plain, key, valid_chars); 
+            /* SEND CIPHER TEXT BACK*/
+            if(cipher_text == NULL){
+              fprintf(stderr, "enc_server: error getting cipher text\n");
+            }else{  
+              // Send a Success message back to the client
+              send_to_client(connectionSocket, cipher_text, strlen(cipher_text), 0);
+            }
 
-      }
+          }
+        }
+        // Close the connection socket for this client
+        close(connectionSocket); 
+        break;
+
+      default:
+        child_pid = spawnpid;
+        child_pid = waitpid(child_pid, &child_status, 0);
+        break;
     }
-    // Close the connection socket for this client
-    close(connectionSocket); 
+    // if(is_enc_client(buffer) == false){
+    //   send_to_client(connectionSocket, "bad", 3, 0);
+    // }
+    // else{
+		//   /* HERE WE GET THE KEY AND PLAIN TEXT*/
+    //   // printf("SERVER: I received this from the client: \"%s\"\n", buffer);
+    //   char* plain = get_pt(buffer);
+    //   char* key = get_k(buffer);
+	  //   /* ENCIPHER WITH THE KEY AND PLAIN TEXT */
+    //   if(plain == NULL || key == NULL){
+    //     fprintf(stderr, "enc_server: plain text or key is null\n");
+    //   }
+    //   else{
+    //     char* cipher_text = encipher(plain, key, valid_chars); 
+    //     /* SEND CIPHER TEXT BACK*/
+    //     if(cipher_text == NULL){
+    //       fprintf(stderr, "enc_server: error getting cipher text\n");
+    //     }else{  
+    //       // Send a Success message back to the client
+    //       send_to_client(connectionSocket, cipher_text, strlen(cipher_text), 0);
+    //     }
+
+    //   }
+    // }
+    // // Close the connection socket for this client
+    // close(connectionSocket); 
   }
   // Close the listening socket
   close(listenSocket); 

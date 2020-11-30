@@ -185,20 +185,9 @@ int main(int argc, char *argv[]) {
     error("CLIENT: ERROR connecting");
   }
   
-	
-
-	// Get input message from user
-  // printf("CLIENT: Enter text to send to the server, and then hit enter: ");
   // Clear out the buffer array
   memset(buffer, '\0', sizeof(buffer));
-  // Get input from the user, trunc to buffer - 1 chars, leaving \0
-  // fgets(buffer, sizeof(buffer) - 1, stdin);
-  // strcpy(buffer, file_conts);
-  // buffer[strcspn(buffer, "\n")] = '\0'; 
-  // strcat(buffer, key_conts);
-  // Remove the trailing \n that fgets adds
-  // buffer[strcspn(buffer, "\n")] = '\0'; 
-  
+
   /*  Put the plaintext in the buffer
       and place end of pt sequence */
   strcpy(buffer, m_conts);
@@ -212,7 +201,6 @@ int main(int argc, char *argv[]) {
   /* Put end of message sequence*/
   strcat(buffer, END_OF_M);
   // fprintf(stdout, "buffer to send: %s\n",buffer);
-
 
 
   /* SEND TO SERVER */
