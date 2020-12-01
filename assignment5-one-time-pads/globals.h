@@ -15,7 +15,7 @@
 #define END_OF_CIPH	"*eoci" // FIXED: if len is not five it will break encryption
 #define END_OF_K 		"*eok"
 #define END_OF_PT 	"*eopt" // FIXED: if len is not five it will break decryption
-#define BUFF_SIZE 150000
+#define BUFF_SIZE 270000
 #define true 1
 #define false 0
 

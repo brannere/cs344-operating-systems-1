@@ -194,7 +194,7 @@ int main(int argc, char *argv[]){
     //                       ntohs(clientAddress.sin_port));
 
     /* So server can take multiple requests on the same port */
-
+    /* Do all the work in the child */
     pid_t spawnpid = -5;
     pid_t child_pid;
     int child_status;
@@ -213,7 +213,7 @@ int main(int argc, char *argv[]){
           // charsRead = recv(connectionSocket, buffer, BUFF_SIZE-1, 0);
         if(is_dec_client(buffer) == false){
           // fprintf(stdout,"buffer got: %s\n", buffer);
-          send_to_client(connectionSocket, "bad*eom", 3, 0);
+          send_to_client(connectionSocket, "bad*eom", 7, 0);
         }
         else{
 		      /* HERE WE GET THE KEY AND PLAIN TEXT*/
@@ -238,6 +238,7 @@ int main(int argc, char *argv[]){
         }
         // Close the connection socket for this client
         close(connectionSocket); 
+        exit(0);
         break;
 
       default:

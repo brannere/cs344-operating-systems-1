@@ -258,7 +258,7 @@ int main(int argc, char *argv[]) {
   memset(buffer, '\0', sizeof(buffer));
   // Read data from the socket, leaving \0 at end
   // charsRead = recv(socketFD, buffer, sizeof(buffer), 0); 
-  read_from_client(socketFD, buffer, sizeof(buffer), 0, END_OF_M);
+  read_from_client(socketFD, buffer, BUFF_SIZE, 0, END_OF_M);
 
   /* Remove end of message sequence */
   for(int i = 0; i < strlen(buffer); i++){
@@ -268,7 +268,7 @@ int main(int argc, char *argv[]) {
     }
   }
   if(strcmp(buffer, "bad") == 0){
-    fprintf(stderr, "enc_client: server rejected connection on port %s; connection not dec_server\n",
+    fprintf(stderr, "dec_client: server rejected connection on port %s; connection not dec_server\n",
             argv[3]);
     exit(2);
   }

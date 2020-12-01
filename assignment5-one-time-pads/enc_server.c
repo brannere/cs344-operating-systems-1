@@ -197,6 +197,8 @@ int main(int argc, char *argv[]){
 
     // Get the message from the client and display it
 
+    /* So server can take multiple requests on the same port */
+    /* Do all the work in the child */
     pid_t spawnpid = -5;
     pid_t child_pid;
     int child_status; 
@@ -211,7 +213,7 @@ int main(int argc, char *argv[]){
         // charsRead = recv(connectionSocket, buffer, BUFF_SIZE, 0); 
         read_from_client(connectionSocket, buffer, sizeof(buffer), 0, END_OF_M);      
         if(is_enc_client(buffer) == false){
-          send_to_client(connectionSocket, "bad*eom", 3, 0);
+          send_to_client(connectionSocket, "bad*eom", 7, 0);
         }
         else{
 		      /* HERE WE GET THE KEY AND PLAIN TEXT*/
@@ -237,6 +239,7 @@ int main(int argc, char *argv[]){
         }
         // Close the connection socket for this client
         close(connectionSocket); 
+        exit(0);
         break;
 
       default:

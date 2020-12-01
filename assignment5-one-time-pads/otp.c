@@ -45,6 +45,7 @@ char* encipher(const char* m, const char* k, const char* allowed){
         return NULL;
     }
     // scrap the extra chars
+    //get the idx that that char is stored at for modulo operations, -1 if not present
     for(int i = 0; i < strlen(m); i++){
         tmpk = char_idx(allowed, k[i]);
         tmpm = char_idx(allowed, m[i]);
@@ -76,6 +77,7 @@ char* decipher(const char* ct, const char* k, const char* allowed){
         return NULL;
     }
     // scrap the extra chars
+    //get the idx that that char is stored at for modulo operations, -1 if not present
     for(int i = 0; i < strlen(ct); i++){
         tmpk = char_idx(allowed, k[i]);
         tmpct = char_idx(allowed, ct[i]);
