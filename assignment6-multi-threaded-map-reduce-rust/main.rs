@@ -176,5 +176,17 @@ fn main() {
 */
 fn partition_data(num_partitions: usize, v: &Vec<usize>) -> Vec<Vec<usize>>{
     // Remove the following line which has been added to remove a compiler error
+    // let partition_size = v.len()/2;
+    // println!("num_partitions {}", num_partitions);
+    // println!("partition_size(num_elements) {}", v.len());
+    // println!("num_elements % num_partitions {}", v.len()%num_partitions);
+
+    if v.len()%num_partitions == 0{
+        println!("is multiple");
+    }
+    else{
+        println!("is not multiple");
+    }
+
     partition_data_in_two(v)
 }
