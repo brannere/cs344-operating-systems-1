@@ -124,15 +124,17 @@ fn main() {
     // CHANGE CODE START: Don't change any code above this line
 
     // Change the following code to create 2 threads that run concurrently and each of which uses map_data() function to process one of the two partitions
-
+    
+    /*******************/
     intermediate_sums.push(map_data(&xs[0]));
     intermediate_sums.push(map_data(&xs[1]));
     let c_xs0 = xs[0].clone();
     let c_xs1 = xs[1].clone();
     let t1 = thread::spawn(move ||(map_data(&c_xs0)));
     let t2 = thread::spawn(move ||(map_data(&c_xs1)));
-    // let _r1 = t1.join().unwrap();
-    // let _r2 = t2.join().unwrap();
+    let _r1 = t1.join().unwrap();
+    let _r2 = t2.join().unwrap();
+    /*******************/
 
     // CHANGE CODE END: Don't change any code below this line until the next CHANGE CODE comment
 
@@ -151,7 +153,11 @@ fn main() {
     // 5. Prints information about the intermediate sums
     // 5. Calls reduce_data to process the intermediate sums
     // 6. Prints the final sum computed by reduce_data
+    /*******************/
 
+    let my_pd = partition_data(num_partitions, &v);
+    
+    /*******************/
 }
 
 /*
