@@ -125,12 +125,14 @@ fn main() {
 
     // Change the following code to create 2 threads that run concurrently and each of which uses map_data() function to process one of the two partitions
 
-    // intermediate_sums.push(map_data(&xs[0]));
-    // intermediate_sums.push(map_data(&xs[1]));
-    let t1 = thread::spawn(move||intermediate_sums.push(map_data(&xs[0])));
-    let t2 = thread::spawn(move||intermediate_sums.push(map_data(&xs[1])));
-    let _r1 = t1.join().unwrap();
-    let _r2 = t2.join().unwrap();
+    intermediate_sums.push(map_data(&xs[0]));
+    intermediate_sums.push(map_data(&xs[1]));
+    let c_xs0 = xs[0].clone();
+    let c_xs1 = xs[1].clone();
+    let t1 = thread::spawn(move ||(map_data(&c_xs0)));
+    let t2 = thread::spawn(move ||(map_data(&c_xs1)));
+    // let _r1 = t1.join().unwrap();
+    // let _r2 = t2.join().unwrap();
 
     // CHANGE CODE END: Don't change any code below this line until the next CHANGE CODE comment
 
