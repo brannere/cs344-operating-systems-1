@@ -198,7 +198,8 @@ fn partition_data(num_partitions: usize, v: &Vec<usize>) -> Vec<Vec<usize>>{
     // println!("num_elements % num_partitions {}", v.len()%num_partitions);
     
     let mut xs: Vec<Vec<usize>> = Vec::new();
-    
+    let mut v_cpy = v.clone();
+
     if v.len()%num_partitions == 0{
         // println!("is multiple");
         for _i in 0..num_partitions{
@@ -210,26 +211,43 @@ fn partition_data(num_partitions: usize, v: &Vec<usize>) -> Vec<Vec<usize>>{
         }
     }
     else{
-        // println!("is not multiple");
         let extra = v.len()%num_partitions;
-        let mut counter = 0;
-        for _i in 0..num_partitions{
-            let mut called = 0;
+        /* For each partition, write/push the same amount */
+        for _i in 0..v.len(){
             let mut tmp: Vec<usize> = Vec::new();
-            for j in 0..v.len(){
-                tmp.push(v[j]);
-                    if counter < extra && called == 0{
-                        // println!("extra loop");
-                        called = 1; 
-                        // tmp.push(v[j+counter+1]);
-                        tmp.push(v[v.len()-counter]);
-                        counter = counter + 1;
-                    }
+            for _j in 0..num_partitions{
+                if v_cpy.len() != 0{
+                    let end = v_cpy.len()-1;
+                    tmp.push(v_cpy[end]);
+                    // tmp.push(v_cpy.pop());
+                    v_cpy.pop();
+                }
             }
             xs.push(tmp);
         }
-
+        
     }
+    // else{
+    //     // println!("is not multiple");
+    //     let extra = v.len()%num_partitions;
+    //     let mut counter = 0;
+    //     for _i in 0..num_partitions{
+    //         let mut called = 0;
+    //         let mut tmp: Vec<usize> = Vec::new();
+    //         for j in 0..v.len(){
+    //             tmp.push(v[j]);
+    //                 if counter < extra && called == 0{
+    //                     // println!("extra loop");
+    //                     called = 1; 
+    //                     // tmp.push(v[j+counter+1]);
+    //                     tmp.push(v[v.len()-counter]);
+    //                     counter = counter + 1;
+    //                 }
+    //         }
+    //         xs.push(tmp);
+    //     }
+
+    // }
 
     // partition_data_in_two(v)
     xs
