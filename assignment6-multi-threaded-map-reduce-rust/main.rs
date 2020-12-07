@@ -179,13 +179,12 @@ fn partition_data(num_partitions: usize, v: &Vec<usize>) -> Vec<Vec<usize>>{
     // let partition_size = v.len()/2;
     // println!("num_partitions {}", num_partitions);
     // println!("partition_size(num_elements) {}", v.len());
-    // println!("num_elements % num_partitions {}", v.len()%num_partitions);
+    println!("num_elements % num_partitions {}", v.len()%num_partitions);
     
     let mut xs: Vec<Vec<usize>> = Vec::new();
     
     if v.len()%num_partitions == 0{
-        
-        println!("is multiple");
+        // println!("is multiple");
         for i in 0..num_partitions{
             let mut tmp: Vec<usize> = Vec::new();
             for j in 0..v.len(){
@@ -193,10 +192,24 @@ fn partition_data(num_partitions: usize, v: &Vec<usize>) -> Vec<Vec<usize>>{
             }
             xs.push(tmp);
         }
-        // write v.len() in each vector
     }
     else{
-        println!("is not multiple");
+        // println!("is not multiple");
+        let extra = v.len()%num_partitions;
+        for i in 0..num_partitions{
+
+            let mut tmp: Vec<usize> = Vec::new();
+            for j in 0..v.len(){
+                tmp.push(v[j]);
+                if i == 0 && j == 0{
+                    for k in 0..extra{
+                        // println!("extra loop");
+                        tmp.push(v[j+k]);
+                    }
+                }
+            }
+            xs.push(tmp);
+        }
     }
 
     // partition_data_in_two(v)
