@@ -163,17 +163,16 @@ fn main() {
     
     print_partition_info(&my_pd);
     /* create one thread per partition */
-    for element in my_pd{
-        // let tmp_t = thread::spawn(move || (map_data(&pd_clone[i])) );
-        // let _tmp_r1 = tmp_t.join().unwrap();
+    for element in pd_clone{
         let tmp_t = thread::spawn(move || (map_data(&element)) );
         let _tmp_r1 = tmp_t.join().unwrap();
     }
-    // for i in 0..my_pd.len(){
-    //     my_intermediate_sums.push(map_data(&my_pd[i]));
-    // }
+    for i in 0..my_pd.len(){
+        my_intermediate_sums.push(map_data(&my_pd[i]));
+    }
     println!("Intermediate sums = {:?}", my_intermediate_sums);
-
+    let my_sum = reduce_data(&my_intermediate_sums);
+    println!("Sum = {}", my_sum);
     /*******************/
 }
 
