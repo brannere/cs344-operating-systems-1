@@ -196,19 +196,25 @@ fn partition_data(num_partitions: usize, v: &Vec<usize>) -> Vec<Vec<usize>>{
     else{
         // println!("is not multiple");
         let extra = v.len()%num_partitions;
+        let mut counter = 0;
         for i in 0..num_partitions{
+        let mut called = 0;
 
             let mut tmp: Vec<usize> = Vec::new();
             for j in 0..v.len(){
                 tmp.push(v[j]);
-                if i == 0 && j == 0{
-                    for k in 0..extra{
+                    if counter < extra && called == 0{
                         // println!("extra loop");
-                        tmp.push(v[j+k]);
+                        called = 1; 
+                        tmp.push(v[j+counter+1]);
+                        counter = counter + 1;
                     }
-                }
             }
+            called = 1;
             xs.push(tmp);
+        }
+        for i in 0..extra{
+
         }
     }
 
