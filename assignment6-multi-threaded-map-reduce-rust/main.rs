@@ -126,8 +126,8 @@ fn main() {
     // Change the following code to create 2 threads that run concurrently and each of which uses map_data() function to process one of the two partitions
     
     /*******************/
-    intermediate_sums.push(map_data(&xs[0]));
-    intermediate_sums.push(map_data(&xs[1]));
+    // intermediate_sums.push(map_data(&xs[0]));
+    // intermediate_sums.push(map_data(&xs[1]));
     let c_xs0 = xs[0].clone();
     let c_xs1 = xs[1].clone();
     let t1 = thread::spawn(move ||(map_data(&c_xs0)));
@@ -155,8 +155,25 @@ fn main() {
     // 6. Prints the final sum computed by reduce_data
     /*******************/
 
+    
+    let mut my_intermediate_sums : Vec<usize> = Vec::new();
     let my_pd = partition_data(num_partitions, &v);
+    
+    let pd_clone = my_pd.clone();
+    
     print_partition_info(&my_pd);
+    /* create one thread per partition */
+    for element in my_pd{
+        // let tmp_t = thread::spawn(move || (map_data(&pd_clone[i])) );
+        // let _tmp_r1 = tmp_t.join().unwrap();
+        let tmp_t = thread::spawn(move || (map_data(&element)) );
+        let _tmp_r1 = tmp_t.join().unwrap();
+    }
+    // for i in 0..my_pd.len(){
+    //     my_intermediate_sums.push(map_data(&my_pd[i]));
+    // }
+    println!("Intermediate sums = {:?}", my_intermediate_sums);
+
     /*******************/
 }
 
@@ -205,7 +222,8 @@ fn partition_data(num_partitions: usize, v: &Vec<usize>) -> Vec<Vec<usize>>{
                     if counter < extra && called == 0{
                         // println!("extra loop");
                         called = 1; 
-                        tmp.push(v[j+counter+1]);
+                        // tmp.push(v[j+counter+1]);
+                        tmp.push(v[v.len()-counter]);
                         counter = counter + 1;
                     }
             }
