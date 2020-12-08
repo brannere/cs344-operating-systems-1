@@ -126,8 +126,8 @@ fn main() {
     // Change the following code to create 2 threads that run concurrently and each of which uses map_data() function to process one of the two partitions
     
     /*******************/
-    // intermediate_sums.push(map_data(&xs[0]));
-    // intermediate_sums.push(map_data(&xs[1]));
+    intermediate_sums.push(map_data(&xs[0]));
+    intermediate_sums.push(map_data(&xs[1]));
     let c_xs0 = xs[0].clone();
     let c_xs1 = xs[1].clone();
     let t1 = thread::spawn(move ||(map_data(&c_xs0)));
@@ -158,7 +158,7 @@ fn main() {
     
     let mut my_intermediate_sums : Vec<usize> = Vec::new();
     let my_pd = partition_data(num_partitions, &v);
-    
+    // println!("my_pd {:?}", my_pd);
     let pd_clone = my_pd.clone();
     // let mut in_sums : Vec<usize> = Vec::new();
     let mut threads = vec![];
@@ -166,6 +166,7 @@ fn main() {
     print_partition_info(&my_pd);
     
     /* create one thread per partition and use it concurrently */
+    // println!("creating threads");
     for element in pd_clone{
         // let tmp_t = thread::spawn(move || (map_data(&element)) );
         threads.push(thread::spawn(move || (map_data(&element)) ));
@@ -174,8 +175,13 @@ fn main() {
     /* Collect intermdeiate sums from all the threads */
     for handle in threads{
         let tmp = handle.join().unwrap();
+        // println!("tmp {}", tmp);
         my_intermediate_sums.push(tmp);
     }
+    // for i in 0..my_pd.len(){
+    //     // my_intermediate_sums.push(map_data(&my_pd[i]));
+    //     // my_intermediate_sums.push(_r);
+    // }
     /* Prints information about the intermediate sums */
     println!("Intermediate sums = {:?}", my_intermediate_sums);
     /* Calls reduce_data to process the intermediate sums */
@@ -183,10 +189,6 @@ fn main() {
     /* Prints final sum computed by reduce_data */
     println!("Sum = {}", my_sum);
 
-    // for i in 0..my_pd.len(){
-    //     // my_intermediate_sums.push(map_data(&my_pd[i]));
-    //     // my_intermediate_sums.push(_r);
-    // }
 
     // for handle in threads{
     //     let _r = handle.join().unwrap();
@@ -218,11 +220,32 @@ fn partition_data(num_partitions: usize, v: &Vec<usize>) -> Vec<Vec<usize>>{
     // let partition_size = v.len()/2;
     // println!("num_partitions {}", num_partitions);
     // println!("partition_size(num_elements) {}", v.len());
-    // println!("num_elements % num_partitions {}", v.len()%num_partitions);
-    
+    // println!("in partiton data");
     let mut xs: Vec<Vec<usize>> = Vec::new();
     let mut v_cpy = v.clone();
-    let part_size = v.len()/num_partitions;
+    // let part_size = v.len()/num_partitions;
+    let mut counter = 0;    
+    
+    // println!("num_elements % num_partitions {}", v.len()%num_partitions);
+    // if num_partitions%v.len() == 0{
+      if v.len()%num_partitions == 0{
+        // println!("in if");
+        let part_size = v.len() / num_partitions;
+        // let mut last = 0;
+        for _i in 0..num_partitions{
+          let mut tmp: Vec<usize> = Vec::new();
+          for j in 0..part_size{
+            tmp.push(v_cpy[counter]);
+            counter += 1;
+            // last = last+j;
+          }
+          // println!("tmp {:?}", xs);
+          xs.push(tmp);
+        }
+
+    }    
+    xs
+}
 
     // if v.len()%num_partitions == 0{
     //     // println!("is multiple");
@@ -285,5 +308,3 @@ fn partition_data(num_partitions: usize, v: &Vec<usize>) -> Vec<Vec<usize>>{
     // }
 
     // partition_data_in_two(v)
-    xs
-}
