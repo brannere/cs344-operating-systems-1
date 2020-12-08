@@ -227,23 +227,22 @@ fn partition_data(num_partitions: usize, v: &Vec<usize>) -> Vec<Vec<usize>>{
     let mut counter = 0;    
     
     // println!("num_elements % num_partitions {}", v.len()%num_partitions);
-    // if num_partitions%v.len() == 0{
-      if v.len()%num_partitions == 0{
-        // println!("in if");
-        let part_size = v.len() / num_partitions;
-        // let mut last = 0;
-        for _i in 0..num_partitions{
-          let mut tmp: Vec<usize> = Vec::new();
-          for j in 0..part_size{
-            tmp.push(v_cpy[counter]);
-            counter += 1;
-            // last = last+j;
-          }
-          // println!("tmp {:?}", xs);
-          xs.push(tmp);
+    let extra = v.len()%num_partitions;
+    // if v.len()%num_partitions == 0{
+      // println!("in if");
+      let part_size = v.len() / num_partitions;
+      for _i in 0..num_partitions{
+        let mut tmp: Vec<usize> = Vec::new();
+        for j in 0..part_size{
+          tmp.push(v_cpy[counter]);
+          counter += 1;
         }
-
-    }    
+        xs.push(tmp);
+      }
+      for i in 0..extra{
+        xs[i].push(v_cpy[counter]);
+        counter +=1; 
+      }
     xs
 }
 
