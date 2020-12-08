@@ -178,10 +178,10 @@ fn main() {
     }
     /* Prints information about the intermediate sums */
     println!("Intermediate sums = {:?}", my_intermediate_sums);
-    let my_sum = reduce_data(&my_intermediate_sums);
     /* Calls reduce_data to process the intermediate sums */
     let my_sum = reduce_data(&my_intermediate_sums);
     /* Prints final sum computed by reduce_data */
+    println!("Sum = {}", my_sum);
 
     // for i in 0..my_pd.len(){
     //     // my_intermediate_sums.push(map_data(&my_pd[i]));
@@ -224,16 +224,16 @@ fn partition_data(num_partitions: usize, v: &Vec<usize>) -> Vec<Vec<usize>>{
     let mut v_cpy = v.clone();
     let part_size = v.len()/num_partitions;
 
-    if v.len()%num_partitions == 0{
-        // println!("is multiple");
-        for _i in 0..num_partitions{
-            let mut tmp: Vec<usize> = Vec::new();
-            for j in 0..part_size{
-                tmp.push(v[j]);
-            }
-            xs.push(tmp);
-        }
-    }
+    // if v.len()%num_partitions == 0{
+    //     // println!("is multiple");
+    //     for _i in 0..num_partitions{
+    //         let mut tmp: Vec<usize> = Vec::new();
+    //         for j in 0..part_size{
+    //             tmp.push(v[j]);
+    //         }
+    //         xs.push(tmp);
+    //     }
+    // }
     // else{
     //     let extra = v.len()%num_partitions;
     //     /* For each partition, write/push the same amount */
