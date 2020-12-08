@@ -1,6 +1,14 @@
+/*
+  main.rs
+  Operatoring Systemse 1, CS340
+  Multi-threaded map reduce in Rust
+  Erick Branner
+  brannere@oregonstate.edu
+  8 December 2020
+*/
+
 use std::env; // to get arugments passed to the program
 use std::thread;
-use std::time::Duration;
 
 /*
 * Print the number of partitions and the size of each partition
@@ -153,51 +161,35 @@ fn main() {
     // 5. Prints information about the intermediate sums
     // 5. Calls reduce_data to process the intermediate sums
     // 6. Prints the final sum computed by reduce_data
-    /*******************/
-
     
+    
+    /*******************/
     let mut my_intermediate_sums : Vec<usize> = Vec::new();
+    /* Calls partition data to partition the data into equal partitions */
     let my_pd = partition_data(num_partitions, &v);
-    // println!("my_pd {:?}", my_pd);
     let pd_clone = my_pd.clone();
-    // let mut in_sums : Vec<usize> = Vec::new();
     let mut threads = vec![];
     
+    /*  Calls print partition info to print info on the partitions 
+        that have been created 
+    */
     print_partition_info(&my_pd);
     
     /* create one thread per partition and use it concurrently */
-    // println!("creating threads");
     for element in pd_clone{
-        // let tmp_t = thread::spawn(move || (map_data(&element)) );
         threads.push(thread::spawn(move || (map_data(&element)) ));
-        // let _tmp_r1 = tmp_t.join().unwrap();
     }
     /* Collect intermdeiate sums from all the threads */
     for handle in threads{
         let tmp = handle.join().unwrap();
-        // println!("tmp {}", tmp);
         my_intermediate_sums.push(tmp);
     }
-    // for i in 0..my_pd.len(){
-    //     // my_intermediate_sums.push(map_data(&my_pd[i]));
-    //     // my_intermediate_sums.push(_r);
-    // }
     /* Prints information about the intermediate sums */
     println!("Intermediate sums = {:?}", my_intermediate_sums);
     /* Calls reduce_data to process the intermediate sums */
     let my_sum = reduce_data(&my_intermediate_sums);
     /* Prints final sum computed by reduce_data */
     println!("Sum = {}", my_sum);
-
-
-    // for handle in threads{
-    //     let _r = handle.join().unwrap();
-    //     my_intermediate_sums.push(_r);
-    // }
-    
-    // println!("Intermediate sums = {:?}", my_intermediate_sums);
-    // let my_sum = reduce_data(&my_intermediate_sums);
-    // println!("Sum = {}", my_sum);
     /*******************/
 }
 
@@ -216,94 +208,34 @@ fn main() {
 * 
 */
 fn partition_data(num_partitions: usize, v: &Vec<usize>) -> Vec<Vec<usize>>{
-    // Remove the following line which has been added to remove a compiler error
-    // let partition_size = v.len()/2;
-    // println!("num_partitions {}", num_partitions);
-    // println!("partition_size(num_elements) {}", v.len());
-    // println!("in partiton data");
-    let mut xs: Vec<Vec<usize>> = Vec::new();
-    let mut v_cpy = v.clone();
-    // let part_size = v.len()/num_partitions;
-    let mut counter = 0;    
-    
-    // println!("num_elements % num_partitions {}", v.len()%num_partitions);
-    let extra = v.len()%num_partitions;
-    // if v.len()%num_partitions == 0{
-      // println!("in if");
-      let part_size = v.len() / num_partitions;
-      for _i in 0..num_partitions{
-        let mut tmp: Vec<usize> = Vec::new();
-        for j in 0..part_size{
-          tmp.push(v_cpy[counter]);
-          counter += 1;
-        }
-        xs.push(tmp);
-      }
-      for i in 0..extra{
-        xs[i].push(v_cpy[counter]);
-        counter +=1; 
-      }
-    xs
+  // Remove the following line which has been added to remove a compiler error
+  let mut xs: Vec<Vec<usize>> = Vec::new();
+  // let mut v_cpy = v.clone();
+  let mut counter = 0;    
+  
+  /* 
+    For the number of partitions, and for each partition size 
+    length, push into temporary vector v[counter], where counter 
+    is the current local index (local to the function), and push
+    that temporary vector into xs (which is to be returned).
+
+    If there are any extra, write that amount into xs with 
+    the counter while still incrementing it
+  */
+
+  let extra = v.len()%num_partitions;
+  let part_size = v.len() / num_partitions;
+  for _i in 0..num_partitions{
+    let mut tmp: Vec<usize> = Vec::new();
+    for _j in 0..part_size{
+      tmp.push(v[counter]);
+      counter += 1;
+    }
+    xs.push(tmp);
+  }
+  for i in 0..extra{
+    xs[i].push(v[counter]);
+    counter +=1; 
+  }
+  xs
 }
-
-    // if v.len()%num_partitions == 0{
-    //     // println!("is multiple");
-    //     for _i in 0..num_partitions{
-    //         let mut tmp: Vec<usize> = Vec::new();
-    //         for j in 0..part_size{
-    //             tmp.push(v[j]);
-    //         }
-    //         xs.push(tmp);
-    //     }
-    // }
-    // else{
-    //     let extra = v.len()%num_partitions;
-    //     /* For each partition, write/push the same amount */
-    //     while v_cpy.len() != 0{
-    //         for i in 0..num_partitions{
-    //             let last = v_cpy.pop().unwrap();
-                
-    //         }
-    //     }
-        // for _i in 0..v.len(){
-        // for _i in 0..v_cpy.len(){
-        //     let mut tmp: Vec<usize> = Vec::new();
-        // // for _i in 0..num_partitions{
-        //     for j in 0..num_partitions{
-        //     // for _j in 0..v.len(){
-        //         if v_cpy.len() != 0{
-        //             // let end = v_cpy.len()-1;
-        //             // tmp.push(v_cpy[end]);
-        //             // tmp.push(v_cpy.pop());
-        //             let last = v_cpy.pop().unwrap();
-        //             println!("pushin {}", j);
-        //             tmp.push(last);
-        //         }
-        //     }
-        //     xs.push(tmp);
-        // }
-        
-    // }
-    // else{
-    //     // println!("is not multiple");
-    //     let extra = v.len()%num_partitions;
-    //     let mut counter = 0;
-    //     for _i in 0..num_partitions{
-    //         let mut called = 0;
-    //         let mut tmp: Vec<usize> = Vec::new();
-    //         for j in 0..v.len(){
-    //             tmp.push(v[j]);
-    //                 if counter < extra && called == 0{
-    //                     // println!("extra loop");
-    //                     called = 1; 
-    //                     // tmp.push(v[j+counter+1]);
-    //                     tmp.push(v[v.len()-counter]);
-    //                     counter = counter + 1;
-    //                 }
-    //         }
-    //         xs.push(tmp);
-    //     }
-
-    // }
-
-    // partition_data_in_two(v)
