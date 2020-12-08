@@ -20,7 +20,7 @@ fn print_partition_info(vs: &Vec<Vec<usize>>){
 */
 fn generate_data(num_elements: usize) -> Vec<usize>{
     let mut v : Vec<usize> = Vec::new();
-    for i in 0..num_elements {
+    for i in 0..num_elements{
         v.push(i);
     }
     return v;
@@ -160,19 +160,42 @@ fn main() {
     let my_pd = partition_data(num_partitions, &v);
     
     let pd_clone = my_pd.clone();
+    // let mut in_sums : Vec<usize> = Vec::new();
+    let mut threads = vec![];
     
     print_partition_info(&my_pd);
-    /* create one thread per partition */
+    
+    /* create one thread per partition and use it concurrently */
     for element in pd_clone{
-        let tmp_t = thread::spawn(move || (map_data(&element)) );
-        let _tmp_r1 = tmp_t.join().unwrap();
+        // let tmp_t = thread::spawn(move || (map_data(&element)) );
+        threads.push(thread::spawn(move || (map_data(&element)) ));
+        // let _tmp_r1 = tmp_t.join().unwrap();
     }
-    for i in 0..my_pd.len(){
-        my_intermediate_sums.push(map_data(&my_pd[i]));
+    /* Collect intermdeiate sums from all the threads */
+    for handle in threads{
+        let tmp = handle.join().unwrap();
+        my_intermediate_sums.push(tmp);
     }
+    /* Prints information about the intermediate sums */
     println!("Intermediate sums = {:?}", my_intermediate_sums);
     let my_sum = reduce_data(&my_intermediate_sums);
-    println!("Sum = {}", my_sum);
+    /* Calls reduce_data to process the intermediate sums */
+    let my_sum = reduce_data(&my_intermediate_sums);
+    /* Prints final sum computed by reduce_data */
+
+    // for i in 0..my_pd.len(){
+    //     // my_intermediate_sums.push(map_data(&my_pd[i]));
+    //     // my_intermediate_sums.push(_r);
+    // }
+
+    // for handle in threads{
+    //     let _r = handle.join().unwrap();
+    //     my_intermediate_sums.push(_r);
+    // }
+    
+    // println!("Intermediate sums = {:?}", my_intermediate_sums);
+    // let my_sum = reduce_data(&my_intermediate_sums);
+    // println!("Sum = {}", my_sum);
     /*******************/
 }
 
@@ -199,34 +222,46 @@ fn partition_data(num_partitions: usize, v: &Vec<usize>) -> Vec<Vec<usize>>{
     
     let mut xs: Vec<Vec<usize>> = Vec::new();
     let mut v_cpy = v.clone();
+    let part_size = v.len()/num_partitions;
 
     if v.len()%num_partitions == 0{
         // println!("is multiple");
         for _i in 0..num_partitions{
             let mut tmp: Vec<usize> = Vec::new();
-            for j in 0..v.len(){
+            for j in 0..part_size{
                 tmp.push(v[j]);
             }
             xs.push(tmp);
         }
     }
-    else{
-        let extra = v.len()%num_partitions;
-        /* For each partition, write/push the same amount */
-        for _i in 0..v.len(){
-            let mut tmp: Vec<usize> = Vec::new();
-            for _j in 0..num_partitions{
-                if v_cpy.len() != 0{
-                    let end = v_cpy.len()-1;
-                    tmp.push(v_cpy[end]);
-                    // tmp.push(v_cpy.pop());
-                    v_cpy.pop();
-                }
-            }
-            xs.push(tmp);
-        }
+    // else{
+    //     let extra = v.len()%num_partitions;
+    //     /* For each partition, write/push the same amount */
+    //     while v_cpy.len() != 0{
+    //         for i in 0..num_partitions{
+    //             let last = v_cpy.pop().unwrap();
+                
+    //         }
+    //     }
+        // for _i in 0..v.len(){
+        // for _i in 0..v_cpy.len(){
+        //     let mut tmp: Vec<usize> = Vec::new();
+        // // for _i in 0..num_partitions{
+        //     for j in 0..num_partitions{
+        //     // for _j in 0..v.len(){
+        //         if v_cpy.len() != 0{
+        //             // let end = v_cpy.len()-1;
+        //             // tmp.push(v_cpy[end]);
+        //             // tmp.push(v_cpy.pop());
+        //             let last = v_cpy.pop().unwrap();
+        //             println!("pushin {}", j);
+        //             tmp.push(last);
+        //         }
+        //     }
+        //     xs.push(tmp);
+        // }
         
-    }
+    // }
     // else{
     //     // println!("is not multiple");
     //     let extra = v.len()%num_partitions;
